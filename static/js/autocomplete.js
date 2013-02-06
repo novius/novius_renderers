@@ -35,16 +35,14 @@ define(['jquery-nos'], function ($nos) {
                         for (x in data) {
                             var line = data[x];
                             var $li = $nos('<li>'+line.label+'</li>');
-                            if(typeof line.id != 'undefined') {
-                                $li.data('id', line.id);
+                            if(typeof line.class != 'undefined') {
+                                $li.addClass(line.class);
                             }
                             $li.data('value', line.value)
                                 .bind('click', function(e) {
                                     // Callback optionnel
                                     if (typeof callback === 'string') {
-                                        console.log(callback);
                                         callback = window[callback];
-                                        console.log(callback);
                                     }
 
                                     if ($nos.isFunction(callback)) {
