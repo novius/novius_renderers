@@ -1,0 +1,44 @@
+.autocomplete-liste {
+    position: absolute;
+    z-index: 10;
+    width: 39%;
+    left: 325px;
+    padding: 0;
+    margin: 0;
+    margin-top: 4px;
+    margin-left: -1px;
+    background: white;
+    border: 1px solid #DDD;
+    list-style: none;
+    box-shadow: 3px 3px 10px rgba(150,150,150,0.5);
+}
+
+.autocomplete-liste li {
+    padding: 4px 5px;
+    margin: 0;
+    list-style: none;
+    cursor: pointer;
+    border-bottom: 1px solid #EEE;
+    border-top: 1px solid white;
+    background: #F4F4F4;
+    background: -moz-linear-gradient(top, rgba(244, 244, 244, 1) 0%, rgba(255, 255, 255, 1) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(244, 244, 244, 1)), color-stop(100%,rgba(255, 255, 255, 1)));
+    background: -webkit-linear-gradient(top, rgba(244, 244, 244, 1) 0%,rgba(255, 255, 255, 1) 100%);
+    background: -o-linear-gradient(top, rgba(244, 244, 244, 1) 0%,rgba(255, 255, 255, 1) 100%);
+    background: -ms-linear-gradient(top, rgba(244, 244, 244, 1) 0%,rgba(255, 255, 255, 1) 100%);
+    background: linear-gradient(top, rgba(244, 244, 244, 1) 0%,rgba(255, 255, 255, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f4f4', endColorstr='#ffffff',GradientType=0 );
+}
+
+.autocomplete-liste li:hover,
+.autocomplete-liste li.current {
+    background: lightyellow;
+    background: rgb(210,210,210); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(210,210,210,1) 0%, rgba(240,240,240,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(210,210,210,1)), color-stop(100%,rgba(240,240,240,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(210,210,210,1) 0%,rgba(240,240,240,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(210,210,210,1) 0%,rgba(240,240,240,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(210,210,210,1) 0%,rgba(240,240,240,1) 100%); /* IE10+ */
+    background: linear-gradient(top, rgba(210,210,210,1) 0%,rgba(240,240,240,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fff9e0', endColorstr='#fffef7',GradientType=0 ); /* IE6-9 */
+}
