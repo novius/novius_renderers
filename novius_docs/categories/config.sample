@@ -1,0 +1,35 @@
+'categories' => array(
+    'renderer' => '\Local\Libs_Widgetcategories_Selector',
+    'renderer_options' => array(
+        'width' => '250px',
+        'height' => '250px',
+        'namespace' => $namespace,
+        'folder_name' => $application_folder,
+        'inspector_tree' => $path, //(eg inspector/category) (remove 'admin')
+        'columns' => array(
+            array(
+                'dataKey' => 'title',//key name used in the data-mapping
+            )
+        ),
+        'class' => 'Model_Category',
+        'multiple' => '1',
+    ),
+    'label' => __(''),
+    'form' => array(
+    ),
+    'before_save' => function($item, $data) use ($namespace) {
+        $item->categories;//fetch et 'cree' la relation
+        unset($item->categories);
+
+        $category_class = $namespace.'Model_Category';
+        if (!empty($data['categories'])) {
+            foreach ($data['categories'] as $cat_id) {
+                if (is_numeric($cat_id) ) {
+// @TODO : this is a fix in order to prevent the widget from adding models when ids should be passed...
+// when no checkboxes are selected, a model is sent instead of nothing...
+                    $item->categories[$cat_id] = $category_class::find($cat_id); 
+                }
+            }
+        }
+    },
+),
