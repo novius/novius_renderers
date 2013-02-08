@@ -1,5 +1,5 @@
 'categories' => array(
-    'renderer' => '\Local\Libs_Widgetcategories_Selector',
+    'renderer' => '\Lib\Renderers\Renderer_Categories',
     'renderer_options' => array(
         'width' => '250px',
         'height' => '250px',

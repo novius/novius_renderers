@@ -8,13 +8,13 @@
  * @link http://www.novius-os.org
  */
 
-namespace Local;
+namespace Lib\Renderers;
 
-class Libs_Widgetcategories_Selector extends \Nos\Renderer_Selector
+class Renderer_Categories extends \Nos\Renderer_Selector
 {
     public $lang = null;
     /**
-     * Add a class and an id with a prefix to the widget attributes
+     * Add a class and an id with a prefix to the renderer attributes
      * @param $attributes
      * @param $rules
      */
@@ -45,7 +45,7 @@ class Libs_Widgetcategories_Selector extends \Nos\Renderer_Selector
 
             //it is necessary to construct the "selected values" array with keys written like "namespace\model|id"
             // because it must be considered as JS Object when transformed to json (see modeltree_checkbox)
-            // and this is the syntax used in this widget.
+            // and this is the syntax used in this renderer.
             $ids = (array) $this->value;
             $selected = array();
             $pre_selected = array();
@@ -74,7 +74,7 @@ class Libs_Widgetcategories_Selector extends \Nos\Renderer_Selector
 
         $lang = \Arr::get($options, 'lang', $this->lang);
 
-        return $this->template(static::widget(array(
+        return $this->template(static::renderer(array(
             'input_name' => $this->name,
             'selected' => $selected,
             'disabled' => $disabled,
@@ -96,15 +96,15 @@ class Libs_Widgetcategories_Selector extends \Nos\Renderer_Selector
     }
 
     /**
-     * Construct the radio selector widget
+     * Construct the radio selector renderer
      * When using a fieldset,
-     * build() method should be overwritten to call the template() method on widget() response
+     * build() method should be overwritten to call the template() method on renderer() response
      * @static
      * @abstract
      * @param array $options
      */
 
-    public static function widget($options = array(), $attributes = array())
+    public static function renderer($options = array(), $attributes = array())
     {
         $view = 'inspector/modeltree_radio';
         $defaultSelected = null;
