@@ -13,7 +13,7 @@ namespace Lib\Renderers;
 class Renderer_Multiselect extends \Fieldset_Field
 {
     //Multiselect from : http://www.quasipartikel.at/multiselect/
-    protected $widget_options = array();
+    protected $renderer_options = array();
 
     public function __construct($name, $label = '', $attributes = array(), $rules = array(), \Fuel\Core\Fieldset $fieldset = null)
     {
@@ -23,11 +23,11 @@ class Renderer_Multiselect extends \Fieldset_Field
         if (empty($attributes['id'])) {
             $attributes['id'] = uniqid('multi_');
         }
-        if (!empty($attributes['widget_options'])) {
-            if (is_array($attributes['widget_options'])) {
-                //$this->set_attribute('data-multiselect-options', htmlspecialchars(\Format::forge()->to_json($attributes['widget_options'])));
-                $this->widget_options = \Arr::merge($this->widget_options, $attributes['widget_options']);
-                unset($attributes['widget_options']);
+        if (!empty($attributes['renderer_options'])) {
+            if (is_array($attributes['renderer_options'])) {
+                //$this->set_attribute('data-multiselect-options', htmlspecialchars(\Format::forge()->to_json($attributes['renderer_options'])));
+                $this->renderer_options = \Arr::merge($this->renderer_options, $attributes['renderer_options']);
+                unset($attributes['renderer_options']);
             }
         }
         $attributes['style'] = (isset($attributes['style']) ? $attributes['style'] : ''). 'display:none;';
@@ -51,7 +51,7 @@ class Renderer_Multiselect extends \Fieldset_Field
         $id = $this->get_attribute('id');
         return \View::forge('lib_renderers::multiselect/js', array(
             'id' => $id,
-            'options' => \Format::forge()->to_json($this->widget_options),
+            'options' => \Format::forge()->to_json($this->renderer_options),
         ), false);
     }
 
