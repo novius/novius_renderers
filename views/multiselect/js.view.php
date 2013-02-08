@@ -8,10 +8,7 @@
             var  $m = $nos('#<?= $id ?>');
 			$m.nosOnShow('one', function() {
                 $nos(this)
-                        .css({
-                            'width': '60%',
-                            'height': '150px'
-                        });
+                        .css(<?= $css ?>);
                 $nos(this).multiselect(<?= $options ?>);
             });
             $m.nosOnShow();

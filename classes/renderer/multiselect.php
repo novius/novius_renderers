@@ -14,6 +14,10 @@ class Renderer_Multiselect extends \Fieldset_Field
 {
     //Multiselect from : http://www.quasipartikel.at/multiselect/
     protected $renderer_options = array();
+    protected $field_style = array(
+        'width' => '60%',
+        'height' => '150px',
+    );
 
     public function __construct($name, $label = '', $attributes = array(), $rules = array(), \Fuel\Core\Fieldset $fieldset = null)
     {
@@ -30,7 +34,14 @@ class Renderer_Multiselect extends \Fieldset_Field
                 unset($attributes['renderer_options']);
             }
         }
-        $attributes['style'] = (isset($attributes['style']) ? $attributes['style'] : ''). 'display:none;';
+        if (!empty($attributes['style'])) {
+            if (is_array($attributes['style'])) {
+                $this->field_style = \Arr::merge($this->field_style, $attributes['style']);
+                unset($attributes['style']);
+            }
+        }
+        //hide the real select
+        $attributes['style'] = 'display:none;';
         parent::__construct($name, $label, $attributes, $rules, $fieldset);
     }
 
@@ -52,6 +63,7 @@ class Renderer_Multiselect extends \Fieldset_Field
         return \View::forge('lib_renderers::multiselect/js', array(
             'id' => $id,
             'options' => \Format::forge()->to_json($this->renderer_options),
+            'css' => \Format::forge()->to_json($this->field_style),
         ), false);
     }
 
