@@ -21,10 +21,16 @@ define(['jquery-nos'], function ($nos) {
                 // Callback called when clicking on the list
                 var callback = $this.data('autocomplete-callback') || $this.attr('data-autocomplete-callback') || options.on_click || false;
 
+                //data sent by ajax are empty by default and will only contain the input
+                //but it is possible to take account of some sort of a config
+                var post = $this.data('autocomplete-post') || $this.attr('data-autocomplete-post') || options.post || {};
+                if ((typeof post) !== "object" ) {
+                    post = {};
+                }
+
                 // Initialize list of suggestions
                 var $liste = $nos('<ul class="autocomplete-liste"></ul>').hide();
                 $this.after($liste);
-
                 // Initialize cache
                 var cache = [];
 
@@ -122,7 +128,8 @@ define(['jquery-nos'], function ($nos) {
                                 if (cache[search]) {
                                     print_autocomplete.call($this, cache[search]);
                                 } else {
-                                    $.post(url, { 'search': search }, function(data) {
+                                    post.search = search;
+                                    $.post(url, post, function(data) {
                                         cache[search] = data;
                                         print_autocomplete.call($this, data);
                                     });
