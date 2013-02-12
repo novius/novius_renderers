@@ -37,7 +37,7 @@ define(['jquery-nos'], function ($nos) {
                 // function to display autocomplete
                 var print_autocomplete = function(data) {
                     $liste.html('').hide();
-                    if (data.length > 0) {
+                    if ((data != null) && data.length > 0) {
                         for (x in data) {
                             var line = data[x];
                             var $li = $nos('<li>'+line.label+'</li>');
