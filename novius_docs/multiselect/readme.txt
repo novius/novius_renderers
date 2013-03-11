@@ -1,4 +1,4 @@
-This multiselect is easy to use as a crud field, see config below :
+//This multiselect is easy to use as a crud field, see config below :
 
 'objects' => array(
     'renderer' => 'Lib\Renderers\Renderer_Multiselect',
@@ -19,9 +19,20 @@ This multiselect is easy to use as a crud field, see config below :
         if (!empty($data['objects'])) {
             foreach ($data['objects'] as $object_id) {
                 if (ctype_digit($object_id) ) {
-                    $item->objects[$depa_id] = \Namespace\Model_Object::find($object_id);
+                    $item->objects[$object_id] = \Namespace\Model_Object::find($object_id);
                 }
             }
         }
     },
 ),
+
+
+//It can also be used in a standalone way :
+echo \Lib\Renderers\Renderer_Multiselect::renderer(array(
+            'name' => 'objects[]',
+            'options' => \Arr::assoc_to_keyval($item->objects, 'obj_id', 'obj_name'),
+            'values' => (array) $values,
+            'style' => array(
+                'width' => '70%'
+            )
+        ));
