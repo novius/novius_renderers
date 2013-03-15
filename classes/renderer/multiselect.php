@@ -30,16 +30,18 @@ class Renderer_Multiselect extends \Fieldset_Field
         if (empty($attributes['id'])) {
             $attributes['id'] = uniqid('multi_');
         }
+        $options = static::$DEFAULT_OPTIONS;
         if (!empty($attributes['renderer_options'])) {
             if (is_array($attributes['renderer_options'])) {
                 //$this->set_attribute('data-multiselect-options', htmlspecialchars(\Format::forge()->to_json($attributes['renderer_options'])));
-                $options = \Arr::merge(static::$DEFAULT_OPTIONS, $attributes['renderer_options']);
+                $options = \Arr::merge($options, $attributes['renderer_options']);
                 unset($attributes['renderer_options']);
             }
         }
+        $style = static::$DEFAULT_STYLE;
         if (!empty($attributes['style'])) {
             if (is_array($attributes['style'])) {
-                $style = \Arr::merge(static::$DEFAULT_STYLE, $attributes['style']);
+                $style = \Arr::merge($style, $attributes['style']);
                 unset($attributes['style']);
             }
         }
