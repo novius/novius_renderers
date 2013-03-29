@@ -64,7 +64,7 @@ class Renderer_Multiselect extends \Fieldset_Field
     {
         parent::build();
 
-        $this->fieldset()->append($this->js_init($this->get_attribute('id'), $this->renderer_options, $this->renderer_style));
+        $this->fieldset()->append(static::js_init($this->get_attribute('id'), $this->renderer_options, $this->renderer_style));
         return (string) parent::build();
     }
 
@@ -90,7 +90,7 @@ class Renderer_Multiselect extends \Fieldset_Field
         return '<select '.array_to_attr($attributes).'>'.$st_options.'</select>'.static::js_init($attributes['id'], $renderer_options, $style);
     }
 
-    public function js_init($id, $options, $style)
+    public static function js_init($id, $options, $style)
     {
         return \View::forge('lib_renderers::multiselect/js', array(
             'id' => $id,
