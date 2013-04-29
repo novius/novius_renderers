@@ -10,6 +10,8 @@
 
 namespace Lib\Renderers;
 
+use Fuel\Core\Input;
+
 class Renderer_Multiselect extends \Fieldset_Field
 {
     protected $renderer_options = array();
@@ -21,6 +23,12 @@ class Renderer_Multiselect extends \Fieldset_Field
         'width' => '60%',
         'height' => '150px',
     );
+
+    public function repopulate(array $input)
+    {
+        $value = \Arr::get($input, $this->name, null);
+        $this->set_value($value, true);
+    }
 
     public static function create_options(&$attributes)
     {
