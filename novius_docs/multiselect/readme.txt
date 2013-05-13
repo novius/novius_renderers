@@ -32,6 +32,7 @@ echo \Lib\Renderers\Renderer_Multiselect::renderer(array(
             'name' => 'objects[]',
             'options' => \Arr::assoc_to_keyval($item->objects, 'obj_id', 'obj_name'),
             'values' => (array) $values,
+            'order' => true //This allows to display selected elements in the selected order. Don't work with CRUD configuration
             'style' => array(
                 'width' => '70%'
             )

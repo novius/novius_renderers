@@ -71,7 +71,7 @@ class Renderer_Multiselect extends \Fieldset_Field
     public function build()
     {
         parent::build();
-
+        
         $this->fieldset()->append(static::js_init($this->get_attribute('id'), $this->renderer_options, $this->renderer_style));
         return (string) parent::build();
     }
@@ -88,6 +88,14 @@ class Renderer_Multiselect extends \Fieldset_Field
         $options = (array) $attributes['options'];
         $values = (array) $attributes['values'];
         $st_options = '';
+        if ($renderer['order']) {
+            foreach ($values as $val) {
+                $st_options .= array_key_exists($val, $options) ? '<option value="'.$val.'" selected="selected">' : '<option value="'.$val.'">';
+                $st_options .= $options[$val];
+                $st_options .= '</option>';
+                unset($options[$val]);
+            }
+        }
         foreach ($options as $key => $opt) {
             $st_options .= in_array($key, $values) ? '<option value="'.$key.'" selected="selected">' : '<option value="'.$key.'">';
             $st_options .= $opt;
