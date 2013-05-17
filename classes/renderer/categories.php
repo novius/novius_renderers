@@ -80,8 +80,8 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             'disabled' => $disabled,
             'multiple' => isset($options['multiple']) ? $options['multiple'] : 0,
             'sortable' => isset($options['sortable']) ? $options['sortable'] : 0,
-            'folder' => $options['folder_name'],
-            'inspector' => $options['inspector_tree'],
+            'folder' => $options['folder'],
+            'inspector_tree' => $options['inspector_tree'],
             'treeOptions' => array(
                 'lang' => $lang == null ? '' : $lang,
             ),
@@ -113,8 +113,10 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             $defaultSelected = array();
         }
 
+        $save_options = $options;
+
         $options = \Arr::merge(array(
-            'urlJson' => 'admin/'.$options['folder'].'/'.$options['inspector'].'/json',
+            'urlJson' => 'admin/'.$options['folder'].'/'.$options['inspector_tree'].'/json',
             'input_name' => null,
             'selected' => $defaultSelected,
             'disabled' => array(
@@ -129,10 +131,15 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             ),
             'height' => '150px',
             'width' => null,
+            'reset_default_column' => false, //Pour éviter de garder la column cate_titre par défaut, on permet de ne récupérer que les columns souhaitées
         ), $options);
 
+        if ($options['reset_default_column']) {
+            $options['columns'] = $save_options['columns'];
+        }
+
         try {
-            return \Request::forge('admin/'.$options['folder'].'/'.$options['inspector'].'/list')->execute(
+            return \Request::forge('admin/'.$options['folder'].'/'.$options['inspector_tree'].'/list')->execute(
                 array(
                     $view,
                     array(
