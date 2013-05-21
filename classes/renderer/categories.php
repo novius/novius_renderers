@@ -127,7 +127,7 @@ class Renderer_Categories extends \Nos\Renderer_Selector
                 )
             ),
             'treeOptions' => array(
-                'lang' => null,
+                'context' => null,
             ),
             'height' => '150px',
             'width' => null,
