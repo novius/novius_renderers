@@ -1,5 +1,0 @@
-{
-  "version":"2.0.0",
-  "commentaire":"Rupture de compatibilité avec la dernière version, rennomage des clés de config folder & inspector_tree, et possibilité de reset les columns",
-  "last_commit":"2ac9164"
-}
