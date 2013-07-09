@@ -20,6 +20,8 @@ define(['jquery-nos'], function ($nos) {
 
                 // Callback called when clicking on the list
                 var callback = $this.data('autocomplete-callback') || $this.attr('data-autocomplete-callback') || options.on_click || false;
+                //Met-on à jour l'url d'autocomplete ?
+                var maj_url = $this.data('maj_url') || $this.attr('data-maj_url') || false;
 
                 //data sent by ajax are empty by default and will only contain the input
                 //but it is possible to take account of some sort of a config
@@ -114,6 +116,12 @@ define(['jquery-nos'], function ($nos) {
                     });
 
                     $this.bind('keyup', function(e) {
+
+                        //on met à jour l'url
+                        if (maj_url) {
+                            var url = $this.attr('data-autocomplete-url');
+                        }
+
                         if (isSpecialKey(e.keyCode ? e.keyCode : e.which)) {
                             return false;
                         }
