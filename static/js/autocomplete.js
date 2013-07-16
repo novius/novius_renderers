@@ -77,7 +77,7 @@ define(['jquery-nos'], function ($nos) {
                 }
 
                 // Initialize ajax
-                var url = $this.data('autocomplete-url');
+                var url = $this.data('autocomplete-url')  || $this.attr('data-autocomplete-url') || null;
                 if (url.length > 0) {
                     var minlen = $this.data('autocomplete-minlength') || $this.attr('autocomplete-minlength') || 3;
                     $this.bind('keydown', function(e) {
@@ -119,7 +119,7 @@ define(['jquery-nos'], function ($nos) {
 
                         //on met à jour l'url
                         if (maj_url) {
-                            var url = $this.attr('data-autocomplete-url');
+                            url = $this.attr('data-autocomplete-url');
                         }
 
                         if (isSpecialKey(e.keyCode ? e.keyCode : e.which)) {
