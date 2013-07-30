@@ -1,0 +1,4 @@
+'colour' => array (
+    'label' => __('Colour'),
+    'renderer' => '\Lib\Renderers\Renderer_Colorpicker',
+),
