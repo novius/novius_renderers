@@ -85,9 +85,10 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             'treeOptions' => array(
                 'lang' => $lang == null ? '' : $lang,
             ),
-            'columns' => array(
-                array(
-                    'dataKey' => \Arr::get($options, 'datakey', 'title'),
+            'columns' => \Arr::get($options, 'columns', array(
+                    array(
+                        'datakey' => 'title'
+                    )
                 )
             ),
             'height' => \Arr::get($options, 'height', '150px'),
@@ -121,11 +122,6 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             'selected' => $defaultSelected,
             'disabled' => array(
             ),
-            'columns' => array(
-                array(
-                    'dataKey' => 'cate_titre',
-                )
-            ),
             'treeOptions' => array(
                 'context' => null,
             ),
@@ -133,6 +129,14 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             'width' => null,
             'reset_default_column' => false, //Pour éviter de garder la column cate_titre par défaut, on permet de ne récupérer que les columns souhaitées
         ), $options);
+
+        if (!isset($options['columns']) || count($options['columns']) == 0) {
+            $options['columns'] = array(
+                array(
+                    'datakey' => 'title'
+                )
+            );
+        }
 
         if ($options['reset_default_column']) {
             $options['columns'] = $save_options['columns'];
