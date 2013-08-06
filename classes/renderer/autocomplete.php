@@ -13,7 +13,7 @@ namespace Lib\Renderers;
 class Renderer_Autocomplete extends \Fieldset_Field
 {
     protected $renderer_options = array();
-    protected $DEFAULT_OPTIONS = array(
+    protected static $DEFAULT_OPTIONS = array(
         'wrapper' => '', //'<div class="datepicker-wrapper"></div>',
     );
 
