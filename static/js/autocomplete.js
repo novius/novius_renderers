@@ -14,15 +14,14 @@ define(['jquery-nos'], function ($nos) {
 
     return function(context, options) {
         $nos(function () {
-
-            $nos(context).find('input.autocomplete').each(function() {
+            $nos(context).on('focus', 'input.autocomplete', function(event) {
                 var $this = $nos(this);
-
                 // Callback called when clicking on the list
                 var callback = $this.data('autocomplete-callback') || $this.attr('data-autocomplete-callback') || options.on_click || false;
                 //Met-on à jour l'url d'autocomplete ?
                 var maj_url = $this.data('maj_url') || $this.attr('data-maj_url') || false;
 
+                var url = $this.data('autocomplete-url')  || $this.attr('data-autocomplete-url') || null;
                 //data sent by ajax are empty by default and will only contain the input
                 //but it is possible to take account of some sort of a config
                 var post = $this.data('autocomplete-post') || $this.attr('data-autocomplete-post') || options.post || {};
@@ -35,6 +34,13 @@ define(['jquery-nos'], function ($nos) {
                 $this.after($liste);
                 // Initialize cache
                 var cache = [];
+
+                //update data when the input has the focus (otherwise it's useless)
+                if (maj_url) {
+                    $this.on('focus', function(e) {
+                        url = $nos(this).attr('data-autocomplete-url');
+                    });
+                }
 
                 // function to display autocomplete
                 var print_autocomplete = function(data) {
@@ -77,7 +83,6 @@ define(['jquery-nos'], function ($nos) {
                 }
 
                 // Initialize ajax
-                var url = $this.data('autocomplete-url')  || $this.attr('data-autocomplete-url') || null;
                 if (url.length > 0) {
                     var minlen = $this.data('autocomplete-minlength') || $this.attr('autocomplete-minlength') || 3;
                     $this.bind('keydown', function(e) {
@@ -117,11 +122,6 @@ define(['jquery-nos'], function ($nos) {
 
                     $this.bind('keyup', function(e) {
 
-                        //on met à jour l'url
-                        if (maj_url) {
-                            url = $this.attr('data-autocomplete-url');
-                        }
-
                         if (isSpecialKey(e.keyCode ? e.keyCode : e.which)) {
                             return false;
                         }
@@ -148,6 +148,7 @@ define(['jquery-nos'], function ($nos) {
                         return false;
                     });
                 }
+                $this.off( event );//will only initialize once
             });
             $nos(document).click(function() { $nos('ul.autocomplete-liste').html('').hide(); });
         });
