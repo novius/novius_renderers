@@ -6,26 +6,26 @@
     ], function( $nos ) {
     $nos(function() {
 
-            $nos('#<?= $id ?>').after('<div class="customRenderer"/>');
-			$nos('div.customRenderer').append('<div class="colorSelector"/>');
-			$nos('div.colorSelector').after('<div class="colorpickerHolder"/>');
-			$nos('div.colorSelector').append('<div/>');
+            $nos('#<?= $id ?>').after('<div id="renderer_<?= $id ?>" class="customRenderer"/>');
+			$nos('#renderer_<?= $id ?>').append('<div class="colorSelector"/>');
+			$nos('#renderer_<?= $id ?> div.colorSelector').after('<div class="colorpickerHolder"/>');
+			$nos('#renderer_<?= $id ?> div.colorSelector').append('<div/>');
             var color = '#' + $nos('#<?= $id ?>').attr('value');
-			$nos('div.colorSelector div').css('backgroundColor', color);
+			$nos('#renderer_<?= $id ?> div.colorSelector div').css('backgroundColor', color);
 
-			$nos('div.colorpickerHolder').ColorPicker({
+			$nos('#renderer_<?= $id ?> div.colorpickerHolder').ColorPicker({
                 flat: true,
                 color: color,
                 onSubmit: function(hsb, hex, rgb) {
-                    $nos('div.colorSelector div').css('backgroundColor', '#' + hex);
+                    $nos('#renderer_<?= $id ?> div.colorSelector div').css('backgroundColor', '#' + hex);
                     $nos('#<?= $id ?>').attr('value', hex);
-                    $nos('div.colorpickerHolder').stop().animate({height: 0}, 500);
+                    $nos('#renderer_<?= $id ?> div.colorpickerHolder').stop().animate({height: 0}, 500);
                 }
             });
-            $nos('div.colorpickerHolder>div').css('position', 'absolute');
+            $nos('#renderer_<?= $id ?> div.colorpickerHolder>div').css('position', 'absolute');
             var widt = false;
-            $nos('div.colorSelector').bind('click', function() {
-                $nos('div.colorpickerHolder').stop().animate({height: widt ? 0 : 173}, 500);
+            $nos('#renderer_<?= $id ?> div.colorSelector').on('click', function() {
+                $nos('#renderer_<?= $id ?> div.colorpickerHolder').stop().animate({height: widt ? 0 : 173}, 500);
                 widt = !widt;
             });
         });
