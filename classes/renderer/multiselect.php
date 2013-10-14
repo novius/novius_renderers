@@ -17,11 +17,14 @@ class Renderer_Multiselect extends \Fieldset_Field
     protected $renderer_options = array();
     protected $renderer_style = array();
 
-    //Multiselect from : http://www.quasipartikel.at/multiselect/
-    protected static $DEFAULT_OPTIONS = array();
+    //Multiselect from : https://github.com/yanickrochon/jquery.uix.multiselect
+    protected static $DEFAULT_OPTIONS = array(
+        'availableListPosition' => 'left'
+    );
     protected static $DEFAULT_STYLE = array(
-        'width' => '60%',
+        'width' => '70%',
         'height' => '150px',
+        'margin' => '10px 0'
     );
 
     public function repopulate(array $input)
@@ -108,10 +111,12 @@ class Renderer_Multiselect extends \Fieldset_Field
 
     public static function js_init($id, $options, $style)
     {
+        $user = \Session::user();
         return \View::forge('lib_renderers::multiselect/js', array(
             'id' => $id,
             'options' => \Format::forge()->to_json($options),
             'css' => \Format::forge()->to_json($style),
+            'locale' => \Str::sub($user->user_lang, 0, 2),
         ), false);
     }
 
