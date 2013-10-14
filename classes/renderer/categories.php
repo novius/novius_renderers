@@ -12,7 +12,7 @@ namespace Lib\Renderers;
 
 class Renderer_Categories extends \Nos\Renderer_Selector
 {
-    public $lang = null;
+    public $context = null;
     /**
      * Add a class and an id with a prefix to the renderer attributes
      * @param $attributes
@@ -28,7 +28,7 @@ class Renderer_Categories extends \Nos\Renderer_Selector
         }
 
         if (isset($attributes['renderer_options']['instance'])) {
-            $this->lang = $attributes['renderer_options']['instance']->get_lang();
+            $this->context = $attributes['renderer_options']['instance']->get_context();
         }
 
         if (isset($attributes['renderer_options']) && isset($attributes['renderer_options']['parents'])) {
@@ -54,15 +54,16 @@ class Renderer_Categories extends \Nos\Renderer_Selector
                 $pre_selected = $options['parents'];
                 unset($options['parents']);
             }
+            $model_name = $options['namespace'].'\\'.$options['class'];
             foreach ($ids as $id => $value) {
-                $selected[$options['namespace'].$options['class'].'|'.$id] = array(
+                $selected[$model_name.'|'.$id] = array(
                     'id' => $id,
-                    'model' => $options['namespace'].$options['class'],
+                    'model' => $model_name,
                 );
                 if (in_array($id, $pre_selected)) {
-                    $disabled[$options['namespace'].$options['class'].'|'.$id] = array(
+                    $disabled[$model_name.'|'.$id] = array(
                         'id' => $id,
-                        'model' => $options['namespace'].$options['class'],
+                        'model' => $model_name,
                     );
                 }
             }
@@ -72,7 +73,7 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             $disabled = array();
         }
 
-        $lang = \Arr::get($options, 'lang', $this->lang);
+        $context = \Arr::get($options, 'context', $this->context);
 
         return $this->template(static::renderer(array(
             'input_name' => $this->name,
@@ -83,11 +84,11 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             'folder' => $options['folder'],
             'inspector_tree' => $options['inspector_tree'],
             'treeOptions' => array(
-                'lang' => $lang == null ? '' : $lang,
+                'context' => $context == null ? '' : $context,
             ),
             'columns' => \Arr::get($options, 'columns', array(
                     array(
-                        'datakey' => 'title'
+                        'dataKey' => 'title'
                     )
                 )
             ),
