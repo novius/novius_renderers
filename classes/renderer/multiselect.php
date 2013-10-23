@@ -19,7 +19,8 @@ class Renderer_Multiselect extends \Fieldset_Field
 
     //Multiselect from : https://github.com/yanickrochon/jquery.uix.multiselect
     protected static $DEFAULT_OPTIONS = array(
-        'availableListPosition' => 'left'
+        'availableListPosition' => 'left',
+        'searchField' => true,
     );
     protected static $DEFAULT_STYLE = array(
         'width' => '70%',

@@ -273,7 +273,7 @@
                 }
                 this._searchField = $('<input type="text" />').addClass('uix-search ui-widget-content ui-corner-' + (isToggle ? 'left' : 'all'))[isToggle ? 'hide' : 'show']()
                     .insertBefore( this._headers[searchHeader] )
-                    .focus(function() { $(this).select(); })
+//                    .focus(function() { $(this).select(); })
                     .on("keydown keypress", function(e) { if (e.keyCode == 13) { e.preventDefault(); e.stopPropagation(); return false; } })
                     .keyup($.proxy(this._searchDelayed.request, this._searchDelayed));
             }
