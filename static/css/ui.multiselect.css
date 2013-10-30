@@ -1,7 +1,7 @@
 
 
 .uix-multiselect-original { position: absolute; left:-999999px; }
-.uix-multiselect { position: relative; float:left; }
+.uix-multiselect { position: relative; }
 .uix-multiselect .multiselect-selected-list, .uix-multiselect .multiselect-available-list { position:absolute; overflow:hidden; }
 .uix-multiselect .ui-widget-header { height: 28px; overflow:hidden;  white-space:nowrap; padding:2px 4px; }
 .uix-multiselect .ui-widget-header div.header-text { white-space: nowrap; }
