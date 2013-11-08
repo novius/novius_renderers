@@ -20,8 +20,6 @@ define(['jquery-nos'], function ($nos) {
                 if (typeof $this.attr('auto-initialized') == 'undefined' || !$this.attr('auto-initialized')) {
                     // Callback called when clicking on the list
                     var callback = $this.data('autocomplete-callback') || $this.attr('data-autocomplete-callback') || options.on_click || false;
-                    //Met-on à jour l'url d'autocomplete ?
-                    var maj_url = $this.data('maj_url') || $this.attr('data-maj_url') || false;
 
                     var url = $this.data('autocomplete-url')  || $this.attr('data-autocomplete-url') || null;
                     //data sent by ajax are empty by default and will only contain the input
@@ -37,12 +35,13 @@ define(['jquery-nos'], function ($nos) {
                     // Initialize cache
                     var cache = [];
 
-                    //update data when the input has the focus (otherwise it's useless)
-                    if (maj_url) {
-                        $this.on('focus', function(e) {
-                            url = $nos(this).attr('data-autocomplete-url');
-                        });
-                    }
+                    //update data when the custom event is triggered (otherwise it's useless)
+                    //As any changes on dom attribute OR data will be done manually,
+                    // user will always have the opportunity to trigger this custom event
+                    $this.on('update_autocomplete.renderer', function(e) {
+                        url = $nos(this).attr('data-autocomplete-url');
+                        post = $this.data('autocomplete-post') || post;
+                    });
 
                     // function to display autocomplete
                     var print_autocomplete = function(data) {

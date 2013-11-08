@@ -1,6 +1,8 @@
-About the autocomplete renderer :
+===== Introduction ================
 It was designed to be used as a special Fieldset_Field, and for now, it was not meant to be used outside a form.
 The use of the Renderer is therefore related to how it is included in the crud config or included in the View.
+
+===== Configuration ===============
 
 3 kinds of options :
  - 'form' options : used in the construction of the input field, does not concerns the renderer (eg : class)
@@ -21,7 +23,20 @@ The use of the Renderer is therefore related to how it is included in the crud c
             WARNING : will be overwritten if a specific callback is used ('data-autocomplete-callback');
 - 'renderer_options' -> other keys : unused; could be used in the future to add options on the renderer and used them in the php class
 
-See below for example :
+
+===== Update options afterward ====
+
+A custom jQuery event can be used to update the url and post content.
+New url is retrieved on dom attribute "data-autocomplete-url" in order to be easily read during dev,
+whereas the new post content must be retrieved on data as it can be a js object.
+See below how to use it :
+
+$input.attr('data-autocomplete-url', new_url);
+$input.data('autocomplete-post', new_post);
+var event = $nos.Event('update_autocomplete.renderer');
+$input.trigger(event);
+
+===== Example =====================
 
 /* In a view */
 <?=
