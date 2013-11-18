@@ -39,7 +39,7 @@ define(['jquery-nos'], function ($nos) {
                     //As any changes on dom attribute OR data will be done manually,
                     // user will always have the opportunity to trigger this custom event
                     $this.on('update_autocomplete.renderer', function(e) {
-                        url = $nos(this).attr('data-autocomplete-url');
+                        url = $nos(this).data('autocomplete-url');
                         post = $this.data('autocomplete-post') || post;
                     });
 
