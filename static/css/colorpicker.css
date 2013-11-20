@@ -164,6 +164,7 @@
 /*Custom Widget*/
 .customRenderer {
     position: relative;
+    /* Attention ! Si le 36px change, il faut aussi aller le changer dans le colopicker.js (mot-clé "overlay") */
     height: 36px;
 }
 
