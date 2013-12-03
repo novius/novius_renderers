@@ -71,7 +71,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
         $populate = '';
         if (!empty($this->renderer_options['populate']) && is_callable($this->renderer_options['populate'])) {
             $value = $this->renderer_options['populate']($item);
-            $hiddenName = empty( $this->attributes['data-name']) ? $this->attributes['data-name'] : $this->options['name'];
+            $hiddenName = !empty( $this->attributes['data-name']) ? $this->attributes['data-name'] : $this->options['name'];
             if (is_array($value)) {
                 if ($this->attributes['data-multiple'] && !\Str::ends_with($hiddenName, '[]')) {
                     $hiddenName .= '[]';
