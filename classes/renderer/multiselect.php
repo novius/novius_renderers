@@ -45,7 +45,6 @@ class Renderer_Multiselect extends \Fieldset_Field
         $options = static::$DEFAULT_OPTIONS;
         if (!empty($attributes['renderer_options'])) {
             if (is_array($attributes['renderer_options'])) {
-                //$this->set_attribute('data-multiselect-options', htmlspecialchars(\Format::forge()->to_json($attributes['renderer_options'])));
                 $options = \Arr::merge($options, $attributes['renderer_options']);
                 if (isset($options['order'])) {
                     $options['sortable'] = $options['order'];//preserve retro compatibility
