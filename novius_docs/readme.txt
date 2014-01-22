@@ -3,3 +3,4 @@ For now, renderers included are :
 - autocomplete
 - categories
 - multiselect
+- colorpicker
