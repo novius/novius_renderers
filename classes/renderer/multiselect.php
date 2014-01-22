@@ -47,6 +47,10 @@ class Renderer_Multiselect extends \Fieldset_Field
             if (is_array($attributes['renderer_options'])) {
                 //$this->set_attribute('data-multiselect-options', htmlspecialchars(\Format::forge()->to_json($attributes['renderer_options'])));
                 $options = \Arr::merge($options, $attributes['renderer_options']);
+                if (isset($options['order'])) {
+                    $options['sortable'] = $options['order'];//preserve retro compatibility
+                    unset($options['order']);
+                }
                 unset($attributes['renderer_options']);
             }
         }
@@ -75,7 +79,18 @@ class Renderer_Multiselect extends \Fieldset_Field
     public function build()
     {
         parent::build();
-        
+        if (isset($this->renderer_options['sortable']) && $this->renderer_options['sortable']) {
+            //if sortable, then assue values are sort, and then construct options based on that sort
+            $options = $this->options;
+            $values = $this->value;
+            while (!empty($values)) {
+                $val = array_pop($values);//get values from the last, in order to apply a FILO
+                $label = $options[$val];//get label of the current value
+                unset($options[$val]);//remove the value where it was
+                \Arr::insert_assoc($options, array($val => $label), 0);//put value on top and preserve keys
+            }
+            $this->options = $options;
+        }
         $this->fieldset()->append(static::js_init($this->get_attribute('id'), $this->renderer_options, $this->renderer_style));
         return (string) parent::build();
     }
@@ -92,7 +107,7 @@ class Renderer_Multiselect extends \Fieldset_Field
         $options = (array) $attributes['options'];
         $values = (array) $attributes['values'];
         $st_options = '';
-        if ($renderer['order']) {
+        if ($renderer['sortable']) {
             foreach ($values as $val) {
                 $st_options .= array_key_exists($val, $options) ? '<option value="'.$val.'" selected="selected">' : '<option value="'.$val.'">';
                 $st_options .= $options[$val];

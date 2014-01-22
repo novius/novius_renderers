@@ -6,6 +6,9 @@
     'form' => array(
         'options' => $options, //a key => value array, the value is displayed, the key is sent
     ),
+    'renderer_options' => array(
+        'order' => true //This allows to display selected elements in the selected order.
+    ),
     'populate' => function($item) {
         if (!empty($item->objects)) {
             return array_keys($item->objects);
@@ -14,14 +17,9 @@
         }
     },
     'before_save' => function($item, $data) {
-        $item->objects;//fetch the relation
-        unset($item->objects);//remove all the objects and only set the objects which have been sent
+        $item->objects = array();//fetch the relation
         if (!empty($data['objects'])) {
-            foreach ($data['objects'] as $object_id) {
-                if (ctype_digit($object_id) ) {
-                    $item->objects[$object_id] = \Namespace\Model_Object::find($object_id);
-                }
-            }
+            $item->objects = \Namespace\Model_Object::query()->where('obj_id', 'in', $data['objects'])->get();
         }
     },
 ),
