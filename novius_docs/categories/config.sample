@@ -4,7 +4,7 @@
         'width' => '250px',
         'height' => '250px',
         'namespace' => $namespace,
-        'folder_name' => $application_folder,
+        'folder' => $application_folder,
         'inspector_tree' => $path, //(eg inspector/category) (remove 'admin')
         'columns' => array(
             array(
