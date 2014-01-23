@@ -1,5 +1,5 @@
 'categories' => array(
-    'renderer' => '\Lib\Renderers\Renderer_Categories',
+    'renderer' => '\Novius\Renderers\Renderer_Categories',
     'renderer_options' => array(
         'width' => '250px',
         'height' => '250px',

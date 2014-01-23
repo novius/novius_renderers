@@ -11,8 +11,8 @@
 <script type="text/javascript">
     require([
         'jquery-nos',
-        'static/apps/lib_renderers/js/autocomplete',
-        'link!static/apps/lib_renderers/css/autocomplete.css'
+        'static/apps/novius_renderers/js/autocomplete',
+        'link!static/apps/novius_renderers/css/autocomplete.css'
     ], function ($nos, autocomplete) {
 
         var $content = $nos('<?= empty($wrapper) ? 'body' : $wrapper ?>');

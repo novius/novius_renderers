@@ -1,7 +1,7 @@
 //This multiselect is easy to use as a crud field, see config below :
 
 'objects' => array(
-    'renderer' => 'Lib\Renderers\Renderer_Multiselect',
+    'renderer' => 'Novius\Renderers\Renderer_Multiselect',
     'label' => __('Label'),
     'form' => array(
         'options' => $options, //a key => value array, the value is displayed, the key is sent
@@ -26,7 +26,7 @@
 
 
 //It can also be used in a standalone way :
-echo \Lib\Renderers\Renderer_Multiselect::renderer(array(
+echo \Novius\Renderers\Renderer_Multiselect::renderer(array(
             'name' => 'objects[]',
             'options' => \Arr::assoc_to_keyval($item->objects, 'obj_id', 'obj_name'),
             'values' => (array) $values,

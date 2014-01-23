@@ -8,7 +8,7 @@
  * @link http://www.novius-os.org
  */
 
-namespace Lib\Renderers;
+namespace Novius\Renderers;
 
 class Renderer_Autocomplete extends \Fieldset_Field
 {
@@ -114,7 +114,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
      */
     protected static function js_init($id, $renderer_options = array())
     {
-        return \View::forge('lib_renderers::autocomplete/js', array(
+        return \View::forge('novius_renderers::autocomplete/js', array(
             'id' => $id,
             'wrapper' => \Arr::get($renderer_options, 'wrapper', ''),
         ), false);

@@ -8,7 +8,7 @@
  * @link http://www.novius-os.org
  */
 
-namespace Lib\Renderers;
+namespace Novius\Renderers;
 
 class Renderer_Categories extends \Nos\Renderer_Selector
 {

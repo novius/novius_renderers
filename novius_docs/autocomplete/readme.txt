@@ -40,7 +40,7 @@ $input.trigger(event);
 
 /* In a view */
 <?=
-    Lib\Renderers\Renderer_Autocomplete::renderer(array(
+    Novius\Renderers\Renderer_Autocomplete::renderer(array(
         'name' => 'field_name',
         'class' => 'class_for_input_field',
         'renderer_options' => array(
@@ -57,7 +57,7 @@ $input.trigger(event);
     'fields' => array(
         ...
         'field_name' => array(
-            'renderer' => 'Lib\Renderers\Renderer_Autocomplete',
+            'renderer' => 'Novius\Renderers\Renderer_Autocomplete',
             'form' => array(
                 'class' => 'class_for_input_field',
             ),

@@ -11,8 +11,8 @@
 <script type="text/javascript">
     require([
         'jquery-nos',
-        'static/apps/lib_renderers/js/colorpicker',
-        'link!static/apps/lib_renderers/css/colorpicker.css'
+        'static/apps/novius_renderers/js/colorpicker',
+        'link!static/apps/novius_renderers/css/colorpicker.css'
     ], function( $ ) {
     $(function() {
 

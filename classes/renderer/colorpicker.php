@@ -8,7 +8,7 @@
  * @link http://www.novius-os.org
  */
 
-namespace Lib\Renderers;
+namespace Novius\Renderers;
 
 class Renderer_Colorpicker extends \Fieldset_Field
 {
@@ -37,7 +37,7 @@ class Renderer_Colorpicker extends \Fieldset_Field
 
     public function js_init() {
         $id = $this->get_attribute('id');
-        return \View::forge('lib_renderers::colorpicker/js', array(
+        return \View::forge('novius_renderers::colorpicker/js', array(
             'id' => $id,
         ), false);
     }

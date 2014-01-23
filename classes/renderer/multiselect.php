@@ -8,7 +8,7 @@
  * @link http://www.novius-os.org
  */
 
-namespace Lib\Renderers;
+namespace Novius\Renderers;
 
 use Fuel\Core\Input;
 
@@ -127,7 +127,7 @@ class Renderer_Multiselect extends \Fieldset_Field
     public static function js_init($id, $options, $style)
     {
         $user = \Session::user();
-        return \View::forge('lib_renderers::multiselect/js', array(
+        return \View::forge('novius_renderers::multiselect/js', array(
             'id' => $id,
             'options' => \Format::forge()->to_json($options),
             'css' => \Format::forge()->to_json($style),
