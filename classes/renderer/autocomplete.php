@@ -69,24 +69,25 @@ class Renderer_Autocomplete extends \Fieldset_Field
         //use fieldset to populate the field
         $item = $this->fieldset()->getInstance();
         $populate = '';
+        //keeps the renderer working if populate was made thanks to a key in renderer_options
         if (!empty($this->renderer_options['populate']) && is_callable($this->renderer_options['populate'])) {
-            $value = $this->renderer_options['populate']($item);
-            $hiddenName = !empty( $this->attributes['data-name']) ? $this->attributes['data-name'] : $this->options['name'];
-            if (is_array($value)) {
-                if ($this->attributes['data-multiple'] && !\Str::ends_with($hiddenName, '[]')) {
-                    $hiddenName .= '[]';
-                }
-                if (!empty($value)) {
-                    foreach($value as $id => $label) {
-                        $populate.='<input name="'.$hiddenName.'" type="hidden" value="'.$id.'">';
-                        $populate.= '<div class="label-result-autocomplete" data-value="'.$id.'" data-name="'.$hiddenName.'">'.$label.'<span class="delete-label">X</span></div>';
-                    }
-                }
-                $this->set_value('');
-            } else {
-                $populate.='<input name="'.$hiddenName.'" type="hidden" value="'.$value.'">';
-            }
+            $this->value = $this->renderer_options['populate']($item);
         }
+        $hiddenName = !empty( $this->attributes['data-name']) ? $this->attributes['data-name'] : $this->options['name'];
+        if (is_array($this->value)) {
+            if ($this->attributes['data-multiple'] && !\Str::ends_with($hiddenName, '[]')) {
+                $hiddenName .= '[]';
+            }
+            if (!empty($this->value)) {
+                foreach($this->value as $id => $label) {
+                    $populate.='<input name="'.$hiddenName.'" type="hidden" value="'.$id.'">';
+                    $populate.= '<div class="label-result-autocomplete" data-value="'.$id.'" data-name="'.$hiddenName.'">'.$label.'<span class="delete-label">X</span></div>';
+                }
+            }
+        } else {
+            $populate.='<input name="'.$hiddenName.'" type="hidden" value="'.$this->value.'">';
+        }
+        $this->set_value('');//autocomplete input always empty
         $this->fieldset()->append(static::js_init($this->get_attribute('id'), $this->renderer_options));
         //build without user's template
         $build = $this->template((string) parent::build().$populate);
