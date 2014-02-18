@@ -15,8 +15,6 @@ return array(
         'name' => 'Novius',
     ),
     'namespace' => 'Novius\Renderers',
-    'permission' => array(
-    ),
     'icons' => array(
         64 => 'static/apps/novius_renderers/img/renderer-64.png',
         32 => 'static/apps/novius_renderers/img/renderer-32.png',
