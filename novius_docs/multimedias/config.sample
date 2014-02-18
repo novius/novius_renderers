@@ -1,0 +1,45 @@
+'image' => array(
+    'label' => '',
+    'renderer' => 'Novius\Renderers\Renderer_MultiMedias',
+    'renderer_options' => array(
+        'key' => 'image',
+        'mode' => 'image',
+    ),
+    'before_save' => function($item, $data) {
+        $images = $data['image'];
+        //empty images
+        foreach($item->linked_medias as $id => $m) {
+            if (\Str::starts_with($m->medil_key, 'image')) {
+                $item->medias->{$m->medil_key} = null;
+                unset($item->linked_medias[$id]);
+            }
+        }
+        //reindex and update them
+        if (!empty($images)) {
+            $index = 1;
+            $keys = array();
+            foreach ($images as $id) {
+                if (!empty($id)) {
+                    $item->medias->{'image'.$index} = $id;
+                    $index++;
+                    $keys[] = 'image'.$index;
+                }
+            }
+        }
+
+        //flush database
+        if(!$item->is_new()) {
+            $query = \DB::delete('nos_media_link')->where('medil_from_table', '=', \Ftv\Front\Model_Front::table())
+                ->where_open()
+                ->where('medil_foreign_id', '=', $item->front_id);
+
+            if (!empty($keys)) {
+                $query->where('medil_key', 'NOT IN', $keys);
+            }
+            $query->where_close()
+                ->or_where('medil_foreign_id', 'IS', \DB::expr('NULL'))
+                ->or_where('medil_media_id', '=', 0)
+                ->execute();
+        }
+    },
+)
