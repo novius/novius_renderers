@@ -15,13 +15,17 @@ The use of the Renderer is therefore related to how it is included in the crud c
         - 'data-autocomplete-minlength' : optional
             Numbers of chars needed to perform the search.
             Default value : 3
+        - 'data-name' : optional
+            Choose a name for the hidden input (and not the one used for the input itself)
+            "name" of the field + "-id". eg "field_name-id"
         - 'wrapper' : optional but strongly advised.
             A unique html id used to identify the current autocomplete. Prevent from adding multiple list (each for autocomplete in DOM)
             Becomes mandatory when using "multiple" option (see below).
         - 'multiple' : optional. Default :0.
             If setting to '1', it will display chosen values below the autocomplete field. When using this option, 'wrapper' becomes mandatory.
             WARNING : will be overwritten if a specific callback is used ('data-autocomplete-callback');
-- 'renderer_options' -> other keys : unused; could be used in the future to add options on the renderer and used them in the php class
+- 'renderer_options' -> 'populate_input' : optional
+        Allow to populate the input "text"
 
 
 ===== Update options afterward ====

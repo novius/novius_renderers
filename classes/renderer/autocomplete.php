@@ -87,7 +87,12 @@ class Renderer_Autocomplete extends \Fieldset_Field
         } else {
             $populate.='<input name="'.$hiddenName.'" type="hidden" value="'.$this->value.'">';
         }
-        $this->set_value('');//autocomplete input always empty
+        if (!empty($this->renderer_options['populate_input']) && is_callable($this->renderer_options['populate_input'])) {
+            $this->set_value($this->renderer_options['populate_input']($item));
+        } else {
+            $this->set_value('');//autocomplete input always empty
+        }
+
         $this->fieldset()->append(static::js_init($this->get_attribute('id'), $this->renderer_options));
         //build without user's template
         $build = $this->template((string) parent::build().$populate);
