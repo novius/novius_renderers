@@ -56,7 +56,7 @@ $input.trigger(event);
     ...
     'fields' => array(
         ...
-        'field_name' => array(
+        'field_name' => array( // For single select, you need to insert a false field name here
             'renderer' => 'Novius\Renderers\Renderer_Autocomplete',
             'form' => array(
                 'class' => 'class_for_input_field',
@@ -64,9 +64,11 @@ $input.trigger(event);
             'renderer_options' => array(
                 'data' => array(
                     'data-autocomplete-url' => 'admin/application/folder/crud/autocomplete',
+                    'data-name' => 'field_name' // For single select, you need to insert the real name of your property
                     //'data-autocomplete-callback' => 'on_click'
                 )
             ),
         ),
+        'field_name' => array() //needed for single select. the key must be the real name of your property. Don't need this if the 'multiple' option is set to 1
     )
     ...
