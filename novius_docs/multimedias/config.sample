@@ -31,7 +31,8 @@
         if(!$item->is_new()) {
             $query = \DB::delete('nos_media_link')->where('medil_from_table', '=', \Ftv\Front\Model_Front::table())
                 ->where_open()
-                ->where('medil_foreign_id', '=', $item->front_id);
+                ->where('medil_foreign_id', '=', $item->front_id)
+                ->where('medil_key', 'LIKE', 'image%');
 
             if (!empty($keys)) {
                 $query->where('medil_key', 'NOT IN', $keys);
