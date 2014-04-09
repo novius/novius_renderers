@@ -29,9 +29,9 @@
 
         //flush database
         if(!$item->is_new()) {
-            $query = \DB::delete('nos_media_link')->where('medil_from_table', '=', \Ftv\Front\Model_Front::table())
+            $query = \DB::delete('nos_media_link')->where('medil_from_table', '=', Model::table())
                 ->where_open()
-                ->where('medil_foreign_id', '=', $item->front_id)
+                ->where('medil_foreign_id', '=', $item->id)
                 ->where('medil_key', 'LIKE', 'image%');
 
             if (!empty($keys)) {
