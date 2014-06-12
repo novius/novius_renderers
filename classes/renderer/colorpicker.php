@@ -37,8 +37,16 @@ class Renderer_Colorpicker extends \Fieldset_Field
 
     public function js_init() {
         $id = $this->get_attribute('id');
+        $checkbox = new \Fieldset_Field($this->name.'_reset', __('Empty'), array('type' => 'checkbox'));
+        if (empty($this->value)) {
+            $checkbox->set_attribute('checked', 'checked');
+            $checkbox->set_attribute('disabled', 'true');
+        }
+        $checkbox->set_template('<div class="colorpickerReset"><span>{label}</span><span>{field}</span></div>')
+            ->set_fieldset($this->fieldset());
         return \View::forge('novius_renderers::colorpicker/js', array(
             'id' => $id,
+            'reset' => $checkbox->build(),
         ), false);
     }
 
