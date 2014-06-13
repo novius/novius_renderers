@@ -37,7 +37,7 @@ class Renderer_Colorpicker extends \Fieldset_Field
 
     public function js_init() {
         $id = $this->get_attribute('id');
-        $checkbox = new \Fieldset_Field($this->name.'_reset', __('Empty'), array('type' => 'checkbox'));
+        $checkbox = new \Fieldset_Field($this->name.'_reset', __('None'), array('type' => 'checkbox'));
         if (empty($this->value)) {
             $checkbox->set_attribute('checked', 'checked');
             $checkbox->set_attribute('disabled', 'true');

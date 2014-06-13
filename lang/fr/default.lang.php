@@ -7,7 +7,7 @@
 
 return array(
     #: classes/renderer/colorpicker.php:40
-    'Empty' => 'Vider',
+    'None' => 'Aucune',
 
     #: config/metadata.config.php:12
     'Renderers' => 'Renderers',

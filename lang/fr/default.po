@@ -1,6 +1,6 @@
 #: classes/renderer/colorpicker.php:40
-msgid "Empty"
-msgstr "Vider"
+msgid "None"
+msgstr "Aucune"
 
 #: config/metadata.config.php:12
 msgid "Renderers"
