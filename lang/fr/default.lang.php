@@ -7,7 +7,7 @@
 
 return array(
     #: classes/renderer/colorpicker.php:40
-    'None' => 'Aucune',
+    'None' => 'Aucun(e)',
 
     #: config/metadata.config.php:12
     'Renderers' => 'Renderers',

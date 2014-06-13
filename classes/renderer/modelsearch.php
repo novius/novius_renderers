@@ -68,6 +68,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
         });
 
         return (string) \View::forge('novius_renderers::modelsearch/inputs', array(
+            'label' => $this->label,
             'id' => $id,
             'value' => $this->value,
             'item' => $item,

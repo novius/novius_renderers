@@ -6,7 +6,10 @@ if (!empty($class)) {
 $class_id = $value['id'];
 ?>
 <div id="<?= $id ?>" class="modelsearch">
-    <select name="<?= $options['names']['model'] ?>" style="margin-bottom:10px">
+    <label>
+        <?= $label ?>
+    </label>
+    <select name="<?= $options['names']['model'] ?>">
         <option value="" <?= empty($class) ? '' : '' ?>><?= __('None') ?></option>
         <?php
         foreach ($options['models'] as $model => $label) {

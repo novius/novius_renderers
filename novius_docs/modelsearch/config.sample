@@ -19,7 +19,16 @@
                 );
             },
             'before_save' => function ($item, $data) {
-                $item->item_foreign_model = \Input::post('item_foreign_model', '');
-                $item->item_foreign_id = \Input::post('item_foreign_id', 0);
+                $item->item_foreign_model = '';
+                $item->item_foreign_id = 0;
+                $model = \Input::post('item_foreign_model', '');
+                if (!empty($model)) {
+                    $id = \Input::post('item_foreign_id', 0);
+                    //Only save information if the correspond id/model exists
+                    if (!empty($id) && !empty($model::find($id))) {
+                        $item->item_foreign_model = $model;
+                        $item->item_foreign_id = $id;
+                    }
+                }
             }
         ),
