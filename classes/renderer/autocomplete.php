@@ -42,11 +42,13 @@ class Renderer_Autocomplete extends \Fieldset_Field
 
         $options = array();
         //then set options used by the renderer
-        if (!empty($attributes['renderer_options'])) {
-            $options = \Arr::merge(static::$DEFAULT_OPTIONS, $attributes['renderer_options']);
+        if (isset($attributes['renderer_options'])) {
+            $options = \Arr::merge(static::$DEFAULT_OPTIONS, (array) $attributes['renderer_options']);
             unset($attributes['renderer_options']);
         }
 
+        //prevent from displaying native autocomplete
+        $attributes['autocomplete'] = 'off';
         return array($attributes, $options);
     }
 
