@@ -5,3 +5,7 @@ msgstr "Aucune"
 #: config/metadata.config.php:12
 msgid "Renderers"
 msgstr "Renderers"
+
+#: views/modelsearch/inputs.php:28
+msgid 'Choose "empty" value above to remove a possibly registered value'
+msgstr 'Sélectionnez la valeur "vide" ci-dessus pour supprimer un lien préalablement enregistré'

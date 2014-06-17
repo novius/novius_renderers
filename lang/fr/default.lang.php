@@ -12,4 +12,7 @@ return array(
     #: config/metadata.config.php:12
     'Renderers' => 'Renderers',
 
+    #: views/modelsearch/inputs.php:28
+    'Choose "empty" value above to remove a possibly registered value' => 'Sélectionnez la valeur "vide" ci-dessus pour supprimer un lien préalablement enregistré',
+
 );

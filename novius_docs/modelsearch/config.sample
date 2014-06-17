@@ -22,7 +22,8 @@
                 $item->item_foreign_model = '';
                 $item->item_foreign_id = 0;
                 $model = \Input::post('item_foreign_model', '');
-                if (!empty($model)) {
+                $search = \Input::post('search', '');
+                if (!empty($model) && !empty($search)) {
                     $id = \Input::post('item_foreign_id', 0);
                     //Only save information if the correspond id/model exists
                     if (!empty($id) && !empty($model::find($id))) {

@@ -23,15 +23,16 @@ $class_id = $value['id'];
     <input type="hidden" name="<?= $options['names']['id'] ?>" value="<?= !empty($class_id) ? $class_id : 0 ?>"/>
     <?php
     echo \Novius\Renderers\Renderer_Autocomplete::renderer(array(
-        'name' => 'search',
+        'name' => 'search[]',//do not assume this will be the only one
         'value' => (!empty($title) && !empty($class_id)) ? $class::find($class_id)->{$title} : '',
+        'placeholder' => __('Choose "empty" value above to remove a possibly registered value'),
         'renderer_options' => array(
             'data' => array(
                 'data-autocomplete-url' => 'admin/novius_renderers/modelsearch/search',
                 'data-autocomplete-callback' => 'click_modelsearch',
                 'data-autocomplete-post' => \Format::forge(array('model' => $class))->to_json(),
             ),
-            'wrapper' => '#'.$id,
+            //do not use a wrapper to allow using multiple modelsearch and including only one script
         ),
     ));
     ?>
