@@ -2,13 +2,14 @@
 
 namespace Novius\Renderers;
 
-class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
+class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
 {
-    public function action_search() {
+    public function action_search_model() {
         try {
             $results = array();
             $filter = trim(\Input::post('search', ''));
             $class = \Input::post('model', '');
+            $from_id = intval(\Input::post('from_id', ''));
 
             if (!empty($class)) {
 
@@ -28,6 +29,9 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
                     array($title_property, 'label')
                 )->from($table);
 
+                // Do not search on the item where the autocomplete appears
+                $query->where($pk_property, '!=', $from_id);
+
                 // Apply filter on query
                 if (!empty($filter)) {
                     $query->where_open()
@@ -36,10 +40,10 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
                 }
 
                 // Limit (optionnal)
-                \Config::load('novius_renderers::renderer/modelsearch', true);
-                $limit = \Config::get('novius_renderers::renderer/modelsearch.suggestion_limit', array());
-                if (!empty($limit)) {
-                    $query->limit($limit);
+                \Config::load('novius_renderers::renderer/autocomplete', true);
+                $max_suggestions = \Config::get('novius_renderers::renderer/autocomplete.max_suggestions', array());
+                if (!empty($max_suggestions)) {
+                    $query->limit($max_suggestions);
                 }
 
                 // Get query results

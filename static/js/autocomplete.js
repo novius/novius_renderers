@@ -38,11 +38,16 @@ define(['jquery-nos'], function ($nos) {
                         post = {};
                     }
 
+                    // Initialize cache
+                    var cache = [];
+                    var cache_enabled = $this.data('autocomplete-cache');
+                    if (typeof cache_enabled == 'undefined') {
+                        cache_enabled = true;
+                    }
+
                     // Initialize list of suggestions
                     var $liste = $nos('<ul class="autocomplete-liste"></ul>').hide();
                     $this.after($liste);
-                    // Initialize cache
-                    var cache = [];
 
                     //update data when the custom event is triggered (otherwise it's useless)
                     //As any changes on dom attribute OR data will be done manually,
@@ -54,42 +59,48 @@ define(['jquery-nos'], function ($nos) {
 
                     // function to display autocomplete
                     var print_autocomplete = function(data) {
-                        $liste.html('').hide();
-                        if ((data != null) && data.length > 0) {
-                            for (x in data) {
-                                var line = data[x];
-                                var $li = $nos('<li>'+line.label+'</li>');
-                                if(typeof line.class != 'undefined') {
-                                    $li.addClass(line.class);
-                                }
-                                $li.data('value', line.value)
-                                    .bind('click', function(e) {
-                                        // Callback optionnel
-                                        if (typeof callback === 'string') {
-                                            callback = window[callback];
-                                        }
 
-                                        if ($nos.isFunction(callback)) {
-                                            callback.call(this, {
-                                                'root'      : $this,
-                                                'value'     : $nos(this).data('value'),
-                                                'label'     : $nos(this).html(),
-                                                'event'     : e
-                                            });
-                                        } else {
-                                            $this.val($nos(this).data('value')).trigger('focus');
-                                            $liste.hide();
-                                        }
-                                    })
-                                    // deal with current hover selection
-                                    .mouseenter(function() {
-                                        $liste.find('.current').removeClass('current');
-                                        $nos(this).addClass('current');
-                                    })
-                                    .appendTo($liste);
-                            }
-                            $liste.show();
+                        // Clear old results
+                        $liste.html('').hide();
+
+                        // No results ?
+                        if (typeof data != 'object' || !data.length) {
+                            return ;
                         }
+
+                        // Print the results
+                        $nos.each(data, function(key, line) {
+                            var $li = $nos('<li>'+line.label+'</li>');
+                            if (typeof line.class != 'undefined') {
+                                $li.addClass(line.class);
+                            }
+                            $li.data('value', line.value)
+                                .bind('click', function(e) {
+                                    if (typeof callback === 'string') {
+                                        callback = window[callback];
+                                    }
+                                    if ($nos.isFunction(callback)) {
+                                        // Callback
+                                        callback.call(this, {
+                                            'root'      : $this,
+                                            'value'     : $nos(this).data('value'),
+                                            'label'     : $nos(this).html(),
+                                            'event'     : e
+                                        });
+                                    } else {
+                                        // Default behaviour
+                                        $this.val($nos(this).data('value')).trigger('focus');
+                                        $liste.hide();
+                                    }
+                                })
+                                // deal with current hover selection
+                                .mouseenter(function() {
+                                    $liste.find('.current').removeClass('current');
+                                    $nos(this).addClass('current');
+                                })
+                                .appendTo($liste);
+                        });
+                        $liste.show();
                     }
 
                     // Initialize ajax
@@ -142,16 +153,22 @@ define(['jquery-nos'], function ($nos) {
                             $this.data('timer', setTimeout(function() {
                                 var search = $this.val();
                                 if (search.length >= minlen) {
-                                    // Check si recherche en cache
-                                    if (cache[search]) {
+                                    // Get the results from the cache
+                                    if (cache_enabled && cache[search]) {
                                         print_autocomplete.call($this, cache[search]);
-                                    } else {
+                                    }
+                                    // Get the results from an ajax query
+                                    else {
                                         post.search = search;
-                                        $.post(url, post, function(data) {
-                                            cache[search] = data;
-                                            print_autocomplete.call($this, data);
+                                        $this.nosAjax({
+                                            url : url,
+                                            method : 'POST',
+                                            data : post,
+                                            success: function(data) {
+                                                cache[search] = data;
+                                                print_autocomplete.call($this, data);
+                                            }
                                         });
-
                                     }
                                 }
                             }, 200));

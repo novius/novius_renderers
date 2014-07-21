@@ -53,6 +53,22 @@
 
 .label-result-autocomplete {
     margin: 5px 0;
+    padding: 1px 4px;
+    color: #fff;
+    background: #858585;
+    background: -moz-linear-gradient(top,rgba(133,133,133,1) 0,rgba(168,168,168,1) 100%);
+    background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,rgba(133,133,133,1)),color-stop(100%,rgba(168,168,168,1)));
+    background: -webkit-linear-gradient(top,rgba(133,133,133,1) 0,rgba(168,168,168,1) 100%);
+    background: -o-linear-gradient(top,rgba(133,133,133,1) 0,rgba(168,168,168,1) 100%);
+    background: -ms-linear-gradient(top,rgba(133,133,133,1) 0,rgba(168,168,168,1) 100%);
+    background: linear-gradient(to bottom,rgba(133,133,133,1) 0,rgba(168,168,168,1) 100%);
+    border: 1px solid #666;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #333;
 }
 .delete-label {
     margin: 0 5px;

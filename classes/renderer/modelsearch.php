@@ -16,7 +16,8 @@ class Renderer_ModelSearch extends \Nos\Renderer
         'names' => array(
             'id' => '{{prefix}}foreign_id',
             'model' => '{{prefix}}foreign_model',
-        )
+        ),
+        'minlength' => 3,
     );
 
     public function build()
@@ -24,14 +25,19 @@ class Renderer_ModelSearch extends \Nos\Renderer
         $attr_id = $this->get_attribute('id');
         $id = !empty($attr_id) ? $attr_id : uniqid('modelsearch_');
 
-        //Add JS (init sub renderer)
-        $this->fieldset()->append(static::js_init());
+        $item = $this->fieldset()->getInstance();
 
-        //Prepare values
+        // Prepare options
+        $options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
+        $available_models = $this->get_available_models($options);
+        \Arr::set($options, 'models', $available_models);
+
+        // Prepare values
         if (empty($this->value) || !is_array($this->value)) {
-            //value must contain model name and ID
+            // First available model as default value
+            reset($available_models);
             $this->value = array(
-                'model' => 'Nos\Page\Model_Page',//Page is the default related model
+                'model' => key($available_models),
                 'id' => 0
             );
         } else {
@@ -51,21 +57,15 @@ class Renderer_ModelSearch extends \Nos\Renderer
             }
         }
 
-        $item = $this->fieldset()->getInstance();
-
-        //Prepare options
-        $options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
-        \Config::load('novius_renderers::renderer/modelsearch', true);
-        //Do not assume that Model_Page must always be available, default value is array()
-        $default_models = \Config::get('novius_renderers::renderer/modelsearch.models', array());
-        $options['models'] = !empty($options['models']) ? \Arr::merge($default_models, (array) $options['models']) : $default_models;
-
         //Format options
         $class = get_class($item);
         $prefix = $class::prefix();
         array_walk($options['names'], function(&$value, $key) use ($prefix) {
             $value = str_replace('{{prefix}}', $prefix, $value);
         });
+
+        //Add JS (init sub renderer)
+        $this->fieldset()->append(static::js_init());
 
         return (string) \View::forge('novius_renderers::modelsearch/inputs', array(
             'label' => $this->label,
@@ -79,5 +79,22 @@ class Renderer_ModelSearch extends \Nos\Renderer
     public static function js_init()
     {
         return \View::forge('novius_renderers::modelsearch/js', array(), false);
+    }
+
+    /**
+     * Return the available models
+     *
+     * @param array $options
+     * @return array
+     */
+    public static function get_available_models($options = array()) {
+        // Do not assume that Model_Page must always be available, default value is array()
+        \Config::load('novius_renderers::renderer/modelsearch', true);
+        $models = \Config::get('novius_renderers::renderer/modelsearch.models', array());
+
+        // Custom models
+        $models = \Arr::merge($models, \Arr::get($options, 'models', array()));
+
+        return array_filter($models);
     }
 }

@@ -14,46 +14,69 @@
         'static/apps/novius_renderers/js/autocomplete',
         'link!static/apps/novius_renderers/css/autocomplete.css'
     ], function ($nos, autocomplete) {
-
         var $content = $nos('<?= empty($wrapper) ? 'body' : $wrapper ?>');
+
+        // Delete selection (multiple only)
         $content.on('click', 'span.delete-label', function() {
-            var $div = $nos(this).parent();
-            var value = $div.attr('data-value');
-            var name = $div.attr('data-name');
-            //remove hidden input, then remove label
-            $div.closest('form').find('input[name="'+name+'"][value="'+value+'"]').remove();
-            $div.remove();
+            $nos(this).closest('.label-result-autocomplete').remove();
         });
 
+        // Initialize the autocomplete
         autocomplete('<?= empty($wrapper) ? 'body' : $wrapper ?>', {
             on_click : function(infos) {
-                var $ul = $nos('ul.autocomplete-liste');
                 var $input = infos.root;
-                var name = $input.attr('name');
-                var hiddenName = $input.attr('data-name') || $input.data('name') || name + '-id';
-                var multiple = ($input.attr('data-multiple') == 1) || ($input.data('multiple') == 1) || 0;
-                var label = '';
+                var hiddenName = $input.attr('data-name') || $input.data('name') || $input.attr('name') + '-id';
+                var multiple = ($input.attr('data-multiple') == 1) || ($input.data('multiple') == 1);
+
+                // Multiple selection
                 if (multiple) {
                     //add [] because of the multiple sent values
                     if (hiddenName.indexOf('[]', hiddenName.length - 2) === -1) {
                         hiddenName += '[]';
                     }
-                    //flush value
+                    // Clears the text typed by the user to get suggestions
                     $input.val('').trigger('focus');
-                    //then add item as a tag, paired with an hidden input
-                    $input.after('<input name="'+hiddenName+'" type="hidden" value="'+infos.value+'">');
-                    label = '<div class="label-result-autocomplete" data-value="'+infos.value+'" data-name="'+hiddenName+'">'+infos.label+'<span class="delete-label">X</span></div>';
-                    $input.after(label);
-                } else {
-                    $input.val(infos.label).trigger('focus');
-                    //update hidden input value if possible, create it otherwise
-                    if($input.parent().find('input[name="'+hiddenName+'"]').length) {
-                        $input.parent().find('input[name="'+hiddenName+'"]').val(infos.value);
-                    } else {
-                        $input.after('<input name="'+hiddenName+'" type="hidden" value="'+infos.value+'">');
+                    // Add item as a tag, paired with an hidden input
+                    if (!$input.closest('form').find('.label-result-autocomplete[data-name="'+hiddenName+'"][data-value="'+infos.value+'"]').length) {
+                        $input.after(
+                            $(document.createElement('div'))
+                                .addClass('label-result-autocomplete')
+                                .attr({ 'data-value': infos.value, 'data-name': hiddenName })
+                                .html(infos.label)
+                                .append(
+                                    $(document.createElement('span')).addClass('delete-label').html('X')
+                                )
+                                .append(
+                                    $(document.createElement('input')).attr({
+                                        name: hiddenName,
+                                        type: 'hidden',
+                                        value: infos.value
+                                    })
+                                )
+                        );
                     }
-                    $ul.hide();
                 }
+
+                // Single selection
+                else {
+                    // Replace the text typed by the user to get suggestions by the selected label
+                    console.log(infos.label);
+                    $input.val(infos.label).trigger('focus');
+                    // Update the hidden value
+                    var $hidden_input = $input.cloest('form').find('input[name="'+hiddenName+'"]');
+                    if (!$hidden_input.length) {
+                        // Creates the hidden field whether it doesn't already exists
+                        $hidden_input = $(document.createElement('input')).attr({
+                            name: hiddenName,
+                            type: 'hidden'
+                        });
+                        $input.after($hidden_input);
+                    }
+                    $hidden_input.val(infos.value);
+                }
+
+                // Hide the autocomplete list
+                $input.nextAll('ul.autocomplete-liste').first().hide();
             }
         });
     });
