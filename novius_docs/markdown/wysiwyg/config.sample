@@ -1,0 +1,9 @@
+
+        'my_markdown_text' => array (
+            'label' => __('A textarea with a markdown editor'),
+            'renderer' => 'Novius\Renderers\Renderer_Markdown_Wysiwyg',
+            'form' => array( //The form options are take in count, but the type is automatically set to textarea
+                'type' => 'textarea',
+                'rows' => '6',
+            ),
+        ),
