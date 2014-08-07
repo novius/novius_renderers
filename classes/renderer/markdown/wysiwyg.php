@@ -40,9 +40,16 @@ class Renderer_Markdown_Wysiwyg extends \Fieldset_Field
     public function js_init()
     {
         $id = $this->get_attribute('id');
-
+        $user = \Session::user();
+        $lang = \Str::upper(\Str::sub($user->user_lang, 0, 2));
+        if (!in_array($lang, array('RU', 'EN', 'FR'))) {
+            $lang = 'EN';
+        }
         return \View::forge('novius_renderers::markdown/wysiwyg/js', array(
             'id' => $id,
+            'options' => array(
+                'lang' => $lang
+            )
         ), false);
     }
 }
