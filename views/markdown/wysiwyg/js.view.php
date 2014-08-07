@@ -9,7 +9,7 @@
             var $input = $('#<?= $id ?>');
             var $toolbar = $('<div id="toolbar_<?= $id ?>" class="wmd-toolbar"></div>');
             $toolbar.insertBefore($input);
-            new WMD("<?= $id ?>", "toolbar_<?= $id ?>");
+            new WMD("<?= $id ?>", "toolbar_<?= $id ?>", <?= \Fuel\Core\Format::forge($options)->to_json() ?>);
         });
     });
 </script>

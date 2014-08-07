@@ -14,7 +14,8 @@ class Renderer_Markdown_Wysiwyg extends \Fieldset_Field
 {
     protected $renderer_options = array();
 
-    public function __construct($name, $label = '', array $attributes = array(), array $rules = array(), \Fuel\Core\Fieldset $fieldset) {
+    public function __construct($name, $label = '', array $attributes = array(), array $rules = array(), \Fuel\Core\Fieldset $fieldset = null)
+    {
 
         $attributes['type']  = 'textarea';
         $attributes['class'] = (isset($attributes['class']) ? $attributes['class'] : '').' wmd-input';
@@ -28,19 +29,27 @@ class Renderer_Markdown_Wysiwyg extends \Fieldset_Field
      * How to display the field
      * @return string
      */
-    public function build() {
+    public function build()
+    {
         parent::build();
 
         $this->fieldset()->append($this->js_init());
         return (string) parent::build();
     }
 
-    public function js_init() {
+    public function js_init()
+    {
         $id = $this->get_attribute('id');
-
+        $user = \Session::user();
+        $lang = \Str::upper(\Str::sub($user->user_lang, 0, 2));
+        if (!in_array($lang, array('RU', 'EN', 'FR'))) {
+            $lang = 'EN';
+        }
         return \View::forge('novius_renderers::markdown/wysiwyg/js', array(
             'id' => $id,
+            'options' => array(
+                'lang' => $lang
+            )
         ), false);
     }
-
 }
