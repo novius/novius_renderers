@@ -63,7 +63,7 @@
                     console.log(infos.label);
                     $input.val(infos.label).trigger('focus');
                     // Update the hidden value
-                    var $hidden_input = $input.cloest('form').find('input[name="'+hiddenName+'"]');
+                    var $hidden_input = $input.closest('form').find('input[name="'+hiddenName+'"]');
                     if (!$hidden_input.length) {
                         // Creates the hidden field whether it doesn't already exists
                         $hidden_input = $(document.createElement('input')).attr({
