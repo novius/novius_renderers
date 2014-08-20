@@ -24,7 +24,7 @@ if (!empty($class) && !empty($class_id)) {
     <?php } else { ?>
         <input type="hidden" name="<?= \Arr::get($options, 'names.model') ?>" value="<?= reset($models) ?>" />
     <?php } ?>
-    <div class="ms-input">
+    <div class="ms-value">
         <label>
             <?= __('Content title') ?>
         </label>

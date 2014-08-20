@@ -22,7 +22,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
     );
 
     protected static $DEFAULT_ATTRIBUTES = array(
-        'data-autocomplete-url' => 'admin/local/autocomplete/search',//function called by ajax
+        'data-autocomplete-url' => 'admin/novius_renderers/modelsearch/search',//function called by ajax
         'data-autocomplete-minlength' => 3,//number of chars used before calling the function above
         //'data-autocomplete-callback' => 'on_click',//function name used once the user has clicked in the list
     );
@@ -45,7 +45,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
 
     /**
      * Extract options from renderer attributes
-     *
+     *n
      * @param $attributes
      * @return array
      */
