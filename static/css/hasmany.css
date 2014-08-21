@@ -1,0 +1,72 @@
+.item_list .hasmany_icon {
+    cursor: pointer;
+    position: absolute;
+}
+
+.item_list .hasmany_delete_item {
+    background: url("../img/hasmany/cross-button.png") repeat scroll 0 0 rgba(0, 0, 0, 0);
+    height: 16px;
+    width: 16px;
+    right: 10px;
+    top: 10px;
+}
+.hasmany_item:first-child .hasmany_icon_arrow.item-up-js {
+    display: none;
+}
+
+.hasmany_item:last-child .hasmany_icon_arrow.item-down-js {
+    display: none;
+}
+.item_list .hasmany_icon_arrow {
+    height: 32px;
+    width: 32px;
+    right: 17px;
+}
+
+.item_list .hasmany_icon.item-up-js {
+    background: url("../img/hasmany/up.png") repeat scroll 0 0 rgba(0, 0, 0, 0);
+    top: 48px;
+}
+.item_list .hasmany_icon.item-down-js {
+    background: url("../img/hasmany/down.png") repeat scroll 0 0 rgba(0, 0, 0, 0);
+    top: 96px;
+}
+
+.item_list .hasmany_item {
+    position: relative;
+}
+
+.item_list .hasmany_message {
+    font-weight: bold;
+}
+
+.item_list th,
+.item_list td {
+    padding: 1em;
+}
+
+.item_list th {
+    font-weight: bold;
+    padding-top: 17px;
+}
+
+.item_list td {
+    padding-right: 65px;
+}
+
+.hasmany_item:nth-child(even) {
+    background: #CCC
+}
+
+.hasmany_item {
+    margin: 10px 0;
+    border: solid 1px gray;
+}
+
+.hasmany_item table {
+    margin-top: 10px;
+}
+
+.button-add-item {
+    margin: 15px;
+}
