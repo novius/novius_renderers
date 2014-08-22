@@ -1,3 +1,6 @@
+<?php
+\Nos\I18n::current_dictionary('novius_renderers::default');
+?>
 <div class="hasmany_item" data-item-index="<?= $index ?>">
 <?php
 /**

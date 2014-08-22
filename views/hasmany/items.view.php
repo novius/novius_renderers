@@ -1,3 +1,6 @@
+<?php
+\Nos\I18n::current_dictionary('novius_renderers::default');
+?>
 <div class="count-items-js" data-nb-items="<?= empty($item->{$relation}) ? 1 : count($item->{$relation}) ?>">
     <div class="item_list">
         <?php

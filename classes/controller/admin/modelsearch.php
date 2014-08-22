@@ -4,6 +4,12 @@ namespace Novius\Renderers;
 
 class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
 {
+    public function prepare_i18n()
+    {
+        parent::prepare_i18n();
+        \Nos\I18n::current_dictionary('novius_renderers::default');
+    }
+
     public function action_search() {
         try {
             $results = array();
