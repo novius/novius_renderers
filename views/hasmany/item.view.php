@@ -26,4 +26,5 @@ foreach ($fields as $field) {
 }
 ?>
     </table>
+    <button class="dupli-item-js button-dupli-item"><?= __('Duplicate this item') ?></button>
 </div>

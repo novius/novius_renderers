@@ -25,6 +25,48 @@ require(['jquery-nos-wysiwyg'], function ($) {
         e.preventDefault();
     });
 
+    //Duplicate an item
+    $(document).on('click', 'button.dupli-item-js', function(e){
+        var $div = $(this).closest('.hasmany_item');
+        var index = $div.data('item-index');
+        var next = $div.closest('.count-items-js').find('.hasmany_item').length + 1;
+        var $button = $div.closest('.count-items-js').find('button.add-item-js');
+        var model = $button.data('model');
+        var relation = $button.data('relation');
+        var data = {};
+        data.forge = {};
+
+        //select all inputs (cannot search on name, assuming it begins with "relation", because it's possible that it doesn't
+        $div.find('input, select').each(function() {
+            var $input = $(this);
+            var input_name = $input.attr('name');
+            if (typeof input_name != "undefined" && input_name.length > 0) {
+                var value = $input.val();
+                var begin = input_name.lastIndexOf('[') + 1;
+                if (begin > 0) {
+                    var end = input_name.lastIndexOf(']');
+                    var name = input_name.substring(begin, end);
+                    data.forge[name] = value;
+                }
+            }
+        });
+        data.model = model;
+        data.relation = relation;
+
+        $nos.ajax({
+            type : "GET",
+            url: 'admin/novius_renderers/hasmany/add_item/' + next,
+            data : data,
+            success : function(vue) {
+                var $vue = $(vue);
+                $vue.nosFormUI();
+                $div.closest('.item_list').append($vue);
+                $div.closest('.count-items-js').data('nb-items', next);
+            }
+        });
+        e.preventDefault();
+    });
+
     //Delete an item
     $(document).on('click', '.hasmany_delete_item', function() {
         var question = $(this).data('question');
