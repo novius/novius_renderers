@@ -1,0 +1,7 @@
+<?php
+
+\Event::register_function('novius_renderers.hasmany_fieldset', function($args) {
+    $index = $args['index'];
+    $relation = $args['relation'];
+    $args['replaces']['"repr_movie_id"'] = '"'.$relation.'['.$index.'][repr_movie_id]"';
+});
