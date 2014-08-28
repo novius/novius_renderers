@@ -8,15 +8,15 @@
         if (!empty($item->{$relation})) {
             foreach ($item->{$relation} as $o) {
                 //Build fieldset and return view
-                echo \Novius\Renderers\Renderer_HasMany::render_fieldset($o, $relation, $i);
+                echo \Novius\Renderers\Renderer_HasMany::render_fieldset($o, $relation, $i, $options);
                 $i++;
             }
         } else {
             //Display an empty item in case none have already been added
-            echo \Novius\Renderers\Renderer_HasMany::render_fieldset($model::forge(), $relation, $i);
+            echo \Novius\Renderers\Renderer_HasMany::render_fieldset($model::forge(), $relation, $i, $options);
         }
         ?>
     </div>
-    <button class="add-item-js button-add-item" data-model="<?= $model ?>" data-relation="<?= $relation ?>"><?= __('Add one item') ?></button>
+    <button class="add-item-js button-add-item" data-model="<?= $model ?>" data-relation="<?= $relation ?>" data-order="<?= (!empty($options['order']) ? 1 : 0) ?>"><?= __('Add one item') ?></button>
 </div>
 

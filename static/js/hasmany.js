@@ -7,13 +7,15 @@ require(['jquery-nos-wysiwyg'], function ($) {
         var next = parseInt($container.find('.count-items-js').data('nb-items')) + 1;
         var model = $button.data('model');
         var relation = $button.data('relation');
+        var order = $button.data('order');
 
         $.ajax({
             type : "GET",
             url: 'admin/novius_renderers/hasmany/add_item/' + next,
             data : {
                 model : model,
-                relation : relation
+                relation : relation,
+                order: order
             },
             success : function(vue) {
                 var $vue = $(vue);
@@ -33,6 +35,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
         var $button = $div.closest('.count-items-js').find('button.add-item-js');
         var model = $button.data('model');
         var relation = $button.data('relation');
+        var order = $button.data('order');
         var data = {};
         data.forge = {};
 
@@ -52,6 +55,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
         });
         data.model = model;
         data.relation = relation;
+        data.order = order;
 
         $nos.ajax({
             type : "GET",
