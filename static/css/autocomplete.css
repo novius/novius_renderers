@@ -52,35 +52,38 @@
 }
 
 .label-result-autocomplete {
-    margin: 5px 0;
-    padding: 1px 4px;
-    color: #fff;
-    background: #858585;
-    background: -moz-linear-gradient(top,rgba(133,133,133,1) 0,rgba(168,168,168,1) 100%);
-    background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,rgba(133,133,133,1)),color-stop(100%,rgba(168,168,168,1)));
-    background: -webkit-linear-gradient(top,rgba(133,133,133,1) 0,rgba(168,168,168,1) 100%);
-    background: -o-linear-gradient(top,rgba(133,133,133,1) 0,rgba(168,168,168,1) 100%);
-    background: -ms-linear-gradient(top,rgba(133,133,133,1) 0,rgba(168,168,168,1) 100%);
-    background: linear-gradient(to bottom,rgba(133,133,133,1) 0,rgba(168,168,168,1) 100%);
-    border: 1px solid #666;
-    -moz-border-radius: 3px;
-    -ms-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-    font-weight: bold;
-    text-shadow: 1px 1px 1px #333;
+    position: relative;
+    padding: 6px 32px 6px 6px;
+    margin: 0 !important;
+    color: #666666;
+    background: #EEEEEE;
+    border-bottom: 2px solid #FFFFFF;
 }
-.delete-label {
-    margin: 0 5px;
-    padding: 0 2px;
+
+.label-result-autocomplete:hover {
+    background: #ddd;
+    cursor: default;
+}
+
+.label-result-autocomplete .delete-label {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    margin: -10px 0 0 0;
+    height: 20px;
+    width: 20px;
+    line-height: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
     color: white;
     cursor: pointer;
-    font-weight: bold;
-    border: 1px solid #CCCCCC;
+    border: 0;
+    border-radius: 20px;
     background-color: #CD0A0A;
 }
-.delete-label:hover {
-    border: 1px solid #777777;
+
+.label-result-autocomplete  .delete-label:hover {
     background-color: #770707;
     color: #EEEEEE;
 }

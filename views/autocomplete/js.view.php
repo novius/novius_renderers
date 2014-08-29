@@ -36,31 +36,39 @@
                     }
                     // Clears the text typed by the user to get suggestions
                     $input.val('').trigger('focus');
+
+                    // Search
+                    var $values = $input.closest('form').find('.label-result-autocomplete[data-name="'+hiddenName+'"]');
+
                     // Add item as a tag, paired with an hidden input
-                    if (!$input.closest('form').find('.label-result-autocomplete[data-name="'+hiddenName+'"][data-value="'+infos.value+'"]').length) {
-                        $input.after(
-                            $(document.createElement('div'))
-                                .addClass('label-result-autocomplete')
-                                .attr({ 'data-value': infos.value, 'data-name': hiddenName })
-                                .html(infos.label)
-                                .append(
-                                    $(document.createElement('span')).addClass('delete-label').html('X')
-                                )
-                                .append(
-                                    $(document.createElement('input')).attr({
-                                        name: hiddenName,
-                                        type: 'hidden',
-                                        value: infos.value
-                                    })
-                                )
-                        );
+                    if (!$values.is('[data-value="'+infos.value+'"]')) {
+
+                        var $value = $(document.createElement('div'))
+                            .addClass('label-result-autocomplete')
+                            .attr({ 'data-value': infos.value, 'data-name': hiddenName })
+                            .html(infos.label)
+                            .append(
+                                $(document.createElement('span')).addClass('delete-label').html('X')
+                            )
+                            .append(
+                                $(document.createElement('input')).attr({
+                                    name: hiddenName,
+                                    type: 'hidden',
+                                    value: infos.value
+                                })
+                            );
+
+                        if ($values.length) {
+                            $values.last().after($value);
+                        } else {
+                            $input.after($value);
+                        }
                     }
                 }
 
                 // Single selection
                 else {
                     // Replace the text typed by the user to get suggestions by the selected label
-                    console.log(infos.label);
                     $input.val(infos.label).trigger('focus');
                     // Update the hidden value
                     var $hidden_input = $input.closest('form').find('input[name="'+hiddenName+'"]');

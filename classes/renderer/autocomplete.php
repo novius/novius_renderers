@@ -11,6 +11,7 @@
 namespace Novius\Renderers;
 
 use Fuel\Core\Fieldset;
+use Orm\Model;
 
 class Renderer_Autocomplete extends \Fieldset_Field
 {
@@ -93,23 +94,27 @@ class Renderer_Autocomplete extends \Fieldset_Field
      */
     public function build()
     {
-        $this->autocomplete_template = $this->template;
-        $this->template = '{field}';
-        //parent::build();
 
-        // Use fieldset to populate the field
-        $item = $this->fieldset()->getInstance();
+        $populate = '';
+        $hiddenName = \Arr::get($this->attributes, 'data-name', $this->options['name']);
 
         $is_multiple = !empty($this->attributes['data-multiple']);
+
+        // Get the current fieldset item
+        $item = $this->fieldset()->getInstance();
+
+        // Add the current item ID to the posted vars (used to prevent current item to appear in suggestions)
+        $this->set_attribute('data-autocomplete-post', static::json_merge(
+            $this->get_attribute('data-autocomplete-post'),
+            array('from_id' => $item->implode_pk($item))
+        ));
 
         // Keeps the renderer working if populate was made thanks to a key in renderer_options (backward compatibility)
         if (!empty($this->renderer_options['populate']) && is_callable($this->renderer_options['populate'])) {
             $this->value = $this->renderer_options['populate']($item);
         }
 
-        // Populate the default values
-        $populate = '';
-        $hiddenName = \Arr::get($this->attributes, 'data-name', $this->options['name']);
+        // Populate multiple values
         if ($is_multiple) {
             if (!\Str::ends_with($hiddenName, '[]')) {
                 $hiddenName .= '[]';
@@ -117,12 +122,12 @@ class Renderer_Autocomplete extends \Fieldset_Field
             if (!empty($this->value)) {
                 foreach((array) $this->value as $id => $value) {
                     // Get the item title and ID whether $value is a Model
+                    $label = $value;
                     if ($value instanceof \Nos\Orm\Model) {
                         $id = $value->implode_pk($value);
                         $label = $value->title_item();
-                    } else {
-                        $label = $value;
                     }
+                    // Generate the hidden field
                     $populate .= '
                         <div class="label-result-autocomplete" data-value="'.$id.'" data-name="'.$hiddenName.'">
                             '.$label.'<span class="delete-label">X</span>
@@ -131,36 +136,57 @@ class Renderer_Autocomplete extends \Fieldset_Field
                     ';
                 }
             }
-        } else {
+        }
+        // Populate single value
+        else {
             $value = (is_array($this->value) ? reset($this->value) : $this->value);
             if ($value instanceof \Nos\Orm\Model) {
-                // Get the primary key whether $value is a Model
+                // Set the title as input value
+                $this->set_value($value->title_item());
+                // Set the primary key as value
                 $value = $value->implode_pk($value);
+            } else {
+                $this->set_value($value);
             }
+            // Generate the hidden field
             $populate .= '<input name="'.$hiddenName.'" type="hidden" value="'.$value.'" />';
         }
 
-        // Add the current item ID to the posted vars (used to prevent current item to appear in suggestions)
-        $this->set_attribute('data-autocomplete-post', static::json_merge(
-            $this->get_attribute('data-autocomplete-post'),
-            array('from_id' => $item->implode_pk($item))
-        ));
+        // Remove the field's name attribute to avoid conflicts with the hidden field
+        $this->name = null;
 
         // Populate the autocomplete search input
         $populate_input = \Arr::get($this->renderer_options, 'populate_input');
         if (is_callable($populate_input)) {
             $this->set_value($populate_input($item));
-        } else {
-            $this->set_value('');//autocomplete input always empty
+        } elseif ($is_multiple) {
+            // The autocomplete input must be empty for multiple values
+            $this->set_value('');
         }
 
         // Add the javascript
         $this->fieldset()->append(static::js_init($this->get_attribute('id'), $this->renderer_options));
 
-        //build without user's template
-        $build = $this->template((string) parent::build().$populate);
-        $this->template = $this->autocomplete_template;
-        return $this->template($build);
+        // Build the field followed by the populated values
+        $field = $this->build_without_template().$populate;
+
+        // Apply the original template on the field
+        $field = $this->template($field);
+
+        return $field;
+    }
+
+    /**
+     * Build the field without template
+     *
+     * @return mixed
+     */
+    public function build_without_template() {
+        $original_template = $this->template;
+        $this->template = '{field}';
+        $field = $this->template(parent::build());
+        $this->template = $original_template;
+        return $field;
     }
 
     /**
@@ -202,19 +228,27 @@ class Renderer_Autocomplete extends \Fieldset_Field
         // Get the field name
         $field_name = \Arr::get($this->attributes, 'data-name', $this->name);
 
+        $is_multiple = \Arr::get($this->attributes, 'data-multiple');
+
         // Automatically save the value on $item if the model feature is used
         $model = \Arr::get($this->attributes, 'data-autocomplete-model');
         if (!empty($model)) {
             // Check if the property/relation exists
             if (isset($item->{$field_name})) {
+                // Get the posted value(s)
                 $value = \Arr::get($data, $field_name);
-                // If multiple then consider it's a relation
-                if (\Arr::get($this->attributes, 'data-multiple')) {
+                if ($is_multiple) {
+                    $value = (!is_array($value) ? array($value) : $value);
+                } else {
+                    $value = (is_array($value) ? reset($value) : $value);
+                }
+                // Save the value(s) in a relation
+                if ($item->relations($field_name)) {
                     $item->{$field_name} = $model::query()
                         ->where(\Arr::get($model::primary_key(), 0), 'IN', (array) $value)
                         ->get();
                 }
-                // Otherwise consider it's a property
+                // Save the value(s) in a property
                 else {
                     $item->{$field_name} = $value;
                 }
