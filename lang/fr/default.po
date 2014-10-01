@@ -1,15 +1,41 @@
+#: views/hasmany/item.view.php:15
+msgid "Are you sure you want to delete this item?"
+msgstr "Êtes-vous sûr de vouloir supprimer cet élément?"
+
+#: views/hasmany/item.view.php:16
+msgid "This item will be deleted when the form is saved"
+msgstr "Cet élément sera supprimé une fois votre contenu enregistré"
+
+#: views/hasmany/item.view.php:34
+msgid "Duplicate this item"
+msgstr "Dupliquer cet élément"
+
+#: views/hasmany/items.view.php:17
+msgid "Add one item"
+msgstr "Ajouter un élément"
+
+#: views/modelsearch/inputs.php:19
 #: classes/renderer/colorpicker.php:40
 msgid "None"
-msgstr "Aucune"
+msgstr "Aucun(e)"
+
+#: views/modelsearch/inputs.php:29
+msgid "Content title"
+msgstr "Titre du contenu"
+
+#: views/modelsearch/inputs.php:35
+msgid "Choose \"empty\" value above to remove a possibly registered value"
+msgstr "Sélectionnez la valeur \"vide\" ci-dessus pour supprimer un lien préalablement enregistré"
+
+#: classes/controller/admin/autocomplete.php:59
+#: classes/controller/admin/modelsearch.php:55
+msgid "No content of that type has been found"
+msgstr "Aucun contenu de ce type ne correspond"
 
 #: config/metadata.config.php:12
 msgid "Renderers"
 msgstr "Renderers"
 
-#: views/modelsearch/inputs.php:23
-msgid 'Content title'
-msgstr 'Titre du contenu'
-
-#: views/modelsearch/inputs.php:28
-msgid 'Choose "empty" value above to remove a possibly registered value'
-msgstr 'Sélectionnez la valeur "vide" ci-dessus pour supprimer un lien préalablement enregistré'
+#: config/renderer/modelsearch.config.php:6
+msgid "Page"
+msgstr "Page"

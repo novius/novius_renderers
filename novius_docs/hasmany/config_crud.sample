@@ -1,0 +1,29 @@
+
+        'shows' => array(
+            'label' => __('Film Show'),
+            'renderer' => 'Novius\Renderers\Renderer_HasMany',
+            'renderer_options' => array(
+                'model' => 'Model_FilmShow'
+            ),
+            'template' => '{field}',
+            'before_save' => function($item, $data) {
+                $values = $data['shows'];
+                $item->shows = array();
+                foreach ($values as $v) {
+                    if (!empty($v['show_id'])) {
+                        $r = Model_FilmShow::find($v['show_id']);
+                    } else {
+                        $r = Model_FilmShow::forge();
+                    }
+                    if (!empty($v['show_movie_id'])) {
+                        $r->movie = Model_Movie::find($v['show_movie_id']);
+                    }
+
+                    if (!empty($v['show_id'])) {
+                        $item->shows[$v['show_id']] = $r;
+                    } else {
+                        $item->shows[] = $r;
+                    }
+                }
+            }
+        ),

@@ -1,5 +1,7 @@
 <?php
 
+\Nos\I18n::current_dictionary('novius_renderers::default');
+
 return array(
     // Default available models
     'models' => array(
