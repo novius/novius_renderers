@@ -1,25 +1,42 @@
 require(['jquery-nos-wysiwyg'], function ($) {
+    /**
+     * Restore the order hidden inputs on a while list, going from 0 to XX
+     * This isn't the most optimal way of doing it but it is the most resilient and cost-effective
+     *
+     * @param $list node like $('.item_list')
+     */
+    function restore_order($list) {
+        var order = 0;
+
+        $list.find('input[name*=_order]').each(function(){
+            this.value = order++;
+        });
+    }
 
     //Add one item
     $(document).on('click', 'button.add-item-js', function(e) {
         var $button = $(this);
-        var $container = $button.closest('form');
-        var next = parseInt($container.find('.count-items-js').data('nb-items')) + 1;
+        var $container = $button.closest('.count-items-js');
+        var next = parseInt($container.data('nb-items')) + 1;
         var model = $button.data('model');
         var relation = $button.data('relation');
+        var order = $button.data('order');
 
         $.ajax({
             type : "GET",
             url: 'admin/novius_renderers/hasmany/add_item/' + next,
             data : {
                 model : model,
-                relation : relation
+                relation : relation,
+                order: order
             },
             success : function(vue) {
                 var $vue = $(vue);
                 $vue.nosFormUI();
                 $container.find('.item_list').append($vue);
-                $container.find('.count-items-js').data('nb-items', next);
+                $container.data('nb-items', next);
+
+                restore_order($container.find('.item_list'));
             }
         });
         e.preventDefault();
@@ -33,6 +50,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
         var $button = $div.closest('.count-items-js').find('button.add-item-js');
         var model = $button.data('model');
         var relation = $button.data('relation');
+        var order = $button.data('order');
         var data = {};
         data.forge = {};
 
@@ -52,6 +70,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
         });
         data.model = model;
         data.relation = relation;
+        data.order = order;
 
         $nos.ajax({
             type : "GET",
@@ -62,6 +81,8 @@ require(['jquery-nos-wysiwyg'], function ($) {
                 $vue.nosFormUI();
                 $div.closest('.item_list').append($vue);
                 $div.closest('.count-items-js').data('nb-items', next);
+
+                restore_order($div.closest('.item_list'));
             }
         });
         e.preventDefault();
@@ -80,34 +101,47 @@ require(['jquery-nos-wysiwyg'], function ($) {
             }
 
         }
+
+        restore_order($(this).closest('.item_list'));
     });
 
-    // TODO Move an item
-    // arrows only exist if the "order" option is activated
+    /**
+     * Move around an item
+     * The function keeps the tinyMCE editors alive and keep a clean order
+     */
     $(document).on('click', '.hasmany_icon_arrow', function() {
-        var down = $(this).hasClass('item-down-js');
-        var $item = $(this).closest('.hasmany_item');
-        var former_value = parseInt($item.find('input[name$="order]"]').val());
-        var $swapper = down ? $item.next() : $item.prev();
-        var $textarea = $item.find('textarea.tinymce');
-        //Deal with a possible wysiwyg
-        if ($textarea.length > 0) {
-            var id_tiny = $textarea.attr('id');
-            tinyMCE.get(id_tiny).save();
-            tinyMCE.get(id_tiny).remove();
+        var down = $(this).hasClass('item-down-js'),
+            $item = $(this).closest('.hasmany_item'),
+            $swapper = down ? $item.nextAll('div:eq(0)') : $item.prevAll('div:eq(0)'),
+            $textarea = $item.find('textarea[name*=wysiwyg]'),
+            order = 0;
+
+        // already top or bottom
+        if ($swapper.length == 0) {
+            return;
         }
 
-        $swapper.find('input[name$="order]"]').val(former_value);
+        //Deal with possible wysiwyg's
+        $textarea.each(function(){
+            var id_tiny = $(this).attr('id');
+            tinyMCE.get(id_tiny).save();
+            tinyMCE.get(id_tiny).remove();
+        });
+
+        // move it
         if (down) {
-            $item.find('input[name$="order]"]').val(former_value + 1);
             $swapper.after($item);
         } else {
-            $item.find('input[name$="order]"]').val(former_value - 1);
             $swapper.before($item);
         }
 
-        if ($textarea.length > 0) {
-            $textarea.wysiwyg($textarea.data('wysiwyg-options'));
-        }
+        // set order on all hidden input! 0..X
+        restore_order($item.closest('.item_list'));
+
+        // restore wysiwyg
+        $textarea.each(function(){
+            $(this).wysiwyg($(this).data('wysiwyg-options'));
+        });
     });
 });
+

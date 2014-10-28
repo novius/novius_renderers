@@ -17,8 +17,8 @@ echo $fieldset->build_hidden_fields();
 <?php
 if (!empty($options['order'])) {
 ?>
-    <span class="hasmany_icon hasmany_icon_arrow qa-up-js"></span>
-    <span class="hasmany_icon hasmany_icon_arrow qa-down-js"></span>
+    <span class="hasmany_icon hasmany_icon_arrow item-up-js"></span>
+    <span class="hasmany_icon hasmany_icon_arrow item-down-js"></span>
 <?php
 }
 ?>
@@ -29,5 +29,5 @@ foreach ($fields as $field) {
 }
 ?>
     </table>
-    <button class="dupli-item-js button-dupli-item"><?= __('Duplicate this item') ?></button>
+    <button class="dupli-item-js button-dupli-item" data-order="<?= (!empty($options['order']) ? 1 : 0) ?>"><?= __('Duplicate this item') ?></button>
 </div>

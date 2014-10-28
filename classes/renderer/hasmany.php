@@ -26,7 +26,7 @@ class Renderer_HasMany extends \Nos\Renderer
         return $this->template($return);
     }
 
-    public static function render_fieldset($item, $relation, $index = null)
+    public static function render_fieldset($item, $relation, $index = null, $renderer_options = array())
     {
         static $auto_id_increment = 1;
         $class = get_class($item);
@@ -52,6 +52,7 @@ class Renderer_HasMany extends \Nos\Renderer
             'fields' => $fields,
             'is_new' => $item->is_new(),
             'index' => $index,
+            'options' => $renderer_options,
         );
         $view_params['view_params'] = &$view_params;
 
