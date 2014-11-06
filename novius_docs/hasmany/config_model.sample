@@ -8,25 +8,6 @@ return array(
                 'type' => 'hidden',
             )
         ),
-        'movie' => array(
-            'label' => __('Movie'),
-            'renderer' => 'Novius\Renderers\Renderer_Autocomplete',
-            'form' => array(
-                'class' => 'autocomplete-search',
-            ),
-            'renderer_options' => array(
-                'data' => array(
-                    'data-autocomplete-post' => \Format::forge(array(
-                            'model' => 'Model_Movie'
-                        ))->to_json(),
-                    'data-name' => 'show_movie_id',
-                    'data-autocomplete-minlength' => 2,
-                ),
-                'populate_input' => function($item) {
-                    return (!empty($item->movie)) ? $item->movie->movie_title : '';
-                },
-            ),
-        ),
         'show_datetime' => array(
             'label' => __('Schedule'),
             'renderer' => 'Nos\Renderer_Datetime_Picker',

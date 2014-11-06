@@ -1,9 +1,29 @@
-
+return array(
+    'layout' => array(
+        'content' => array(
+            'mentions' => array(
+                'view' => 'nos::form/expander',
+                'params' => array(
+                    'title'   => __('Movie shows'),
+                    'nomargin' => false,
+                    'content' => array(
+                        'view' => 'novius_renderers::hasmany/layout',
+                        'params' => array(
+                            'fields' => array(
+                                'shows',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
+    'fields' => array(
         'shows' => array(
-            'label' => __('Film Show'),
+            'label' => __('Movie Show'),
             'renderer' => 'Novius\Renderers\Renderer_HasMany',
             'renderer_options' => array(
-                'model' => 'Model_FilmShow'
+                'model' => 'Model_MovieShow'
             ),
             'template' => '{field}',
             'before_save' => function($item, $data) {
@@ -11,19 +31,14 @@
                 $item->shows = array();
                 foreach ($values as $v) {
                     if (!empty($v['show_id'])) {
-                        $r = Model_FilmShow::find($v['show_id']);
-                    } else {
-                        $r = Model_FilmShow::forge();
-                    }
-                    if (!empty($v['show_movie_id'])) {
-                        $r->movie = Model_Movie::find($v['show_movie_id']);
-                    }
-
-                    if (!empty($v['show_id'])) {
+                        $r = Model_MovieShow::find($v['show_id']);
                         $item->shows[$v['show_id']] = $r;
                     } else {
+                        $r = Model_MovieShow::forge();
                         $item->shows[] = $r;
                     }
                 }
             }
         ),
+    )
+);
