@@ -11,7 +11,7 @@
                 echo \Novius\Renderers\Renderer_HasMany::render_fieldset($o, $relation, $i, $options);
                 $i++;
             }
-        } else {
+        } elseif (\Arr::get($options, 'default_item', true)) {
             // Display an empty item in case none have already been added
             echo \Novius\Renderers\Renderer_HasMany::render_fieldset($model::forge(), $relation, $i, $options);
         }
