@@ -43,16 +43,19 @@ require(['jquery-nos-wysiwyg'], function ($) {
     });
 
     //Duplicate an item
-    $(document).on('click', 'button.dupli-item-js', function(e){
+    $(document).on('click', 'button.dupli-item-js', function(event){
         var $div = $(this).closest('.hasmany_item');
         var index = $div.data('item-index');
         var next = $div.closest('.count-items-js').find('.hasmany_item').length + 1;
         var $button = $div.closest('.count-items-js').find('button.add-item-js');
-        var model = $button.data('model');
+        var model = $button.data('model') || $button.attr('data-model');
         var relation = $button.data('relation');
         var order = $button.data('order');
         var data = {};
         data.forge = {};
+
+        console.log($button);
+        console.log('model', model);
 
         //select all inputs (cannot search on name, assuming it begins with "relation", because it's possible that it doesn't
         $div.find('input, select').each(function() {
@@ -72,6 +75,8 @@ require(['jquery-nos-wysiwyg'], function ($) {
         data.relation = relation;
         data.order = order;
 
+        console.log(data);
+
         $nos.ajax({
             type : "GET",
             url: 'admin/novius_renderers/hasmany/add_item/' + next,
@@ -85,19 +90,23 @@ require(['jquery-nos-wysiwyg'], function ($) {
                 restore_order($div.closest('.item_list'));
             }
         });
-        e.preventDefault();
+        event.preventDefault();
     });
 
     //Delete an item
-    $(document).on('click', '.hasmany_delete_item', function() {
+    $(document).on('click', '.item-delete-js', function(event) {
+        event.preventDefault();
         var question = $(this).data('question');
         var removed = $(this).data('removed');
-        if (confirm(question))
-        {
-            if(removed.length > 0) {
-                $(this).closest('.hasmany_item').html('<table><tr><th></th><td class="hasmany_message">' + removed + '</td></tr></table>');
+        if (confirm(question)) {
+            var $item = $(this).closest('.hasmany_item');
+            if (removed.length > 0) {
+                $item.find('.head').remove();
+                $item.html(
+                    $('<div/>').addClass('hasmany_message ui-state-error').html(removed)
+                );
             } else {
-                $(this).closest('.hasmany_item').remove();
+                $item.remove();
             }
 
         }
@@ -109,7 +118,8 @@ require(['jquery-nos-wysiwyg'], function ($) {
      * Move around an item
      * The function keeps the tinyMCE editors alive and keep a clean order
      */
-    $(document).on('click', '.hasmany_icon_arrow', function() {
+    $(document).on('click', '.item-down-js, .item-up-js', function(event) {
+        event.preventDefault();
         var down = $(this).hasClass('item-down-js'),
             $item = $(this).closest('.hasmany_item'),
             $swapper = down ? $item.nextAll('div:eq(0)') : $item.prevAll('div:eq(0)'),
