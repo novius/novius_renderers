@@ -49,7 +49,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
              *  )
              * => not considered as empty()
              */
-            if (!array_key_exists('model', $this->value)) {
+            if (!array_key_exists('model', $this->value) || empty($this->value['model'])) {
                 $this->value['model'] = 'Nos\Page\Model_Page';
             }
             if (!array_key_exists('id', $this->value)) {
@@ -91,7 +91,6 @@ class Renderer_ModelSearch extends \Nos\Renderer
         // Do not assume that Model_Page must always be available, default value is array()
         \Config::load('novius_renderers::renderer/modelsearch', true);
         $models = \Config::get('novius_renderers::renderer/modelsearch.models', array());
-
         // Custom models
         $models = \Arr::merge($models, \Arr::get($options, 'models', array()));
 

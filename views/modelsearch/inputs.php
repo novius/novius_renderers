@@ -22,7 +22,7 @@ if (!empty($class) && !empty($class_id)) {
             </select>
         </div>
     <?php } else { ?>
-        <input type="hidden" name="<?= \Arr::get($options, 'names.model') ?>" value="<?= reset($models) ?>" />
+        <input type="hidden" name="<?= \Arr::get($options, 'names.model') ?>" value="<?= key($models) ?>" />
     <?php } ?>
     <div class="ms-value">
         <label>
