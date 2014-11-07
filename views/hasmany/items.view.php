@@ -4,7 +4,7 @@
 <div class="hasmany_items count-items-js" data-nb-items="<?= empty($item->{$relation}) ? 1 : count($item->{$relation}) ?>">
     <div class="item_list">
         <?php
-        $i = 1;
+        $i = 0;
         if (!empty($relation) && count($item->{$relation})) {
             foreach ($item->{$relation} as $o) {
                 // Build fieldset and return view
