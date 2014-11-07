@@ -60,7 +60,7 @@ class Renderer_HasMany extends \Nos\Renderer
         foreach ($config['fieldset_fields'] as $name => $item_config) {
             $replaces['"'.$name.'"'] = '"'.$relation.'['.$index.']['.$name.']"';
         }
-        $return = (string) \View::forge('novius_renderers::hasmany/item', $view_params, false)->render().$fieldset->build_append();
+        $return = (string) \View::forge('novius_renderers::hasmany/item', $view_params, false)->render();
 
         \Event::trigger('novius_renderers.hasmany_fieldset');
 

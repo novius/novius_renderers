@@ -30,4 +30,7 @@ foreach ($fields as $field) {
 ?>
     </table>
     <button class="dupli-item-js button-dupli-item" data-order="<?= (!empty($options['order']) ? 1 : 0) ?>"><?= __('Duplicate this item') ?></button>
+<?php
+echo $fieldset->build_append();
+?>
 </div>
