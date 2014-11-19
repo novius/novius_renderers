@@ -12,3 +12,29 @@
     width: 80%;
     margin-top: 5px;
 }
+
+.modelsearch .autocomplete-container {
+    display: inline;
+}
+
+#line_second .expander .modelsearch {
+    margin-bottom: .5em;
+}
+
+#line_second .expander .modelsearch label {
+    width: 30.4%;
+    padding: 7px;
+    line-height: 120%;
+    text-align: right;
+    box-sizing: border-box;
+    clear: left;
+}
+
+#line_second .expander .modelsearch .autocomplete {
+    width: 69%;
+}
+
+#line_second .expander .modelsearch .autocomplete-container {
+    position: relative;
+    padding-left: .5em;
+}

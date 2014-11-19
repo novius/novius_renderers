@@ -12,56 +12,81 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
 
     public function action_search() {
         try {
-            $results = array();
-            $filter = trim(\Input::post('search', ''));
+            // Get the search keywords
+            $keywords = trim(strval(\Input::post('search', '')));
+
+            // Get the target model
             $class = \Input::post('model', '');
+            if (empty($class) or !class_exists($class)) {
+                throw new \Exception('Could not find this model.');
+            }
 
-            if (!empty($class)) {
+            // Check if the current user has the permission to access the model
+            list($application) = \Config::configFile($class);
+            if (!\Nos\User\Permission::isApplicationAuthorised($application)) {
+                throw new \Nos\Access_Exception('You don\'t have access to application '.$application.'!');
+            }
 
-                // Check if the current user has the permission to access the model
-                list($application) = \Config::configFile($class);
-                if (!\Nos\User\Permission::isApplicationAuthorised($application)) {
-                    throw new \Nos\Access_Exception('You don\'t have access to application '.$application.'!');
-                }
+            $query_args = array();
 
-                $table = $class::table();
-                $pk_property = \Arr::get($class::primary_key(), 0);
-                $title_property = $class::title_property();
+            $pk_property = \Arr::get($class::primary_key(), 0);
+            $title_property = $class::title_property();
+            if (empty($title_property)) {
+                throw new \Exception('Cannot search on this model.');
+            }
 
-                // Create the query
-                $query = \Fuel\Core\DB::select(
-                    array($pk_property, 'value'),
-                    array($title_property, 'label')
-                )->from($table);
+            // Search on keywords if jayps_search is configured on the model
+            $searchable = $class::behaviours('JayPS\Search\Orm_Behaviour_Searchable');
+            if (!empty($keywords) && !empty($searchable)) {
+                $query_args['where'][] = array('keywords', $keywords.'*');
+            }
 
-                // Apply filter on query
-                if (!empty($filter)) {
-                    $query->where_open()
-                        ->or_where($title_property, 'LIKE', '%' . $filter . '%')
-                        ->where_close();
-                }
+            // Create the base query from the model
+            $query = $class::query($query_args)->get_query();
 
-                // Limit (optionnal)
-                \Config::load('novius_renderers::renderer/modelsearch', true);
-                $limit = \Config::get('novius_renderers::renderer/modelsearch.suggestion_limit', array());
-                if (!empty($limit)) {
-                    $query->limit($limit);
-                }
+            // Select only the primary key and the title
+            $query = $query->select_array(array(
+                array($pk_property, 'value'),
+                array($title_property, 'label')
+            ), true);
 
-                // Get query results
-                $results = array_filter((array) $query->order_by($title_property)
-                    ->distinct(true)
-                    ->execute()
-                    ->as_array()
+            // Search on title if jayps_search is not configured on the model
+            if (!empty($keywords) && empty($searchable)) {
+                $query->where_open()
+                    ->or_where($title_property, 'LIKE', '%'.$keywords.'%')
+                    ->where_close();
+            }
+
+            // Limit (optionnal)
+            \Config::load('novius_renderers::renderer/modelsearch', true);
+            $limit = \Config::get('novius_renderers::renderer/modelsearch.suggestion_limit', array());
+            if (!empty($limit)) {
+                $query->limit($limit);
+            }
+
+            // Order by title
+            $query->order_by($title_property);
+
+            // Get query results
+            $results = $query
+                ->order_by($title_property)
+                ->distinct(true)
+                ->execute()
+                ->as_array()
+            ;
+            $results = array_filter((array) $results);
+
+            if (!empty($results)) {
+                $results = array_map(function($result) {
+                    return \Arr::subset($result, array('label', 'value'));
+                }, $results);
+            } else {
+                $results = array(
+                    array(
+                        'value' => 0,
+                        'label' => __('No content of that type has been found')
+                    )
                 );
-                if (empty($results)) {
-                    $results = array(
-                        array(
-                            'value' => 0,
-                            'label' => __('No content of that type has been found')
-                        )
-                    );
-                }
             }
 
             \Response::json($results);
