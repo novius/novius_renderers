@@ -15,6 +15,10 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
             // Get the search keywords
             $keywords = trim(strval(\Input::post('search', '')));
 
+            // Use jayps_search ?
+            $use_jayps_search = \Input::post('use_jayps_search', false);
+            $use_jayps_search = (!empty($use_jayps_search) and $use_jayps_search != 'false');
+
             // Get the target model
             $class = \Input::post('model', '');
             if (empty($class) or !class_exists($class)) {
@@ -35,9 +39,9 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
                 throw new \Exception('Cannot search on this model.');
             }
 
-            // Search on keywords if jayps_search is configured on the model
+            // Search on keywords if jayps_search is enabled
             $searchable = $class::behaviours('JayPS\Search\Orm_Behaviour_Searchable');
-            if (!empty($keywords) && !empty($searchable)) {
+            if (!empty($use_jayps_search) && !empty($keywords) && !empty($searchable)) {
                 $query_args['where'][] = array('keywords', $keywords.'*');
             }
 
@@ -50,8 +54,8 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
                 array($title_property, 'label')
             ), true);
 
-            // Search on title if jayps_search is not configured on the model
-            if (!empty($keywords) && empty($searchable)) {
+            // Search on title if jayps_search is disabled
+            if (empty($use_jayps_search) && !empty($keywords)) {
                 $query->where_open()
                     ->or_where($title_property, 'LIKE', '%'.$keywords.'%')
                     ->where_close();
