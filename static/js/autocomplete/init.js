@@ -40,6 +40,20 @@ define(
                 }
             };
 
+            var addSingle = function($input, hiddenName, infos) {
+                // Update the hidden value
+                var $hidden_input = $input.closest('form').find('input[name="'+hiddenName+'"]');
+                if (!$hidden_input.length) {
+                    // Creates the hidden field whether it doesn't already exists
+                    $hidden_input = $(document.createElement('input')).attr({
+                        name: hiddenName,
+                        type: 'hidden'
+                    });
+                    $input.after($hidden_input);
+                }
+                $hidden_input.val(infos.value);
+            };
+
 // Delete selection (multiple only)
             $content.on('click', 'span.delete-label', function() {
                 $nos(this).closest('.label-result-autocomplete').remove();
@@ -75,6 +89,15 @@ define(
                                         label: event.title
                                     };
                                     addMultiple($input, hiddenName, infos);
+                                    $input.val('').trigger('focus');
+                                } else {
+                                    infos = {
+                                        value: event.id,
+                                        label: event.title
+                                    };
+                                    // Replace the text typed by the user to get suggestions by the selected label
+                                    $input.val(infos.label).trigger('focus');
+                                    addSingle($input, hiddenName, infos);
                                 }
                             }
                         );
@@ -87,22 +110,11 @@ define(
                             $input.val('').trigger('focus');
                             addMultiple($input, hiddenName, infos);
                         }
-
                         // Single selection
                         else {
                             // Replace the text typed by the user to get suggestions by the selected label
                             $input.val(infos.label).trigger('focus');
-                            // Update the hidden value
-                            var $hidden_input = $input.closest('form').find('input[name="'+hiddenName+'"]');
-                            if (!$hidden_input.length) {
-                                // Creates the hidden field whether it doesn't already exists
-                                $hidden_input = $(document.createElement('input')).attr({
-                                    name: hiddenName,
-                                    type: 'hidden'
-                                });
-                                $input.after($hidden_input);
-                            }
-                            $hidden_input.val(infos.value);
+                            addSingle($input, hiddenName, infos);
                         }
                     } else {
 
