@@ -26,6 +26,8 @@ The use of the Renderer is therefore related to how it is included in the crud c
             WARNING : will be overwritten if a specific callback is used ('data-autocomplete-callback');
 - 'renderer_options' -> 'populate_input' : optional
         Allow to populate the input "text"
+- 'renderer_options' -> 'insert_option' : optional
+        Add the ability to create content on click when there's no result.
 
 
 ===== Update options afterward ====
