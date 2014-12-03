@@ -108,10 +108,12 @@ class Renderer_Multiselect extends \Fieldset_Field
         $st_options = '';
         if (!empty($renderer_options['sortable']) && $renderer_options['sortable']) {
             foreach ($values as $val) {
-                $st_options .= array_key_exists($val, $options) ? '<option value="'.$val.'" selected="selected">' : '<option value="'.$val.'">';
-                $st_options .= $options[$val];
-                $st_options .= '</option>';
-                unset($options[$val]);
+                if (isset($options[$val])) {
+                    $st_options .= array_key_exists($val, $options) ? '<option value="'.$val.'" selected="selected">' : '<option value="'.$val.'">';
+                    $st_options .= $options[$val];
+                    $st_options .= '</option>';
+                    unset($options[$val]);
+                }
             }
         }
         foreach ($options as $key => $opt) {
