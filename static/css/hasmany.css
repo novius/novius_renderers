@@ -74,16 +74,16 @@
     margin: 10px 0;
 }
 
-.hasmany_items .item_list th,
-.hasmany_items .item_list td {
+.hasmany_items .item_list .hasmany_content > table > tbody > tr > th,
+.hasmany_items .item_list .hasmany_content > table > tbody > tr > td {
     padding: 1em;
 }
 
-.hasmany_items .item_list th {
+.hasmany_items .item_list .hasmany_content > table > tbody > tr > th {
     font-weight: bold;
     padding-top: 17px;
 }
 
-.hasmany_items .item_list td {
+.hasmany_items .item_list .hasmany_content > table > tbody > tr > td {
     padding-right: 65px;
 }
