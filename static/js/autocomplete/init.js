@@ -79,7 +79,7 @@ define(
                     if (insert) {
                         //Add listener in case an item is added
                         $content.nosListenEvent({
-                                name: 'crudJson',
+                                name: 'afterSaveCrud',
                                 is: js_id
                             },
                             function(event) {

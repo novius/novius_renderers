@@ -136,7 +136,7 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
             }
         } else {
             //HMVC call
-            \Event::register_function('crudJson|'.$config_file, function(&$json) use ($crud, $js_id) {
+            \Event::register_function('afterSaveCrud|'.$config_file, function(&$json) use ($crud, $js_id) {
                 unset($json['replaceTab']);
                 $json['closeDialog'] = true;
                 //Get id in the classic Event
@@ -147,7 +147,7 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
                     $item = $class::find($id);
                     //Add custom event just so the autocomplete knows
                     $json['dispatchEvent'][] = array(
-                        'name' => 'crudJson',
+                        'name' => 'afterSaveCrud',
                         'is' => $js_id,
                         'id' => $id,
                         'title' => $item->title_item(),

@@ -98,6 +98,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
         event.preventDefault();
         var question = $(this).data('question');
         var removed = $(this).data('removed');
+        var $list = $(this).closest('.item_list');
         if (confirm(question)) {
             var $item = $(this).closest('.hasmany_item');
             if (removed.length > 0) {
@@ -111,7 +112,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
 
         }
 
-        restore_order($(this).closest('.item_list'));
+        restore_order($list);
     });
 
     /**
