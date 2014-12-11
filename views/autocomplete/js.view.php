@@ -15,7 +15,7 @@
         'link!static/apps/novius_renderers/css/autocomplete.css'
     ], function ($nos, init) {
         var js_id = '<?= $id ?>';
-        var $content = <?= empty($wrapper) ? '$nos(\'#\' + js_id).closest(\'form\')' : '$nos(\''.$wrapper.'\')' ?>;
+        var $content = <?= empty($wrapper) ? '$nos(\'body\').find(\'[data-id="\' + js_id + \'"]\').closest(\'form\')' : '$nos(\''.$wrapper.'\')' ?>;
         init($content, js_id);
     });
 </script>

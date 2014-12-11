@@ -58,6 +58,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
         // Generate a unique ID for the field if none were defined
         if (empty($attributes['id'])) {
             $attributes['id'] = uniqid('autocomplete_');
+            $attributes['data-id'] = $attributes['id'];
         }
 
         // Autocomplete on a model
@@ -204,7 +205,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
         }
 
         // Add the javascript
-        $this->fieldset()->append(static::js_init($this->get_attribute('id'), $this->renderer_options));
+        $this->fieldset()->append(static::js_init($this->get_attribute('data-id'), $this->renderer_options));
 
         // Build the field followed by the populated values
         $field = $this->build_without_template().$populate;
@@ -250,7 +251,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
     public static function renderer($renderer = array())
     {
         list($attributes, $renderer_options) = static::create_options($renderer);
-        return '<input '.array_to_attr($attributes).' />'.static::js_init($attributes['id'], $renderer_options);
+        return '<input '.array_to_attr($attributes).' />'.static::js_init($attributes['data-id'], $renderer_options);
     }
 
     /**
