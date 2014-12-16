@@ -11,6 +11,7 @@
 namespace Novius\Renderers;
 
 use Fuel\Core\Fieldset;
+use Nos\Config_Common;
 use Orm\Model;
 
 class Renderer_Autocomplete extends \Fieldset_Field
@@ -23,7 +24,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
     );
 
     protected static $DEFAULT_ATTRIBUTES = array(
-        'data-autocomplete-url' => 'admin/novius_renderers/modelsearch/search',//function called by ajax
+        'data-autocomplete-url' => 'admin/novius_renderers/autocomplete/search_model',//function called by ajax
         'data-autocomplete-minlength' => 3,//number of chars used before calling the function above
         //'data-autocomplete-callback' => 'on_click',//function name used once the user has clicked in the list
     );
@@ -57,6 +58,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
         // Generate a unique ID for the field if none were defined
         if (empty($attributes['id'])) {
             $attributes['id'] = uniqid('autocomplete_');
+            $attributes['data-id'] = $attributes['id'];
         }
 
         // Autocomplete on a model
@@ -71,6 +73,44 @@ class Renderer_Autocomplete extends \Fieldset_Field
                 \Arr::get($attributes, 'renderer_options.data.data-autocomplete-post'),
                 array('model' => $model)
             ));
+        } else {
+            $post = \Arr::get($attributes, 'renderer_options.data.data-autocomplete-post');
+            $post = \Format::forge($post, 'json')->to_array();
+            $model = \Arr::get($post, 'model', false);
+        }
+
+        if (!empty($model)) {
+            $data_insert = \Arr::get($attributes, 'renderer_options.data.data-autocomplete-crud', false);
+            if (empty($data_insert)) {
+                //Try to determine path for the crud controller (if not set)
+                $insert = \Arr::get($attributes, 'renderer_options.insert_option', false);
+                if (!empty($insert)) {
+                    if (!is_string($insert)) {
+                        $application = $model::getApplication();
+                        $common_config = Config_Common::load($model);
+                        $crud_path = \Arr::get($common_config, 'controller');
+                        $insert = $application.DS.$crud_path;
+                    }
+                    if (!\Str::ends_with($insert, 'insert_update')) {
+                        $insert .= DS.'insert_update';
+                    }
+                    if (!\Str::starts_with($insert, 'admin')) {
+                        $insert = 'admin'.DS.$insert;
+                    }
+                    \Arr::set($attributes, 'renderer_options.data.data-autocomplete-crud', $insert);
+                }
+            }
+            //If insert option is active, add this information in POST
+            if (!empty($data_insert) || !empty($insert)) {
+                $post = \Arr::get($attributes, 'renderer_options.data.data-autocomplete-post');
+                $post = \Format::forge($post, 'json')->to_array();
+                $insert_option = \Arr::get($post, 'insert_option', false);
+                if (empty($insert_option)) {
+                    \Arr::set($attributes, 'renderer_options.data.data-autocomplete-post', \Format::forge(
+                        \Arr::merge($post, array('insert_option' => true))
+                    )->to_json());
+                }
+            }
         }
 
         // Extract data from renderer options
@@ -165,7 +205,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
         }
 
         // Add the javascript
-        $this->fieldset()->append(static::js_init($this->get_attribute('id'), $this->renderer_options));
+        $this->fieldset()->append(static::js_init($this->get_attribute('data-id'), $this->renderer_options));
 
         // Build the field followed by the populated values
         $field = $this->build_without_template().$populate;
@@ -211,7 +251,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
     public static function renderer($renderer = array())
     {
         list($attributes, $renderer_options) = static::create_options($renderer);
-        return '<input '.array_to_attr($attributes).' />'.static::js_init($attributes['id'], $renderer_options);
+        return '<input '.array_to_attr($attributes).' />'.static::js_init($attributes['data-id'], $renderer_options);
     }
 
     /**
