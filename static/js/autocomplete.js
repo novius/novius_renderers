@@ -23,6 +23,9 @@ define(['jquery-nos'], function ($nos) {
 
     return function($context, options) {
         $nos(function () {
+            if (!($context instanceof $nos)) {
+                $context = $nos($context);
+            }
             $context.on('focus', 'input.autocomplete', function(event) {
                 var $this = $nos(this);
                 if (typeof $this.attr('auto-initialized') == 'undefined' || !$this.attr('auto-initialized')) {
