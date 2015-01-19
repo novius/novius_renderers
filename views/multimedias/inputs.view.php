@@ -1,12 +1,13 @@
 <div id="<?= $id ?>">
 <?php
 $index = 1;
-while(!empty($item->medias->{$key.$index})) {
-    $media = $item->medias->{$key.$index};
+$value = (array) $value;
+foreach ($value as $media_id) {
+    if (empty($media_id)) continue;
     echo \Nos\Media\Renderer_Media::renderer(
         array(
             'name' => $key.'['.$index.']',
-            'value' => isset($media->media_id) && !empty($media->media_id) ? $media->media_id : null,
+            'value' => $media_id,
             'required' => false,
             'renderer_options' => $options,
         )
