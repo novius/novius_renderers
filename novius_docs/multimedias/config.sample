@@ -29,7 +29,7 @@
 
         //flush database
         if(!$item->is_new()) {
-            $query = \DB::delete('nos_media_link')->where('medil_from_table', '=', Model::table())
+            $query = \DB::delete('nos_media_link')->where('medil_from_table', '=', $item->table())
                 ->where_open()
                 ->where('medil_foreign_id', '=', $item->id)
                 ->where('medil_key', 'LIKE', 'image%');
@@ -38,7 +38,10 @@
                 $query->where('medil_key', 'NOT IN', $keys);
             }
             $query->where_close()
-                ->or_where('medil_foreign_id', 'IS', \DB::expr('NULL'))
+                ->or_where_open()
+                    ->where('medil_foreign_id', 'IS', \DB::expr('NULL'))
+                    ->where('medil_foreign_context_common_id', 'IS', \DB::expr('NULL'))
+                ->or_where_close()
                 ->or_where('medil_media_id', '=', 0)
                 ->execute();
         }
