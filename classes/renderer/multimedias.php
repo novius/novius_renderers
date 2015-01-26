@@ -27,6 +27,7 @@ class Renderer_MultiMedias extends Renderer
             'id' => $id,
             'key' => $key,
             'options' => $this->renderer_options,
+            'item' => $item,
             'value' => $this->value,
         ), false);
     }
