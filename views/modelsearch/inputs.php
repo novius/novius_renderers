@@ -31,7 +31,7 @@ if (!count($available_models)) {
     <?php } else { ?>
         <input type="hidden" name="<?= \Arr::get($options, 'names.model') ?>" value="<?= key($available_models) ?>" />
     <?php } ?>
-    <div class="ms-value">
+    <div class="ms-value ms-autocomplete">
         <label>
             <?= __('Content title') ?>
         </label>
@@ -57,6 +57,18 @@ if (!count($available_models)) {
             )); ?>
         </div>
     </div>
+<?php
+    if ($options['external'] === true) {
+        ?>
+        <div class="ms-value ms-hidden ms-external">
+            <label>
+                <?= __('External link') ?>
+            </label>
+            <input class="ms-external" type="text" name="<?= $options['names']['external'] ?>">
+        </div>
+    <?php
+    }
+    ?>
 </div>
 
 <style type="text/css">

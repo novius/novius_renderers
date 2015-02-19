@@ -18,6 +18,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
             'model' => '{{prefix}}foreign_model',
         ),
         'minlength' => 3,
+        'external' => false
     );
 
     public function build()
@@ -55,6 +56,10 @@ class Renderer_ModelSearch extends \Nos\Renderer
             if (!array_key_exists('id', $this->value)) {
                 $this->value['id'] = 0;
             }
+        }
+
+        if ($options['external'] === true) {
+            $options['models'] = \Arr::merge(array('' => __('External')), $options['models']);
         }
 
         //Format options
