@@ -39,7 +39,8 @@ class Renderer_ModelSearch extends \Nos\Renderer
             reset($available_models);
             $this->value = array(
                 'model' => key($available_models),
-                'id' => 0
+                'id' => 0,
+                'external' => ''
             );
         } else {
             /*
