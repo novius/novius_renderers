@@ -51,14 +51,15 @@ if (!count($available_models)) {
                         'data-autocomplete-url' => 'admin/novius_renderers/modelsearch/search',
                         'data-autocomplete-callback' => 'click_modelsearch',
                         'data-autocomplete-post' => \Format::forge(array(
-                                'model' => $current_model,
-                                'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
-                            ))->to_json(),
+                            'model' => $current_model,
+                            'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
+                        ))->to_json(),
                     ),
                     //do not use a wrapper to allow using multiple modelsearch and including only one script
                 ),
             )); ?>
         </div>
+    </div>
     <?php
     if ($options['external'] === true) {
         ?>
