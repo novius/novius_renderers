@@ -23,7 +23,7 @@ if (!count($available_models)) {
 <div id="<?= $id ?>" class="modelsearch">
     <?php if (count($available_models) > 1) { ?>
         <div class="ms-select">
-            <label><?= $label ?><br><?= $current_model?></label>
+            <label><?= $label ?></label>
             <select name="<?= \Arr::get($options, 'names.model') ?>">
                 <?php
                 if ($options['external'] !== true) {
