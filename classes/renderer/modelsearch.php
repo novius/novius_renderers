@@ -51,9 +51,6 @@ class Renderer_ModelSearch extends \Nos\Renderer
              *  )
              * => not considered as empty()
              */
-            if (!array_key_exists('model', $this->value) || empty($this->value['model'])) {
-                $this->value['model'] = 'Nos\Page\Model_Page';
-            }
             if (!array_key_exists('id', $this->value)) {
                 $this->value['id'] = 0;
             }
