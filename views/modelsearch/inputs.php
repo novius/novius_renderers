@@ -2,8 +2,8 @@
 $current_model = \Arr::get($value, 'model');
 $current_model_id = \Arr::get($value, 'id');
 $external = \Arr::get($value, 'external');
-$classAutocomplete = !empty($$current_model) ? '' : 'ms-hidden';
-$classExternal = !empty($$current_model) ? 'ms-hidden' : '';
+$classAutocomplete = !empty($current_model) ? '' : 'ms-hidden';
+$classExternal = !empty($current_model) ? 'ms-hidden' : '';
 
 $current_model_title = '';
 if (!empty($current_model) && !empty($current_model_id)) {
@@ -23,11 +23,21 @@ if (!count($available_models)) {
 <div id="<?= $id ?>" class="modelsearch">
     <?php if (count($available_models) > 1) { ?>
         <div class="ms-select">
-            <label><?= $label ?></label>
+            <label><?= $label ?><br><?= $current_model?></label>
             <select name="<?= \Arr::get($options, 'names.model') ?>">
-                <option value=""><?= __('None') ?></option>
-                <?php foreach ($available_models as $model => $label) { ?>
-                    <option value="<?= $model ?>" <?= ($model == $current_model) ? 'selected="selected"' : '' ?>><?= $label ?></option>
+                <?php
+                if ($options['external'] !== true) {
+                    ?>
+                    <option value=""><?= __('None') ?></option>
+                <?php
+                }
+                foreach ($available_models as $model => $label) {
+                        $selected = ($model == $current_model) ? 'selected="selected"' : '';
+                        if (empty($current_model) && $model == '') {
+                            $selected = 'selected="selected"';
+                        }
+                    ?>
+                    <option value="<?= $model ?>" <?= $selected ?>><?= $label ?></option>
                 <?php } ?>
             </select>
         </div>
