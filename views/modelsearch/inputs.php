@@ -21,29 +21,28 @@ if (!count($available_models)) {
 
 ?>
 <div id="<?= $id ?>" class="modelsearch">
-    <?php
-    $models = \Arr::get($options, 'models');
-    if (count($models) > 1) {
-        ?>
+    <?php if (count($available_models) > 1) { ?>
         <div class="ms-select">
             <label><?= $label ?></label>
             <select name="<?= \Arr::get($options, 'names.model') ?>">
-                <?php foreach (\Arr::merge(array('' => __('None')), $models) as $model => $label) { ?>
-                    <option value="<?= $model ?>" <?= ($class == $model) ? 'selected="selected"' : '' ?>><?= $label ?></option>
+                <option value=""><?= __('None') ?></option>
+                <?php foreach ($available_models as $model => $label) { ?>
+                    <option value="<?= $model ?>" <?= ($model == $current_model) ? 'selected="selected"' : '' ?>><?= $label ?></option>
                 <?php } ?>
             </select>
         </div>
     <?php } else { ?>
-        <input type="hidden" name="<?= \Arr::get($options, 'names.model') ?>" value="<?= reset($models) ?>" />
+        <input type="hidden" name="<?= \Arr::get($options, 'names.model') ?>" value="<?= key($models) ?>" />
     <?php } ?>
     <div class="ms-value ms-autocomplete <?=$classAutocomplete?>">
         <label>
             <?= __('Content title') ?>
         </label>
-        <input type="hidden" name="<?= $options['names']['id'] ?>" value="<?= !empty($class_id) ? $class_id : 0 ?>"/>
+        <div class="autocomplete-container">
+        <input type="hidden" name="<?= $options['names']['id'] ?>" value="<?= !empty($current_model_id) ? $current_model_id : 0 ?>"/>
         <?= \Novius\Renderers\Renderer_Autocomplete::renderer(array(
             'name' => 'search[]',//do not assume this will be the only one
-            'value' => $title,
+            'value' => $current_model_title,
             'placeholder' => __('Choose "empty" value above to remove a possibly registered value'),
             'renderer_options' => array(
                 'data' => array(
@@ -51,7 +50,10 @@ if (!count($available_models)) {
                     'data-autocomplete-minlength' => intval(\Arr::get($options, 'minlength')),
                     'data-autocomplete-url' => 'admin/novius_renderers/modelsearch/search',
                     'data-autocomplete-callback' => 'click_modelsearch',
-                    'data-autocomplete-post' => \Format::forge(array('model' => $class))->to_json(),
+                    'data-autocomplete-post' => \Format::forge(array(
+                            'model' => $current_model,
+                            'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
+                        ))->to_json(),
                 ),
                 //do not use a wrapper to allow using multiple modelsearch and including only one script
             ),
