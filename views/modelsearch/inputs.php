@@ -1,6 +1,9 @@
 <?php
 $current_model = \Arr::get($value, 'model');
 $current_model_id = \Arr::get($value, 'id');
+$external = \Arr::get($value, 'external');
+$classAutocomplete = !empty($current_model) ? '' : 'ms-hidden';
+$classExternal = !empty($current_model) ? 'ms-hidden' : '';
 
 $current_model_title = '';
 if (!empty($current_model) && !empty($current_model_id)) {
@@ -22,16 +25,26 @@ if (!count($available_models)) {
         <div class="ms-select">
             <label><?= $label ?></label>
             <select name="<?= \Arr::get($options, 'names.model') ?>">
-                <option value=""><?= __('None') ?></option>
-                <?php foreach ($available_models as $model => $label) { ?>
-                    <option value="<?= $model ?>" <?= ($model == $current_model) ? 'selected="selected"' : '' ?>><?= $label ?></option>
+                <?php
+                if ($options['external'] !== true) {
+                    ?>
+                    <option value=""><?= __('None') ?></option>
+                <?php
+                }
+                foreach ($available_models as $model => $label) {
+                        $selected = ($model == $current_model) ? 'selected="selected"' : '';
+                        if (empty($current_model) && $model == '') {
+                            $selected = 'selected="selected"';
+                        }
+                    ?>
+                    <option value="<?= $model ?>" <?= $selected ?>><?= $label ?></option>
                 <?php } ?>
             </select>
         </div>
     <?php } else { ?>
         <input type="hidden" name="<?= \Arr::get($options, 'names.model') ?>" value="<?= key($available_models) ?>" />
     <?php } ?>
-    <div class="ms-value">
+    <div class="ms-value ms-autocomplete <?=$classAutocomplete?>">
         <label>
             <?= __('Content title') ?>
         </label>
@@ -57,6 +70,18 @@ if (!count($available_models)) {
             )); ?>
         </div>
     </div>
+    <?php
+    if ($options['external'] === true) {
+        ?>
+        <div class="ms-value <?=$classExternal?> ms-external">
+            <label>
+                <?= __('External link') ?>
+            </label>
+            <input class="ms-external" type="text" value="<?=$external?>" name="<?= $options['names']['external'] ?>">
+        </div>
+    <?php
+    }
+    ?>
 </div>
 
 <style type="text/css">

@@ -8,9 +8,13 @@
     float: left;
     display: inline-block;
 }
-.modelsearch .autocomplete {
+.modelsearch .autocomplete, .modelsearch .ms-external {
     width: 80%;
     margin-top: 5px;
+}
+
+.ms-hidden {
+    display : none;
 }
 
 .modelsearch .autocomplete-container {

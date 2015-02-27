@@ -18,6 +18,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
             'model' => '{{prefix}}foreign_model',
         ),
         'minlength' => 3,
+        'external' => false
     );
 
     public function build()
@@ -38,7 +39,8 @@ class Renderer_ModelSearch extends \Nos\Renderer
             reset($available_models);
             $this->value = array(
                 'model' => key($available_models),
-                'id' => 0
+                'id' => 0,
+                'external' => ''
             );
         } else {
             /*
@@ -50,11 +52,17 @@ class Renderer_ModelSearch extends \Nos\Renderer
              * => not considered as empty()
              */
             if (!array_key_exists('model', $this->value) || empty($this->value['model'])) {
-                $this->value['model'] = 'Nos\Page\Model_Page';
-            }
+                if ($options['external'] !== true) {
+                    $this->value['model'] = 'Nos\Page\Model_Page';
+                }
+           }
             if (!array_key_exists('id', $this->value)) {
                 $this->value['id'] = 0;
             }
+        }
+
+        if ($options['external'] === true) {
+            $options['models'] = \Arr::merge(array('' => __('External')), $options['models']);
         }
 
         //Format options

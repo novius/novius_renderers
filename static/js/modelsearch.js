@@ -4,6 +4,22 @@ require(['jquery-nos'], function($nos) {
     // Update autocomplete on model change
     $nos('body').on('change', 'div.modelsearch select', function() {
         var $select = $nos(this);
+
+        $container = $select.parents('.modelsearch');
+        $autocomplete = $container.find('.ms-autocomplete');
+        $external = $container.find('.ms-external');
+
+        autoCompleteHidden = false;
+        if ($select.val() === '') {
+            autoCompleteHidden = true;
+        }
+
+        show = autoCompleteHidden ? $external : $autocomplete;
+        hide = autoCompleteHidden ? $autocomplete : $external;
+        hide.addClass('ms-hidden');
+        show.removeClass('ms-hidden');
+
+
         update_autocomplete_post($select);
         // Clear the search and value fields
         $select.closest('.modelsearch').find('[name="search[]"], .ms-value input[type="hidden"]').val('');
