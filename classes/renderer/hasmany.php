@@ -31,7 +31,8 @@ class Renderer_HasMany extends \Nos\Renderer
         static $auto_id_increment = 1;
         $class = get_class($item);
         $config_file = \Config::configFile($class);
-        $config = \Config::load(implode('::',$config_file), true);
+        $reloadConfig = \Arr::get($renderer_options, 'reload_config');
+        $config = \Config::load(implode('::',$config_file), true, $reloadConfig);
         $index = \Input::get('index', $index);
         $fieldset = \Fieldset::build_from_config($config['fieldset_fields'], $item, array('save' => false, 'auto_id' => false));
         // Override auto_id generation so it don't use the name (because we replace it below)
