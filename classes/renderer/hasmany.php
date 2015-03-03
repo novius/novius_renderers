@@ -21,7 +21,7 @@ class Renderer_HasMany extends \Nos\Renderer
             'relation' => $relation,
             'model' => $this->renderer_options['model'],
             'item' => $this->fieldset()->getInstance(),
-            'options' => $this->renderer_options
+            'options' => $this->renderer_options,
         ), false)->render();
         return $this->template($return);
     }
@@ -31,9 +31,9 @@ class Renderer_HasMany extends \Nos\Renderer
         static $auto_id_increment = 1;
         $class = get_class($item);
         $config_file = \Config::configFile($class);
-        $reloadConfig = \Arr::get($renderer_options, 'reload_config');
-        $config = \Config::load(implode('::',$config_file), true, $reloadConfig);
+        $config = \Config::load(implode('::',$config_file), true);
         $index = \Input::get('index', $index);
+        \Event::trigger_function('novius_renderers.fieldset_config', array('config' => &$config, 'item' => &$item));
         $fieldset = \Fieldset::build_from_config($config['fieldset_fields'], $item, array('save' => false, 'auto_id' => false));
         // Override auto_id generation so it don't use the name (because we replace it below)
         $auto_id = uniqid('auto_id_');
