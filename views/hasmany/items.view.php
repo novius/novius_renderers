@@ -26,6 +26,10 @@
         'data-order' => !empty($options['order']) ? 1 : 0,
     );
     $attr = \Arr::merge($attr, $data);
-    ?>
+    if (!isset($options['add']) || $options['add']) {
+        ?>
     <button class="add-item-js button-add-item" <?= array_to_attr($attr) ?>><?= __('Add one item') ?></button>
+    <?php
+    }
+    ?>
 </div>
