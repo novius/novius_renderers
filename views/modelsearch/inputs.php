@@ -46,14 +46,14 @@ if (!count($available_models)) {
     <?php } ?>
     <div class="ms-value ms-autocomplete <?=$classAutocomplete?>">
         <label>
-            <?= __('Content title') ?>
+            <?= (count($available_models) > 1) ? __('Content title') : $label ?>
         </label>
         <div class="autocomplete-container">
             <input type="hidden" name="<?= $options['names']['id'] ?>" value="<?= !empty($current_model_id) ? $current_model_id : 0 ?>"/>
             <?= \Novius\Renderers\Renderer_Autocomplete::renderer(array(
                 'name' => 'search[]',//do not assume this will be the only one
                 'value' => $current_model_title,
-                'placeholder' => __('Choose "empty" value above to remove a possibly registered value'),
+                'placeholder' => (count($available_models) > 1) ? __('Choose "empty" value above to remove a possibly registered value') : '',
                 'renderer_options' => array(
                     'data' => array(
                         'data-autocomplete-cache' => 'false',
