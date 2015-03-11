@@ -72,6 +72,21 @@ class Renderer_ModelSearch extends \Nos\Renderer
             $value = str_replace('{{prefix}}', $prefix, $value);
         });
 
+        //Deal with autocomplete configuration
+        $options['autocomplete'] = \Arr::merge(array(
+            'data' => array(
+                'data-autocomplete-cache' => 'false',
+                'data-autocomplete-minlength' => intval(\Arr::get($options, 'minlength')),
+                'data-autocomplete-url' => 'admin/novius_renderers/modelsearch/search',
+                'data-autocomplete-callback' => 'click_modelsearch',
+                'data-autocomplete-post' => \Format::forge(array(
+                        'model' => $this->value['model'],
+                        'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
+                    ))->to_json(),
+            ),
+            //do not use a wrapper to allow using multiple modelsearch and including only one script
+        ), $options['autocomplete']);
+
         //Add JS (init sub renderer)
         $this->fieldset()->append(static::js_init());
 
