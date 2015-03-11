@@ -98,7 +98,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
                 'data-autocomplete-post' => \Format::forge($post)->to_json(),
             ),
             //do not use a wrapper to allow using multiple modelsearch and including only one script
-        ), $options['autocomplete']);
+        ), (array) $options['autocomplete']);
 
         //Add JS (init sub renderer)
         $this->fieldset()->append(static::js_init());
