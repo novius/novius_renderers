@@ -34,7 +34,7 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
             $query_args = array();
 
             $pk_property = \Arr::get($class::primary_key(), 0);
-            $title_property = $class::title_property();
+            $title_property = method_exists($class, 'search_property') ? $class::search_property() : $class::title_property();
             if (empty($title_property)) {
                 throw new \Exception('Cannot search on this model.');
             }
@@ -51,8 +51,13 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
             // Will select only the primary key and the title
             $select = array(
                 array($pk_property, 'value'),
-                array($title_property, 'label')
             );
+            if (is_array($title_property)) {
+                $select[] = array(\DB::expr('CONCAT_WS(" ", '.implode(', ', $title_property).')'), 'label');
+            } else {
+                $select[] = array($title_property, 'label');
+                $title_property = array($title_property);
+            }
 
             // Check if a twinnable condition is needed
             $context = \Input::post('twinnable', false);
@@ -75,9 +80,11 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
 
             // Search on title if jayps_search is disabled
             if (empty($use_jayps_search) && !empty($keywords)) {
-                $query->where_open()
-                    ->or_where($title_property, 'LIKE', '%'.$keywords.'%')
-                    ->where_close();
+                $query->where_open();
+                foreach ($title_property as $p) {
+                    $query->or_where($p, 'LIKE', '%'.$keywords.'%');
+                }
+                $query->where_close();
             }
 
             // Limit (optionnal)
@@ -88,7 +95,9 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
             }
 
             // Order by title
-            $query->order_by($title_property);
+            foreach ($title_property as $p) {
+                $query->order_by($p);
+            }
 
             // Get query results
             $results = $query
