@@ -64,9 +64,8 @@ define(['jquery-nos'], function ($nos) {
 
                         // Clear old results
                         $liste.html('').hide();
-
                         // No results ?
-                        if (typeof data != 'object' || !data.length) {
+                        if (typeof data != 'object' || !Object.keys(data).length) {
                             return ;
                         }
 
@@ -162,7 +161,7 @@ define(['jquery-nos'], function ($nos) {
                                     // Get the results from an ajax query
                                     else {
                                         post.search = search;
-                                        $this.nosAjax({
+                                        $.ajax({
                                             url : url,
                                             method : 'POST',
                                             data : post,
