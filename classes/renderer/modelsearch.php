@@ -73,16 +73,29 @@ class Renderer_ModelSearch extends \Nos\Renderer
         });
 
         //Deal with autocomplete configuration
+        $post = array(
+            'model' => $this->value['model'],
+            'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
+        );
+
+        //Twinnable ?
+        if (!empty($options['twinnable'])) {
+            if ($options['twinnable'] === true) {
+                $behaviour_twinnable = $class::behaviours('Nos\Orm_Behaviour_Twinnable', false);
+                //Will use behaviour configuration to match the right results
+                $post['twinnable'] = $item->{$behaviour_twinnable['context_property']};
+            } else {
+                //Allow custom configuration (eg specific context if the current model isn't twinnable but the relation is)
+                $post['twinnable'] = $options['twinnable'];
+            }
+        }
         $options['autocomplete'] = \Arr::merge(array(
             'data' => array(
                 'data-autocomplete-cache' => 'false',
                 'data-autocomplete-minlength' => intval(\Arr::get($options, 'minlength')),
                 'data-autocomplete-url' => 'admin/novius_renderers/modelsearch/search',
                 'data-autocomplete-callback' => 'click_modelsearch',
-                'data-autocomplete-post' => \Format::forge(array(
-                        'model' => $this->value['model'],
-                        'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
-                    ))->to_json(),
+                'data-autocomplete-post' => \Format::forge($post)->to_json(),
             ),
             //do not use a wrapper to allow using multiple modelsearch and including only one script
         ), $options['autocomplete']);

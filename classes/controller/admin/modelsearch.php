@@ -46,13 +46,32 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
             }
 
             // Create the base query from the model
-            $query = $class::query($query_args)->get_query();
+            $query = $class::query($query_args);
 
-            // Select only the primary key and the title
-            $query = $query->select_array(array(
+            // Will select only the primary key and the title
+            $select = array(
                 array($pk_property, 'value'),
                 array($title_property, 'label')
-            ), true);
+            );
+
+            // Check if a twinnable condition is needed
+            $context = \Input::post('twinnable', false);
+            if (!empty($context)) {
+                $behaviour_twinnable = $class::behaviours('Nos\Orm_Behaviour_Twinnable', false);
+                if ($behaviour_twinnable) {
+                    $query->and_where_open()
+                        ->where($behaviour_twinnable['context_property'], is_array($context) ? 'IN' : '=', $context)
+                        ->or_where($behaviour_twinnable['is_main_property'], '=', 1)
+                        ->and_where_close();
+
+                    // Add context_common_id and context in select
+                    $select[] = array($behaviour_twinnable['common_id_property'], 'common');
+                    $select[] = array($behaviour_twinnable['context_property'], 'context');
+                }
+            }
+            $query = $query->get_query();
+
+            $query = $query->select_array($select, true);
 
             // Search on title if jayps_search is disabled
             if (empty($use_jayps_search) && !empty($keywords)) {
@@ -73,12 +92,34 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
 
             // Get query results
             $results = $query
-                ->order_by($title_property)
                 ->distinct(true)
                 ->execute()
                 ->as_array()
             ;
             $results = array_filter((array) $results);
+
+            if (!empty($context)) {
+                // Remove pairs in results (only keep the same context if exist)
+                $result_context = array();
+                $result = array();
+                foreach ($results as $r) {
+                    if (isset($result_context[$r['common']])) {
+                        if ((is_array($context) && !in_array($r['context'], $context)) ||
+                            $r['context'] !== $context) {
+                            continue;
+                        } else {
+                            unset($result[$result_context[$r['common']]]);
+                        }
+                    }
+                    $result_context[$r['common']] = $r['value'];
+                    $result[$r['value']] = array(
+                        'value' => $r['common'],
+                        'label' => $r['label'],
+                    );
+                }
+
+                $results = $result;
+            }
 
             if (!empty($results)) {
                 $results = array_map(function($result) {
