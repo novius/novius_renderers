@@ -18,8 +18,8 @@ class Renderer_HasMany extends \Nos\Renderer
         $data = array();
         $attributes = $this->get_attribute();
         foreach ($attributes as $key => $value) {
-            if (strpos($key, 'form-data') === 0) {
-                $data[substr($key, strlen('form-'))] = $value;
+            if (mb_strpos($key, 'form-data') === 0) {
+                $data[mb_substr($key, strlen('form-'))] = $value;
             }
         }
         $return = \View::forge('novius_renderers::hasmany/items', array(

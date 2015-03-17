@@ -18,8 +18,8 @@ require(['jquery-nos-wysiwyg'], function ($) {
         var $button = $(this);
         var $container = $button.closest('.count-items-js');
         var next = parseInt($container.data('nb-items')) + 1;
-        btnData = $button.data();
-        data = {};
+        var btnData = $button.data();
+        var data = {};
         for (i in btnData) {
             if (typeof btnData[i] !== 'function' && typeof btnData[i] !== 'object') {
                 data[i] = btnData[i];
