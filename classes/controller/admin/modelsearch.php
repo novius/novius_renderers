@@ -122,7 +122,7 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
                     }
                     $result_context[$r['common']] = $r['value'];
                     $result[$r['value']] = array(
-                        'value' => $r['common'],
+                        'value' => $r['value'],
                         'label' => $r['label'],
                     );
                 }
