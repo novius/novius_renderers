@@ -34,7 +34,7 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
             $query_args = array();
 
             $pk_property = \Arr::get($class::primary_key(), 0);
-            $title_property = $class::title_property();
+            $title_property = method_exists($class, 'search_property') ? $class::search_property() : $class::title_property();
             if (empty($title_property)) {
                 throw new \Exception('Cannot search on this model.');
             }
@@ -46,19 +46,45 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
             }
 
             // Create the base query from the model
-            $query = $class::query($query_args)->get_query();
+            $query = $class::query($query_args);
 
-            // Select only the primary key and the title
-            $query = $query->select_array(array(
+            // Will select only the primary key and the title
+            $select = array(
                 array($pk_property, 'value'),
-                array($title_property, 'label')
-            ), true);
+            );
+            if (is_array($title_property)) {
+                $select[] = array(\DB::expr('CONCAT_WS(" ", '.implode(', ', $title_property).')'), 'label');
+            } else {
+                $select[] = array($title_property, 'label');
+                $title_property = array($title_property);
+            }
+
+            // Check if a twinnable condition is needed
+            $context = \Input::post('twinnable', false);
+            if (!empty($context)) {
+                $behaviour_twinnable = $class::behaviours('Nos\Orm_Behaviour_Twinnable', false);
+                if ($behaviour_twinnable) {
+                    $query->and_where_open()
+                        ->where($behaviour_twinnable['context_property'], is_array($context) ? 'IN' : '=', $context)
+                        ->or_where($behaviour_twinnable['is_main_property'], '=', 1)
+                        ->and_where_close();
+
+                    // Add context_common_id and context in select
+                    $select[] = array($behaviour_twinnable['common_id_property'], 'common');
+                    $select[] = array($behaviour_twinnable['context_property'], 'context');
+                }
+            }
+            $query = $query->get_query();
+
+            $query = $query->select_array($select, true);
 
             // Search on title if jayps_search is disabled
             if (empty($use_jayps_search) && !empty($keywords)) {
-                $query->where_open()
-                    ->or_where($title_property, 'LIKE', '%'.$keywords.'%')
-                    ->where_close();
+                $query->where_open();
+                foreach ($title_property as $p) {
+                    $query->or_where($p, 'LIKE', '%'.$keywords.'%');
+                }
+                $query->where_close();
             }
 
             // Limit (optionnal)
@@ -69,16 +95,40 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
             }
 
             // Order by title
-            $query->order_by($title_property);
+            foreach ($title_property as $p) {
+                $query->order_by($p);
+            }
 
             // Get query results
             $results = $query
-                ->order_by($title_property)
                 ->distinct(true)
                 ->execute()
                 ->as_array()
             ;
             $results = array_filter((array) $results);
+
+            if (!empty($context)) {
+                // Remove pairs in results (only keep the same context if exist)
+                $result_context = array();
+                $result = array();
+                foreach ($results as $r) {
+                    if (isset($result_context[$r['common']])) {
+                        if ((is_array($context) && !in_array($r['context'], $context)) ||
+                            $r['context'] !== $context) {
+                            continue;
+                        } else {
+                            unset($result[$result_context[$r['common']]]);
+                        }
+                    }
+                    $result_context[$r['common']] = $r['value'];
+                    $result[$r['value']] = array(
+                        'value' => $r['value'],
+                        'label' => $r['label'],
+                    );
+                }
+
+                $results = $result;
+            }
 
             if (!empty($results)) {
                 $results = array_map(function($result) {
