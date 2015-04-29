@@ -25,10 +25,10 @@ class Renderer_ModelSearch extends \Nos\Renderer
     public function before_save($item, $data)
     {
         $options = $this->getOptions();
+        $link_property = \Arr::get($options, 'link_property');
 
-        if (($link_property = \Arr::get($options, 'link_property'))) {
+        if ($link_property) {
             $newLink = null;
-
             $params = array(
                 'link_foreign_model' => array('name' => 'model'),
                 'link_foreign_id'    => array('name' => 'id'),
@@ -97,9 +97,10 @@ class Renderer_ModelSearch extends \Nos\Renderer
         $options = $this->getOptions();
         $available_models = $this->get_available_models($options);
         \Arr::set($options, 'models', $available_models);
+        $link_property = \Arr::get($options, 'link_property');
 
         // Populate values with the linked object
-        if (empty($this->value) && ($link_property = \Arr::get($options, 'link_property'))) {
+        if (empty($this->value) && $link_property) {
             $currentLink = \Novius\Link\Model_Link::find($item->$link_property);
             $this->value = array('model' => $currentLink->link_foreign_model, 'id' => $currentLink->link_foreign_id, 'external' => $currentLink->link_url);
         }
