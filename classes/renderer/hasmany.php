@@ -48,6 +48,7 @@ class Renderer_HasMany extends \Nos\Renderer
         }
 
         foreach ($values as $v) {
+            $empty = true;
             if (!empty($v[$pk])) {
                 $subItem = $model::find($v[$pk]);
             } else {
@@ -59,13 +60,17 @@ class Renderer_HasMany extends \Nos\Renderer
             }
             unset($v[$pk]);
             foreach ($v as $property => $value) {
+                if (!empty($value)) {
+                    $empty = false;
+                }
                 $subItem->$property = $value;
             }
-
-            if (!empty($subItem->$pk)) {
-                $item->{$name}[$subItem->$pk] = $subItem;
-            } else {
-                $item->{$name}[] = $subItem;
+            if (!$empty) {
+                if (!empty($subItem->$pk)) {
+                    $item->{$name}[$subItem->$pk] = $subItem;
+                } else {
+                    $item->{$name}[] = $subItem;
+                }
             }
         }
     }
