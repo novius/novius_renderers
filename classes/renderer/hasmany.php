@@ -26,6 +26,7 @@ class Renderer_HasMany extends \Nos\Renderer
             'id' => $id,
             'key' => $key,
             'relation' => $relation,
+            'value' => $this->value,
             'model' => $this->renderer_options['model'],
             'item' => $this->fieldset()->getInstance(),
             'options' => $this->renderer_options,
