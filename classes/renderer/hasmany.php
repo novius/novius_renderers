@@ -54,6 +54,7 @@ class Renderer_HasMany extends \Nos\Renderer
             } else {
                 $subItem = $model::forge();
             }
+
             if ($orderField) {
                 $subItem->$orderProperty = $v[$orderField];
                 unset($v[$orderField]);
@@ -66,6 +67,12 @@ class Renderer_HasMany extends \Nos\Renderer
                 $subItem->$property = $value;
             }
             if (!$empty) {
+                // Trigger all the before save
+                $config = static::getConfig($subItem, array());
+                $fieldset = static::getFieldSet($config, $subItem);
+                foreach ($fieldset->field() as $field) {
+                    $field->before_save($subItem, $v);
+                }
                 if (!empty($subItem->$pk)) {
                     $item->{$name}[$subItem->$pk] = $subItem;
                 } else {
@@ -93,7 +100,6 @@ class Renderer_HasMany extends \Nos\Renderer
     public static function render_fieldset($item, $relation, $index = null, $renderer_options = array(), $data = array())
     {
         static $auto_id_increment = 1;
-
         $index = \Input::get('index', $index);
         $config = static::getConfig($item, $data);
         $fieldset = static::getFieldSet($config, $item);
