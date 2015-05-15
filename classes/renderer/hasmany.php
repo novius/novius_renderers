@@ -75,14 +75,28 @@ class Renderer_HasMany extends \Nos\Renderer
         }
     }
 
-    public static function render_fieldset($item, $relation, $index = null, $renderer_options = array())
+    protected static function getFieldSet($config, $item)
+    {
+        $fieldset = \Fieldset::build_from_config($config['fieldset_fields'], $item, array('save' => false, 'auto_id' => false));
+        $fieldset->populate_with_instance($item);
+        return $fieldset;
+    }
+
+    protected static function getConfig($item, $data) {
+        $class       = get_class($item);
+        $config_file = \Config::configFile($class);
+        $config      = \Config::load(implode('::', $config_file), true);
+        \Event::trigger_function('novius_renderers.fieldset_config', array('config' => &$config, 'item' => $item, 'data' => $data));
+        return $config;
+    }
+
+    public static function render_fieldset($item, $relation, $index = null, $renderer_options = array(), $data = array())
     {
         static $auto_id_increment = 1;
-        $class = get_class($item);
-        $config_file = \Config::configFile($class);
-        $config = \Config::load(implode('::',$config_file), true);
+
         $index = \Input::get('index', $index);
-        $fieldset = \Fieldset::build_from_config($config['fieldset_fields'], $item, array('save' => false, 'auto_id' => false));
+        $config = static::getConfig($item, $data);
+        $fieldset = static::getFieldSet($config, $item);
         // Override auto_id generation so it don't use the name (because we replace it below)
         $auto_id = uniqid('auto_id_');
         // Will build hidden fields seperately
@@ -94,7 +108,7 @@ class Renderer_HasMany extends \Nos\Renderer
             }
         }
 
-        $fieldset->populate_with_instance($item);
+
         $fieldset->form()->set_config('field_template', '<tr><th>{label}</th><td>{field}</td></tr>');
         $view_params = array(
             'fieldset' => $fieldset,
