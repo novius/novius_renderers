@@ -34,14 +34,49 @@ class Renderer_HasMany extends \Nos\Renderer
         return $this->template($return);
     }
 
-    public static function render_fieldset($item, $relation, $index = null, $renderer_options = array(), $data = array())
+    public function before_save($item, $data)
+    {
+        $name = $this->name;
+        $item->$name = array();
+        $values        = $data[$name];
+        $orderField = \Arr::get($this->renderer_options, 'order_field');
+        $orderProperty = \Arr::get($this->renderer_options, 'order_property');
+        $model = $this->renderer_options['model'];
+        $pk = current($model::primary_key());
+        if (empty($pk)) {
+            return;
+        }
+
+        foreach ($values as $v) {
+            if (!empty($v[$pk])) {
+                $subItem = $model::find($v[$pk]);
+            } else {
+                $subItem = $model::forge();
+            }
+            if ($orderField) {
+                $subItem->$orderProperty = $v[$orderField];
+                unset($v[$orderField]);
+            }
+            unset($v[$pk]);
+            foreach ($v as $property => $value) {
+                $subItem->$property = $value;
+            }
+
+            if (!empty($subItem->$pk)) {
+                $item->{$name}[$subItem->$pk] = $subItem;
+            } else {
+                $item->{$name}[] = $subItem;
+            }
+        }
+    }
+
+    public static function render_fieldset($item, $relation, $index = null, $renderer_options = array())
     {
         static $auto_id_increment = 1;
         $class = get_class($item);
         $config_file = \Config::configFile($class);
         $config = \Config::load(implode('::',$config_file), true);
         $index = \Input::get('index', $index);
-        \Event::trigger_function('novius_renderers.fieldset_config', array('config' => &$config, 'item' => $item, 'data' => $data));
         $fieldset = \Fieldset::build_from_config($config['fieldset_fields'], $item, array('save' => false, 'auto_id' => false));
         // Override auto_id generation so it don't use the name (because we replace it below)
         $auto_id = uniqid('auto_id_');
