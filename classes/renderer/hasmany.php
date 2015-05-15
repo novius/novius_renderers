@@ -36,6 +36,9 @@ class Renderer_HasMany extends \Nos\Renderer
 
     public function before_save($item, $data)
     {
+        if (!\Arr::get($this->renderer_options, 'before_save')) {
+            return;
+        }
         $name = $this->name;
         $item->$name = array();
         $values        = $data[$name];
