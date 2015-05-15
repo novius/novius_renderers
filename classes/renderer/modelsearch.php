@@ -102,7 +102,9 @@ class Renderer_ModelSearch extends \Nos\Renderer
         // Populate values with the linked object
         if (empty($this->value) && $link_property) {
             $currentLink = \Novius\Link\Model_Link::find($item->$link_property);
-            $this->value = array('model' => $currentLink->link_foreign_model, 'id' => $currentLink->link_foreign_id, 'external' => $currentLink->link_url);
+            if ($currentLink) {
+                $this->value = array('model' => $currentLink->link_foreign_model, 'id' => $currentLink->link_foreign_id, 'external' => $currentLink->link_url);
+            }
         }
 
         // Prepare values
