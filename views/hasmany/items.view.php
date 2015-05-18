@@ -5,8 +5,23 @@
     <div class="item_list">
         <?php
         $i = 0;
-        if (!empty($relation) && count($item->{$relation})) {
-            foreach ($item->{$relation} as $o) {
+        $listItems = null;
+        if (!empty($relation) && !empty($item)) {
+            $listItems = $item->{$relation};
+        }
+        elseif ($value) {
+            $listItems = array();
+            foreach ($value as $elem) {
+                $newModel = $model::forge();
+                foreach ($elem as $property => $elemValue) {
+                    $newModel->$property = $elemValue;
+                }
+                $listItems[] = $newModel;
+            }
+        }
+
+        if (!empty($listItems)) {
+            foreach ($listItems as $o) {
                 // Build fieldset and return view
                 echo \Novius\Renderers\Renderer_HasMany::render_fieldset($o, $relation, $i, $options, $data);
                 $i++;
