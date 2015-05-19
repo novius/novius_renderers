@@ -39,7 +39,7 @@ class Renderer_HasMany extends \Nos\Renderer
         parent::before_save($item, $data);
         // This part of the code is disabled if the before_save renderer_option is not defined.
         if (!\Arr::get($this->renderer_options, 'before_save')) {
-            return;
+            return true;
         }
         $name = $this->name;
         $item->$name = array();
@@ -49,7 +49,7 @@ class Renderer_HasMany extends \Nos\Renderer
         $model = $this->renderer_options['model'];
         $pk = current($model::primary_key());
         if (empty($pk)) {
-            return;
+            return true;
         }
 
         foreach ($values as $v) {
@@ -90,6 +90,7 @@ class Renderer_HasMany extends \Nos\Renderer
                 }
             }
         }
+        return true;
     }
 
     /**
