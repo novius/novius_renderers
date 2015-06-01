@@ -18,18 +18,17 @@ require(['jquery-nos-wysiwyg'], function ($) {
         var $button = $(this);
         var $container = $button.closest('.count-items-js');
         var next = parseInt($container.data('nb-items')) + 1;
-        var model = $button.data('model');
-        var relation = $button.data('relation');
-        var order = $button.data('order');
-
+        var btnData = $button.data();
+        var data = {};
+        for (i in btnData) {
+            if (typeof btnData[i] !== 'function' && typeof btnData[i] !== 'object') {
+                data[i] = btnData[i];
+            }
+        }
         $.ajax({
             type : "GET",
             url: 'admin/novius_renderers/hasmany/add_item/' + next,
-            data : {
-                model : model,
-                relation : relation,
-                order: order
-            },
+            data : data,
             success : function(vue) {
                 var $vue = $(vue);
                 $vue.nosFormUI();

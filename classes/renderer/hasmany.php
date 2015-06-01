@@ -15,24 +15,34 @@ class Renderer_HasMany extends \Nos\Renderer
         $key = !empty($this->renderer_options['name']) ? $this->renderer_options['name'] : $this->name;
         $relation = !empty($this->renderer_options['related']) ? $this->renderer_options['related'] : $this->name;
         $this->fieldset()->append(static::js_init());
+        $data = array();
+        $attributes = $this->get_attribute();
+        foreach ($attributes as $key => $value) {
+            if (mb_strpos($key, 'form-data') === 0) {
+                $data[mb_substr($key, strlen('form-'))] = $value;
+            }
+        }
         $return = \View::forge('novius_renderers::hasmany/items', array(
             'id' => $id,
             'key' => $key,
             'relation' => $relation,
+            'value' => $this->value,
             'model' => $this->renderer_options['model'],
             'item' => $this->fieldset()->getInstance(),
-            'options' => $this->renderer_options
+            'options' => $this->renderer_options,
+            'data' => $data
         ), false)->render();
         return $this->template($return);
     }
 
-    public static function render_fieldset($item, $relation, $index = null, $renderer_options = array())
+    public static function render_fieldset($item, $relation, $index = null, $renderer_options = array(), $data = array())
     {
         static $auto_id_increment = 1;
         $class = get_class($item);
         $config_file = \Config::configFile($class);
         $config = \Config::load(implode('::',$config_file), true);
         $index = \Input::get('index', $index);
+        \Event::trigger_function('novius_renderers.fieldset_config', array('config' => &$config, 'item' => $item, 'data' => $data));
         $fieldset = \Fieldset::build_from_config($config['fieldset_fields'], $item, array('save' => false, 'auto_id' => false));
         // Override auto_id generation so it don't use the name (because we replace it below)
         $auto_id = uniqid('auto_id_');

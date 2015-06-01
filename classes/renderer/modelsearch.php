@@ -18,8 +18,73 @@ class Renderer_ModelSearch extends \Nos\Renderer
             'model' => '{{prefix}}foreign_model',
         ),
         'minlength' => 3,
-        'external' => false
+        'external' => false,
+        'link_property' => null
     );
+
+    public function before_save($item, $data)
+    {
+        $options = $this->getOptions();
+        $link_property = \Arr::get($options, 'link_property');
+
+        if ($link_property) {
+            $newLink = null;
+            $params = array(
+                'link_foreign_model' => array('name' => 'model'),
+                'link_foreign_id'    => array('name' => 'id'),
+                'link_url'           => array('name' => 'external')
+            );
+
+            // Check if link are both identical
+            if (!empty($item->$link_property)) {
+                $currentLink = \Novius\Link\Model_Link::find($item->$link_property);
+                $identical = true;
+                foreach ($params as $property => $name) {
+                    if ($currentLink->$property != $data[$options['names'][$name['name']]]) {
+                        $identical = false;
+                        break;
+                    }
+                }
+                if ($identical) {
+                    return;
+                }
+                // Delete the current link to replace it since it's different now
+                $currentLink->delete();
+                $item->$link_property = NULL;
+            }
+
+            // If we have enough information to create a link, do it
+            if ((!empty($data[$options['names']['model']]) && !empty($data[$options['names']['id']]))
+                || (empty($data[$options['names']['model']]) && !empty($data[$options['names']['external']]))
+            ) {
+                // Create a new link
+                $newLink = \Novius\Link\Model_Link::forge();
+                foreach ($params as $property => $name) {
+                    if (!empty($data[$options['names'][$name['name']]])) {
+                        $newLink->$property = $data[$options['names'][$name['name']]];
+                    }
+                }
+                $newLink->save();
+                $item->$link_property = $newLink->link_id;
+            }
+        }
+
+        return true;
+    }
+    
+    private function getOptions()
+    {
+        $options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
+        $item = $this->fieldset()->getInstance();
+        //Format options
+        $class = get_class($item);
+        $prefix = $class::prefix();
+        array_walk($options['names'], function(&$value, $key) use ($prefix) {
+            $value = str_replace('{{prefix}}', $prefix, $value);
+        });
+        return $options;
+    }
+    
 
     public function build()
     {
@@ -29,9 +94,18 @@ class Renderer_ModelSearch extends \Nos\Renderer
         $item = $this->fieldset()->getInstance();
 
         // Prepare options
-        $options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
+        $options = $this->getOptions();
         $available_models = $this->get_available_models($options);
         \Arr::set($options, 'models', $available_models);
+        $link_property = \Arr::get($options, 'link_property');
+
+        // Populate values with the linked object
+        if (empty($this->value) && $link_property) {
+            $currentLink = \Novius\Link\Model_Link::find($item->$link_property);
+            if ($currentLink) {
+                $this->value = array('model' => $currentLink->link_foreign_model, 'id' => $currentLink->link_foreign_id, 'external' => $currentLink->link_url);
+            }
+        }
 
         // Prepare values
         if (empty($this->value) || !is_array($this->value)) {
@@ -65,12 +139,6 @@ class Renderer_ModelSearch extends \Nos\Renderer
             $options['models'] = \Arr::merge(array('' => __('External')), $options['models']);
         }
 
-        //Format options
-        $class = get_class($item);
-        $prefix = $class::prefix();
-        array_walk($options['names'], function(&$value, $key) use ($prefix) {
-            $value = str_replace('{{prefix}}', $prefix, $value);
-        });
 
         //Deal with autocomplete configuration
         $post = array(
