@@ -16,27 +16,29 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
         try {
             $results = array();
             $filter = trim(\Input::post('search', ''));
-            $class = \Input::post('model', '');
+            $model = \Input::post('model', '');
             $from_id = intval(\Input::post('from_id', ''));
             $insert_option = \Input::post('insert_option', false);
 
-            if (!empty($class)) {
+            if (!empty($model)) {
 
                 // Check if the current user has the permission to access the model
-                list($application) = \Config::configFile($class);
+                list($application) = \Config::configFile($model);
                 if (!\Nos\User\Permission::isApplicationAuthorised($application)) {
                     throw new \Nos\Access_Exception('You don\'t have access to application '.$application.'!');
                 }
 
-                $table = $class::table();
-                $pk_property = \Arr::get($class::primary_key(), 0);
-                $title_property = $class::title_property();
+                $pk_property = \Arr::get($model::primary_key(), 0);
+                $title_property = $model::title_property();
 
-                // Create the query
-                $query = \Fuel\Core\DB::select(
+                // Create the base query from the model
+                $query = $model::query()->get_query();
+
+                // Select only the primary key and the title
+                $query = $query->select_array(array(
                     array($pk_property, 'value'),
                     array($title_property, 'label')
-                )->from($table);
+                ), true);
 
                 // Do not search on the item where the autocomplete appears
                 $query->where($pk_property, '!=', $from_id);
