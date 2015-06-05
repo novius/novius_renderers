@@ -16,7 +16,6 @@ use Nos\Renderer_Text;
 class Renderer_CrudLink extends Renderer_Text
 {
     protected $renderer_options = array();
-
     protected static $_cacheCrud = array();
 
     protected function defaultOptions()
@@ -28,7 +27,6 @@ class Renderer_CrudLink extends Renderer_Text
 
     public function __construct($name, $label = '', array $attributes = array(), array $rules = array(), \Fuel\Core\Fieldset $fieldset)
     {
-
         $this->renderer_options = \Arr::merge($this->defaultOptions(), \Arr::get($attributes, 'renderer_options', array()));
         parent::__construct($name, $label, $attributes, $rules, $fieldset);
     }
@@ -59,7 +57,7 @@ class Renderer_CrudLink extends Renderer_Text
         return (string)parent::build();
     }
 
-    private function findCrud($class, $app)
+    protected function findCrud($class, $app)
     {
         if (!\Arr::get(static::$_cacheCrud, $class)) {
             $configDir      = APPPATH . "applications/$app/config/";
@@ -73,7 +71,7 @@ class Renderer_CrudLink extends Renderer_Text
         return static::$_cacheCrud[$class];
     }
 
-    private function searchDir($dir, $class, $app, $currentDirectory)
+    protected function searchDir($dir, $class, $app, $currentDirectory)
     {
         $dir = (array)$dir;
         foreach ($dir as $dirname => $file) {
@@ -99,7 +97,7 @@ class Renderer_CrudLink extends Renderer_Text
 
     }
 
-    private function cleanFilename($file)
+    protected function cleanFilename($file)
     {
         $infos     = pathinfo($file);
         $filename  = $infos['filename'];
