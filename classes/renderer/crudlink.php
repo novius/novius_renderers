@@ -22,7 +22,7 @@ class Renderer_CrudLink extends Renderer_Text
     protected function defaultOptions()
     {
         \Nos\I18n::current_dictionary('novius_renderers::default');
-        return array('text' => __('See the {{MODEL}}\'s page', 'url' => ''));
+        return array('text' => __('See the {{MODEL}}\'s page'), 'url' => '');
     }
 
 
