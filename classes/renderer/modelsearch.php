@@ -38,19 +38,21 @@ class Renderer_ModelSearch extends \Nos\Renderer
             // Check if link are both identical
             if (!empty($item->$link_property)) {
                 $currentLink = \Novius\Link\Model_Link::find($item->$link_property);
-                $identical = true;
-                foreach ($params as $property => $name) {
-                    if ($currentLink->$property != $data[$options['names'][$name['name']]]) {
-                        $identical = false;
-                        break;
+                if (!empty($currentLink)) {
+                    $identical = true;
+                    foreach ($params as $property => $name) {
+                        if ($currentLink->$property != $data[$options['names'][$name['name']]]) {
+                            $identical = false;
+                            break;
+                        }
                     }
+                    if ($identical) {
+                        return;
+                    }
+                    // Delete the current link to replace it since it's different now
+                    $currentLink->delete();
+                    $item->$link_property = null;
                 }
-                if ($identical) {
-                    return;
-                }
-                // Delete the current link to replace it since it's different now
-                $currentLink->delete();
-                $item->$link_property = NULL;
             }
 
             // If we have enough information to create a link, do it
