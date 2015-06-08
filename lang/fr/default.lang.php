@@ -38,4 +38,7 @@ return array(
     #: config/renderer/modelsearch.config.php:6
     'Page' => 'Page',
 
+    #: classes/controller/admin/crudlink.php
+    'See the {{MODEL}}\'s page' => 'Voir la fiche {{MODEL}}'
+
 );
