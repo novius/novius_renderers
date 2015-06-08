@@ -35,7 +35,6 @@ $id = uniqid();
                         url: url
                     }
                 });
-                console.log('bite');
                 return false;
             });
         });
