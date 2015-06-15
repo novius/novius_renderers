@@ -19,7 +19,7 @@ class Renderer_MultiMedias extends Renderer
         $key = !empty($this->renderer_options['key']) ? $this->renderer_options['key'] : $this->name;
 
         $item = $this->fieldset()->getInstance();
-        if (!empty($item)) {
+        if (!empty($item) && empty($this->value)) {
             $this->set_value($this->getValueFromInstance($item, $key));
         }
 
