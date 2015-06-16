@@ -9,6 +9,7 @@ class Renderer_MultiMedias extends Renderer
     protected static $DEFAULT_RENDERER_OPTIONS = array(
         'limit' => false,
         'mode'  => 'all',
+        'sortable' => false
     );
 
     public function build()
