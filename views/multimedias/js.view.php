@@ -12,7 +12,6 @@
             var key = $span.data('key');
             var sortable = $container.data('sortable');
             if (sortable) {
-                console.log('sortable');
                 $container.find('ul').sortable({
                     helper: 'clone'
                 });
