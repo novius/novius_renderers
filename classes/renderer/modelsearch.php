@@ -24,7 +24,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
 
     public function before_save($item, $data)
     {
-        $options = $this->getOptions();
+        $options = $this->getOptions($item);
         $link_property = \Arr::get($options, 'link_property');
 
         if ($link_property) {
@@ -73,12 +73,11 @@ class Renderer_ModelSearch extends \Nos\Renderer
 
         return true;
     }
-    
-    private function getOptions()
+
+    protected function getOptions(\Nos\Orm\Model $item)
     {
         $options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
-        $item = $this->fieldset()->getInstance();
-        //Format options
+        // Format options
         $class = get_class($item);
         $prefix = $class::prefix();
         array_walk($options['names'], function(&$value, $key) use ($prefix) {
@@ -87,7 +86,6 @@ class Renderer_ModelSearch extends \Nos\Renderer
         return $options;
     }
     
-
     public function build()
     {
         $attr_id = $this->get_attribute('id');
@@ -96,7 +94,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
         $item = $this->fieldset()->getInstance();
 
         // Prepare options
-        $options = $this->getOptions();
+        $options = $this->getOptions($item);
         $available_models = $this->get_available_models($options);
         \Arr::set($options, 'models', $available_models);
         $link_property = \Arr::get($options, 'link_property');
@@ -151,7 +149,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
         //Twinnable ?
         if (!empty($options['twinnable'])) {
             if ($options['twinnable'] === true) {
-                $behaviour_twinnable = $class::behaviours('Nos\Orm_Behaviour_Twinnable', false);
+                $behaviour_twinnable = $item::behaviours('Nos\Orm_Behaviour_Twinnable', false);
                 //Will use behaviour configuration to match the right results
                 $post['twinnable'] = $item->{$behaviour_twinnable['context_property']};
             } else {
