@@ -97,8 +97,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
         $options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
 
         // Replaces placeholders
-        $class = get_class($item);
-        $prefix = $class::prefix();
+        $prefix = $item::prefix();
         array_walk($options['names'], function(&$value, $key) use ($prefix) {
             $value = str_replace('{{prefix}}', $prefix, $value);
         });
