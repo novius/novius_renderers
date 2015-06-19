@@ -22,72 +22,94 @@ class Renderer_ModelSearch extends \Nos\Renderer
         'link_property' => null
     );
 
+    /**
+     * Saves the selected items (only if "link_property" is specified in the renderer options)
+     *
+     * @param $item
+     * @param $data
+     * @return bool
+     */
     public function before_save($item, $data)
     {
-        $options = $this->getOptions();
+        // Gets the renderer options
+        $options = $this->getOptions($item);
+
+        // Gets the link property
         $link_property = \Arr::get($options, 'link_property');
+        if (empty($link_property)) {
+            return true;
+        }
 
-        if ($link_property) {
-            $newLink = null;
-            $params = array(
-                'link_foreign_model' => array('name' => 'model'),
-                'link_foreign_id'    => array('name' => 'id'),
-                'link_url'           => array('name' => 'external')
-            );
+        $params = array(
+            'link_foreign_model' => array('name' => 'model'),
+            'link_foreign_id'    => array('name' => 'id'),
+            'link_url'           => array('name' => 'external')
+        );
 
-            // Check if link are both identical
-            if (!empty($item->$link_property)) {
-                $currentLink = \Novius\Link\Model_Link::find($item->$link_property);
-                if (!empty($currentLink)) {
-                    $identical = true;
-                    foreach ($params as $property => $name) {
-                        if ($currentLink->$property != $data[$options['names'][$name['name']]]) {
-                            $identical = false;
-                            break;
-                        }
-                    }
-                    if ($identical) {
-                        return;
-                    }
-                    // Delete the current link to replace it since it's different now
-                    $currentLink->delete();
-                    $item->$link_property = null;
-                }
-            }
-
-            // If we have enough information to create a link, do it
-            if ((!empty($data[$options['names']['model']]) && !empty($data[$options['names']['id']]))
-                || (empty($data[$options['names']['model']]) && !empty($data[$options['names']['external']]))
-            ) {
-                // Create a new link
-                $newLink = \Novius\Link\Model_Link::forge();
+        // Check if link are both identical
+        if (!empty($item->$link_property)) {
+            $currentLink = \Novius\Link\Model_Link::find($item->$link_property);
+            if (!empty($currentLink)) {
+                $identical = true;
                 foreach ($params as $property => $name) {
-                    if (!empty($data[$options['names'][$name['name']]])) {
-                        $newLink->$property = $data[$options['names'][$name['name']]];
+                    $key = \Arr::get($options['names'], $name['name']);
+                    if (!empty($key) && $currentLink->$property != $data[$key]) {
+                        $identical = false;
+                        break;
                     }
                 }
-                $newLink->save();
-                $item->$link_property = $newLink->link_id;
+                if ($identical) {
+                    return;
+                }
+                // Delete the current link to replace it since it's different now
+                $currentLink->delete();
+                $item->$link_property = null;
             }
+        }
+
+        // If we have enough information to create a link, do it
+        if ((!empty($data[$options['names']['model']]) && !empty($data[$options['names']['id']]))
+            || (empty($data[$options['names']['model']]) && !empty($data[$options['names']['external']]))
+        ) {
+            // Create a new link
+            $newLink = \Novius\Link\Model_Link::forge();
+            foreach ($params as $property => $name) {
+                $key = \Arr::get($options['names'], $name['name']);
+                if (!empty($key) && !empty($data[$key])) {
+                    $newLink->$property = $data[$key];
+                }
+            }
+            $newLink->save();
+            $item->$link_property = $newLink->link_id;
         }
 
         return true;
     }
-    
-    private function getOptions()
+
+    /**
+     * Returns the renderer options for the specified $item
+     *
+     * @param \Nos\Orm\Model $item
+     * @return array
+     */
+    protected function getOptions(\Nos\Orm\Model $item)
     {
         $options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
-        $item = $this->fieldset()->getInstance();
-        //Format options
-        $class = get_class($item);
-        $prefix = $class::prefix();
+
+        // Replaces placeholders
+        $prefix = $item::prefix();
         array_walk($options['names'], function(&$value, $key) use ($prefix) {
             $value = str_replace('{{prefix}}', $prefix, $value);
         });
+
         return $options;
     }
-    
 
+    /**
+     * Builds the field
+     *
+     * @return string
+     */
     public function build()
     {
         $attr_id = $this->get_attribute('id');
@@ -95,8 +117,8 @@ class Renderer_ModelSearch extends \Nos\Renderer
 
         $item = $this->fieldset()->getInstance();
 
-        // Prepare options
-        $options = $this->getOptions();
+        // Gets the renderer options
+        $options = $this->getOptions($item);
         $available_models = $this->get_available_models($options);
         \Arr::set($options, 'models', $available_models);
         $link_property = \Arr::get($options, 'link_property');
@@ -142,20 +164,20 @@ class Renderer_ModelSearch extends \Nos\Renderer
         }
 
 
-        //Deal with autocomplete configuration
+        // Deal with autocomplete configuration
         $post = array(
             'model' => $this->value['model'],
             'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
         );
 
-        //Twinnable ?
+        // Twinnable ?
         if (!empty($options['twinnable'])) {
             if ($options['twinnable'] === true) {
-                $behaviour_twinnable = $class::behaviours('Nos\Orm_Behaviour_Twinnable', false);
-                //Will use behaviour configuration to match the right results
+                $behaviour_twinnable = $item::behaviours('Nos\Orm_Behaviour_Twinnable', false);
+                // Will use behaviour configuration to match the right results
                 $post['twinnable'] = $item->{$behaviour_twinnable['context_property']};
             } else {
-                //Allow custom configuration (eg specific context if the current model isn't twinnable but the relation is)
+                // Allow custom configuration (eg specific context if the current model isn't twinnable but the relation is)
                 $post['twinnable'] = $options['twinnable'];
             }
         }
@@ -167,10 +189,10 @@ class Renderer_ModelSearch extends \Nos\Renderer
                 'data-autocomplete-callback' => 'click_modelsearch',
                 'data-autocomplete-post' => \Format::forge($post)->to_json(),
             ),
-            //do not use a wrapper to allow using multiple modelsearch and including only one script
+            // Do not use a wrapper to allow using multiple modelsearch and including only one script
         ), \Arr::get($options, 'autocomplete', array()));
 
-        //Add JS (init sub renderer)
+        // Add JS (init sub renderer)
         $this->fieldset()->append(static::js_init());
 
         return (string) \View::forge('novius_renderers::modelsearch/inputs', array(
@@ -182,6 +204,11 @@ class Renderer_ModelSearch extends \Nos\Renderer
         ), false);
     }
 
+    /**
+     * Initializes the javascript
+     *
+     * @return \Fuel\Core\View
+     */
     public static function js_init()
     {
         return \View::forge('novius_renderers::modelsearch/js', array(), false);
@@ -197,6 +224,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
         // Do not assume that Model_Page must always be available, default value is array()
         \Config::load('novius_renderers::renderer/modelsearch', true);
         $models = \Config::get('novius_renderers::renderer/modelsearch.models', array());
+
         // Custom models
         $models = \Arr::merge($models, \Arr::get($options, 'models', array()));
 
