@@ -1,0 +1,37 @@
+.multimedias-sortable .sortable {
+    margin     : 3px 3px 3px 0;
+    padding    : 1px;
+    width      : 100px;
+    height     : 60px;
+    text-align : center;
+    font-size  : 13px;
+    display    : inline-block;
+}
+
+.multimedias-sortable:after {
+    visibility : hidden;
+    display    : block;
+    font-size  : 0;
+    content    : " ";
+    clear      : both;
+    height     : 0;
+}
+
+.multimedias-sortable {
+    display : block;
+}
+
+.multimedias-sortable .sortable > * {
+    margin : auto;
+}
+
+.multimedias ul {
+    list-style-type : none;
+    margin          : 0;
+    padding         : 0;
+    width           : 100%;
+}
+
+.multimedias li {
+    float : left;
+}
