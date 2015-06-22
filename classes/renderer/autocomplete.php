@@ -148,12 +148,11 @@ class Renderer_Autocomplete extends \Fieldset_Field
         $item = $this->fieldset()->getInstance();
 
         if (!empty($item)) {
-            $crypt = new Crypt();
             // Add the current item ID to the posted vars (used to prevent current item to appear in suggestions)
-            $this->set_attribute('data-autocomplete-post', $crypt->encode(static::json_merge(
-                $crypt->decode($this->get_attribute('data-autocomplete-post')),
+            $this->set_attribute('data-autocomplete-post', static::json_merge(
+                $this->get_attribute('data-autocomplete-post'),
                 array('from_id' => $item->implode_pk($item))
-            )));
+            ));
         }
 
         // Keeps the renderer working if populate was made thanks to a key in renderer_options (backward compatibility)
