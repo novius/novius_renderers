@@ -2,6 +2,7 @@
 
 namespace Novius\Renderers;
 
+use Fuel\Core\Crypt;
 use Fuel\Core\Input;
 
 class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
@@ -14,6 +15,13 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
 
     public function action_search_model() {
         try {
+            // Uncrypt sensitive data and merge them to the post values
+            $cryptedPosts = \Input::post('crypted_post');
+            if (!empty($cryptedPosts)) {
+                $crypt = new Crypt();
+                $cryptedPosts = json_decode($crypt->decode($cryptedPosts), true);
+                $_POST = \Arr::merge_assoc($_POST, $cryptedPosts);
+            }
             $results = array();
             $filter = trim(\Input::post('search', ''));
             $model = \Input::post('model', '');

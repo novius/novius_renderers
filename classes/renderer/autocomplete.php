@@ -10,6 +10,7 @@
 
 namespace Novius\Renderers;
 
+use Fuel\Core\Crypt;
 use Fuel\Core\Fieldset;
 use Nos\Config_Common;
 use Orm\Model;
@@ -124,6 +125,9 @@ class Renderer_Autocomplete extends \Fieldset_Field
         // Prevent from displaying native autocomplete
         $attributes['autocomplete'] = 'off';
 
+        // Crypt post data
+        $crypt                                = new Crypt();
+        $attributes['data-autocomplete-post'] = json_encode(array('crypted_post' => $crypt->encode($attributes['data-autocomplete-post'])));
         return array($attributes, $options);
     }
 
@@ -144,11 +148,12 @@ class Renderer_Autocomplete extends \Fieldset_Field
         $item = $this->fieldset()->getInstance();
 
         if (!empty($item)) {
+            $crypt = new Crypt();
             // Add the current item ID to the posted vars (used to prevent current item to appear in suggestions)
-            $this->set_attribute('data-autocomplete-post', static::json_merge(
-                $this->get_attribute('data-autocomplete-post'),
+            $this->set_attribute('data-autocomplete-post', $crypt->encode(static::json_merge(
+                $crypt->decode($this->get_attribute('data-autocomplete-post')),
                 array('from_id' => $item->implode_pk($item))
-            ));
+            )));
         }
 
         // Keeps the renderer working if populate was made thanks to a key in renderer_options (backward compatibility)
