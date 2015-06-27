@@ -278,7 +278,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
             // Check if the property/relation exists
             if (isset($item->{$field_name})) {
                 // Get the posted value(s)
-                $value = \Arr::get($data, $field_name);
+                $value = \Input::post($field_name);
                 if ($is_multiple) {
                     $value = (!is_array($value) ? array($value) : $value);
                 } else {
@@ -286,12 +286,14 @@ class Renderer_Autocomplete extends \Fieldset_Field
                 }
                 // Save the value(s) in a relation
                 if ($item->relations($field_name)) {
+					$item->{$field_name} = array();
                     if (!empty($value)) {
-                        $item->{$field_name} = $model::query()
+                        $items = $item->{$field_name} = $model::query()
                             ->where(\Arr::get($model::primary_key(), 0), 'IN', (array) $value)
                             ->get();
-                    } else {
-                        $item->{$field_name} = array();
+						foreach ($value as $pk) {
+							$item->{$field_name}[] = $items[$pk];
+						}
                     }
                 }
                 // Save the value(s) in a property
