@@ -286,16 +286,16 @@ class Renderer_Autocomplete extends \Fieldset_Field
                 }
                 // Save the value(s) in a relation
                 if ($item->relations($field_name)) {
-					$item->{$field_name} = array();
+                    $item->{$field_name} = array();
                     if (!empty($value)) {
                         $related_items = $item->{$field_name} = $model::query()
                             ->where(\Arr::get($model::primary_key(), 0), 'IN', (array) $value)
                             ->get();
-						foreach ((array) $value as $pk) {
+                        foreach ((array) $value as $pk) {
                             if (isset($related_items[$pk])) {
-							    $item->{$field_name}[$pk] = $related_items[$pk];
+                                $item->{$field_name}[$pk] = $related_items[$pk];
                             }
-						}
+                        }
                     }
                 }
                 // Save the value(s) in a property
