@@ -288,11 +288,13 @@ class Renderer_Autocomplete extends \Fieldset_Field
                 if ($item->relations($field_name)) {
 					$item->{$field_name} = array();
                     if (!empty($value)) {
-                        $items = $item->{$field_name} = $model::query()
+                        $related_items = $item->{$field_name} = $model::query()
                             ->where(\Arr::get($model::primary_key(), 0), 'IN', (array) $value)
                             ->get();
-						foreach ($value as $pk) {
-							$item->{$field_name}[] = $items[$pk];
+						foreach ((array) $value as $pk) {
+                            if (isset($related_items[$pk])) {
+							    $item->{$field_name}[$pk] = $related_items[$pk];
+                            }
 						}
                     }
                 }
