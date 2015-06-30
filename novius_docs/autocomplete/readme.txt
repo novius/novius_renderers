@@ -15,6 +15,8 @@ The use of the Renderer is therefore related to how it is included in the crud c
         - 'data-autocomplete-minlength' : optional
             Numbers of chars needed to perform the search.
             Default value : 3
+        - 'data-autocomplete-post' : optional
+            Serialized post data to give to the autocomplete request
         - 'data-name' : optional
             Choose a name for the hidden input (and not the one used for the input itself)
             "name" of the field + "-id". eg "field_name-id"
@@ -29,6 +31,19 @@ The use of the Renderer is therefore related to how it is included in the crud c
 - 'renderer_options' -> 'insert_option' : optional
         Add the ability to create content on click when there's no result.
 
+===== Model Configuration =====
+
+You can use a model to search directly.
+
+You need to pass the key 'model' to the data-autocomplete-post to search in it.
+
+You can also specify how to display / search this model with the properties display and fields respectively.
+
+fields is an array of table fields to search.
+
+display is an associative array [field_name] => 'display information'.
+
+The tag {{field}} will be replaced by the field value in the information. Is the value is not found or is empty, the field won't be displayed.
 
 ===== Update options afterward ====
 
@@ -78,3 +93,27 @@ $input.trigger(event);
         'field_name' => array() //needed for single select. the key must be the real name of your property. Don't need this if the 'multiple' option is set to 1
     )
     ...
+
+
+====== Custom search on a model ====
+
+<?=
+    Novius\Renderers\Renderer_Autocomplete::renderer(array(
+        'name' => 'field_name',
+        'class' => 'class_for_input_field',
+        'renderer_options' => array(
+            'data' => array(
+                'data-autocomplete-url' => 'admin/application/folder/crud/autocomplete',
+                'data-autocomplete-post' => \Format::forge(array(
+                    'model'   => 'Cinematheque\Films\Model_Film', // Search a film
+                    'fields'  => array('film_titre', 'film_titre_vo'), // Search on those two fields
+                    'display' => array(
+                        'film_titre'          => '{{field}}', // Display field
+                        'film_titre_vo'       => '({{field}})', // Display field between parenthesis
+                        'film_realisateur_id' => '{{field}}'
+                    )
+                )
+            )
+        ),
+    ));
+?>

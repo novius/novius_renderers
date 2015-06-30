@@ -10,6 +10,7 @@
 
 namespace Novius\Renderers;
 
+use Fuel\Core\Crypt;
 use Fuel\Core\Fieldset;
 use Nos\Config_Common;
 use Orm\Model;
@@ -124,6 +125,9 @@ class Renderer_Autocomplete extends \Fieldset_Field
         // Prevent from displaying native autocomplete
         $attributes['autocomplete'] = 'off';
 
+        // Crypt post data
+        $crypt                                = new Crypt();
+        $attributes['data-autocomplete-post'] = json_encode(array('crypted_post' => $crypt->encode($attributes['data-autocomplete-post'])));
         return array($attributes, $options);
     }
 

@@ -2,6 +2,7 @@
 
 namespace Novius\Renderers;
 
+use Fuel\Core\Crypt;
 use Fuel\Core\Input;
 
 class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
@@ -14,11 +15,20 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
 
     public function action_search_model() {
         try {
+            // Uncrypt sensitive data and merge them to the post values
+            $cryptedPosts = \Input::post('crypted_post');
+            if (!empty($cryptedPosts)) {
+                $crypt = new Crypt();
+                $cryptedPosts = json_decode($crypt->decode($cryptedPosts), true);
+                $_POST = \Arr::merge_assoc($_POST, $cryptedPosts);
+            }
             $results = array();
             $filter = trim(\Input::post('search', ''));
             $model = \Input::post('model', '');
             $from_id = intval(\Input::post('from_id', ''));
             $insert_option = \Input::post('insert_option', false);
+            $searchField = \Input::post('fields');
+            $display = \Input::post('display');
 
             if (!empty($model)) {
 
@@ -34,23 +44,42 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
                 // Create the base query from the model
                 $query = $model::query()->get_query();
 
-                // Select only the primary key and the title
-                $query = $query->select_array(array(
+                $fieldArray = array(
                     array($pk_property, 'value'),
                     array($title_property, 'label')
-                ), true);
+                );
+
+                if (!empty($display)) {
+                    $keys = array_keys($display);
+                    foreach ($keys as $key) {
+                        $fieldArray[] = array($key, $key);
+                    }
+                }
+
+
+                if (empty($searchField)) {
+                    $searchField = array($title_property);
+                }
+
+                // Select only the primary key and the title
+                $query = $query->select_array($fieldArray, true);
 
                 // Do not search on the item where the autocomplete appears
                 $query->where($pk_property, '!=', $from_id);
 
                 // Apply filter on query
                 if (!empty($filter)) {
-                    $query->where_open()
-                        ->or_where($title_property, 'LIKE', '%' . $filter . '%')
-                        ->where_close();
+
+                    $query->where_open();
+                    foreach ($searchField as $field) {
+                        $query->or_where($field, 'LIKE', '%' . $filter . '%');
+                    }
+
+
+                    $query->where_close();
                 }
 
-                // Limit (optionnal)
+            // Limit (optionnal)
                 \Config::load('novius_renderers::renderer/autocomplete', true);
                 $max_suggestions = \Config::get('novius_renderers::renderer/autocomplete.max_suggestions', array());
                 if (!empty($max_suggestions)) {
@@ -63,6 +92,22 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
                     ->execute()
                     ->as_array()
                 );
+
+                if (!empty($results) && !empty($display)) {
+                    foreach ($results as $resultKey => $result) {
+                        $label = '';
+                        foreach ($display as $key => $template) {
+
+                            if (!empty($result[$key])) {
+                                $label .= ' ' . strtr($template, array('{{field}}' => $result[$key]));
+                            }
+                        }
+                        if (!empty($label)) {
+                            $results[$resultKey]['label'] = $label;
+                        }
+                    }
+                }
+
                 if ($insert_option) {
                     array_unshift($results, array(
                         'value' => 0,
