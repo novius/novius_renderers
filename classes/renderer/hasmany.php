@@ -83,6 +83,10 @@ class Renderer_HasMany extends \Nos\Renderer
                 $fieldset = static::getFieldSet($config, $subItem);
                 foreach ($fieldset->field() as $field) {
                     $field->before_save($subItem, $v);
+                    $callback = \Arr::get($config, 'fieldset_fields.' . $field->name . '.before_save');
+                    if (!empty($callback) && is_callable($callback)) {
+                        $callback($subItem, $v);
+                    }
                 }
                 if (!empty($subItem->$pk)) {
                     $item->{$name}[$subItem->$pk] = $subItem;
