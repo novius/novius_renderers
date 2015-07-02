@@ -288,7 +288,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
                 if ($item->relations($field_name)) {
                     if (!empty($value)) {
                         // Gets the related items
-                        $related_items = $item->{$field_name} = $model::query()
+                        $related_items = $model::query()
                             ->where(\Arr::get($model::primary_key(), 0), 'IN', (array) $value)
                             ->get();
 
