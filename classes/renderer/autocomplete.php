@@ -278,7 +278,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
             // Check if the property/relation exists
             if (isset($item->{$field_name})) {
                 // Get the posted value(s)
-                $value = \Input::post($field_name);
+                $value = \Arr::get($data, $field_name);
                 if ($is_multiple) {
                     $value = (!is_array($value) ? array($value) : $value);
                 } else {
@@ -286,16 +286,27 @@ class Renderer_Autocomplete extends \Fieldset_Field
                 }
                 // Save the value(s) in a relation
                 if ($item->relations($field_name)) {
-                    $item->{$field_name} = array();
                     if (!empty($value)) {
+                        // Gets the related items
                         $related_items = $item->{$field_name} = $model::query()
                             ->where(\Arr::get($model::primary_key(), 0), 'IN', (array) $value)
                             ->get();
-                        foreach ((array) $value as $pk) {
-                            if (isset($related_items[$pk])) {
-                                $item->{$field_name}[$pk] = $related_items[$pk];
+
+                        // Sorts the related items in the order they were posted
+                        $posted_value = (array) \Input::post($field_name);
+                        uasort($related_items, function($a, $b) use ($posted_value) {
+                            $a_order = array_search($a->id, $posted_value);
+                            $b_order = array_search($b->id, $posted_value);
+                            if ($a_order === false xor $b_order === false) {
+                                return $a_order === false ? 1 : -1;
                             }
-                        }
+                            return intval($a_order) - intval($b_order);
+                        });
+
+                        // Sets the related items
+                        $item->{$field_name} = $related_items;
+                    } else {
+                        $item->{$field_name} = array();
                     }
                 }
                 // Save the value(s) in a property
