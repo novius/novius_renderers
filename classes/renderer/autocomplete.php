@@ -291,9 +291,24 @@ class Renderer_Autocomplete extends \Fieldset_Field
                 // Save the value(s) in a relation
                 if ($item->relations($field_name)) {
                     if (!empty($value)) {
-                        $item->{$field_name} = $model::query()
+                        // Gets the related items
+                        $related_items = $model::query()
                             ->where(\Arr::get($model::primary_key(), 0), 'IN', (array) $value)
                             ->get();
+
+                        // Sorts the related items in the order they were posted
+                        $posted_value = (array) \Input::post($field_name);
+                        uasort($related_items, function($a, $b) use ($posted_value) {
+                            $a_order = array_search($a->id, $posted_value);
+                            $b_order = array_search($b->id, $posted_value);
+                            if ($a_order === false xor $b_order === false) {
+                                return $a_order === false ? 1 : -1;
+                            }
+                            return intval($a_order) - intval($b_order);
+                        });
+
+                        // Sets the related items
+                        $item->{$field_name} = $related_items;
                     } else {
                         $item->{$field_name} = array();
                     }
