@@ -127,7 +127,9 @@ class Renderer_Autocomplete extends \Fieldset_Field
 
         // Crypt post data
         $crypt                                = new Crypt();
-        $attributes['data-autocomplete-post'] = json_encode(array('crypted_post' => $crypt->encode($attributes['data-autocomplete-post'])));
+        if (!empty($attributes['data-autocomplete-post'])) {
+            $attributes['data-autocomplete-post'] = json_encode(array('crypted_post' => $crypt->encode($attributes['data-autocomplete-post'])));
+        }
         return array($attributes, $options);
     }
 
