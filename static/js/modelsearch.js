@@ -1,6 +1,12 @@
 // Update the post attribute on model selection
 require(['jquery-nos'], function($nos) {
 
+    // Sets the default selected model
+    $nos('body').on('init_autocomplete.renderer', 'input.autocomplete', function() {
+        var $select = $nos(this).closest('.modelsearch').find('select');
+        update_autocomplete_post($select);
+    });
+
     // Update autocomplete on model change
     $nos('body').on('change', 'div.modelsearch select', function() {
         var $select = $nos(this);
@@ -14,13 +20,16 @@ require(['jquery-nos'], function($nos) {
             autoCompleteHidden = true;
         }
 
-        show = autoCompleteHidden ? $external : $autocomplete;
-        hide = autoCompleteHidden ? $autocomplete : $external;
-        hide.addClass('ms-hidden');
-        show.removeClass('ms-hidden');
-
+        if (autoCompleteHidden) {
+            $external.removeClass('ms-hidden');
+            $autocomplete.addClass('ms-hidden');
+        } else {
+            $autocomplete.removeClass('ms-hidden');
+            $external.addClass('ms-hidden');
+        }
 
         update_autocomplete_post($select);
+
         // Clear the search and value fields
         $select.closest('.modelsearch').find('[name="search[]"], .ms-value input[type="hidden"]').val('');
     });

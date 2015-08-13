@@ -54,12 +54,12 @@ define(
                 $hidden_input.val(infos.value);
             };
 
-// Delete selection (multiple only)
+            // Delete selection (multiple only)
             $content.on('click', 'span.delete-label', function() {
                 $nos(this).closest('.label-result-autocomplete').remove();
             });
 
-// Initialize the autocomplete
+            // Initialize the autocomplete
             autocomplete($content, {
                 on_click : function(infos) {
                     var $input = infos.root;

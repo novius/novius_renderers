@@ -37,9 +37,15 @@
     $attr = array(
         'data-icon' => 'plus',
         'data-model' => $model,
+        'data-context' => $context,
         'data-relation' => $relation,
         'data-order' => !empty($options['order']) ? 1 : 0,
     );
+
+    if (\Arr::get($options, 'inherit_context', true)) {
+        $attr['data-context'] = $item->get_context();
+    }
+
     $attr = \Arr::merge($attr, $data);
     if (!isset($options['add']) || $options['add']) {
         ?>
