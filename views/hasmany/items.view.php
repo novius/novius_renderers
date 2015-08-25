@@ -1,24 +1,25 @@
 <?php
 \Nos\I18n::current_dictionary('novius_renderers::default');
+$defaultItem = (bool)\Arr::get($options, 'default_item', true);
+$listItems = null;
+if (!empty($relation) && !empty($item)) {
+    $listItems = $item->{$relation};
+}
+elseif ($value) {
+    $listItems = array();
+    foreach ($value as $elem) {
+        $newModel = $model::forge();
+        foreach ($elem as $property => $elemValue) {
+            $newModel->$property = $elemValue;
+        }
+        $listItems[] = $newModel;
+    }
+}
 ?>
-<div class="hasmany_items count-items-js" data-nb-items="<?= empty($item->{$relation}) ? 1 : count($item->{$relation}) ?>">
+<div class="hasmany_items count-items-js" data-nb-items="<?= empty($listItems) ? (int)$defaultItem : count($listItems) ?>">
     <div class="item_list">
         <?php
         $i = 0;
-        $listItems = null;
-        if (!empty($relation) && !empty($item)) {
-            $listItems = $item->{$relation};
-        }
-        elseif ($value) {
-            $listItems = array();
-            foreach ($value as $elem) {
-                $newModel = $model::forge();
-                foreach ($elem as $property => $elemValue) {
-                    $newModel->$property = $elemValue;
-                }
-                $listItems[] = $newModel;
-            }
-        }
 
         if (!empty($listItems)) {
             foreach ($listItems as $o) {
@@ -26,7 +27,7 @@
                 echo \Novius\Renderers\Renderer_HasMany::render_fieldset($o, $relation, $i, $options, $data);
                 $i++;
             }
-        } elseif (\Arr::get($options, 'default_item', true)) {
+        } elseif ($defaultItem) {
             // Display an empty item in case none have already been added
             echo \Novius\Renderers\Renderer_HasMany::render_fieldset($model::forge(), $relation, $i, $options, $data);
         }
