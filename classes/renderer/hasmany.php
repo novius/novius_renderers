@@ -28,6 +28,10 @@ class Renderer_HasMany extends \Nos\Renderer
 
         // Gets the fieldset item
         $item = $this->fieldset()->getInstance();
+        $context = $this->getItemContext($item);
+        if (!empty($this->renderer_options['context'])) {
+            $context = $this->renderer_options['context'];
+        }
 
         // Adds the javascript
         $this->fieldset()->append(static::js_init());
@@ -39,7 +43,7 @@ class Renderer_HasMany extends \Nos\Renderer
             'value' => $this->value,
             'model' => $this->renderer_options['model'],
             'item' => $item,
-            'context' => $this->getItemContext($item),
+            'context' => $context,
             'options' => $this->renderer_options,
             'data' => $data
         ), false)->render();
@@ -203,8 +207,10 @@ class Renderer_HasMany extends \Nos\Renderer
      * @return bool
      */
     public function getItemContext($item) {
-        if ($item::behaviours('Nos\Orm_Behaviour_Contextable') || $item::behaviours('Nos\Orm_Behaviour_Twinnable')) {
-            return $item->get_context();
+        if (!empty($item)) {
+            if ($item::behaviours('Nos\Orm_Behaviour_Contextable') || $item::behaviours('Nos\Orm_Behaviour_Twinnable')) {
+                return $item->get_context();
+            }
         }
         return false;
     }
