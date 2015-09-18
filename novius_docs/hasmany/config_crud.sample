@@ -23,7 +23,12 @@ return array(
             'label' => __('Movie Show'),
             'renderer' => 'Novius\Renderers\Renderer_HasMany',
             'renderer_options' => array(
-                'model' => 'Model_MovieShow'
+                'model' => 'Model_MovieShow',
+                'related' => 'movies', // [Optional] The relation on which to save the items
+                'inherit_context' => false, // [Optional] Set "false" to disable the context inheritance (true by default)
+                'order_field' => 'my_order_field', // [Optional] The form field from which the order is obtained
+                'order_property' => 'show_order', // [Optional] The property on the model in which to save the order
+                'before_save' => true, // [Optional] Set "true" to use the renderer's native save mechanism (false by default)
             ),
             'template' => '{field}',
             'before_save' => function($item, $data) {

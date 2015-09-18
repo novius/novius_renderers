@@ -28,158 +28,189 @@ define(['jquery-nos'], function ($nos) {
             }
             $context.on('focus', 'input.autocomplete', function(event) {
                 var $this = $nos(this);
-                if (typeof $this.attr('auto-initialized') == 'undefined' || !$this.attr('auto-initialized')) {
-                    // Callback called when clicking on the list
-                    var callback = $this.data('autocomplete-callback') || $this.attr('data-autocomplete-callback') || options.on_click || false;
 
-                    var url = $this.data('autocomplete-url')  || $this.attr('data-autocomplete-url') || null;
-                    //data sent by ajax are empty by default and will only contain the input
-                    //but it is possible to take account of some sort of a config
-                    var post = $this.data('autocomplete-post') || $this.attr('data-autocomplete-post') || options.post || {};
-                    if ((typeof post) !== "object" ) {
-                        post = {};
+                // Already initialized ?
+                if ($this.attr('auto-initialized')) {
+                    return ;
+                }
+
+                // Callback called when clicking on the list
+                var callback = $this.data('autocomplete-callback') || $this.attr('data-autocomplete-callback') || options.on_click || false;
+
+                // Initializes the cache
+                var cache = [];
+                var cache_enabled = $this.data('autocomplete-cache');
+                if (typeof cache_enabled == 'undefined') {
+                    cache_enabled = true;
+                }
+
+                // Initializes the list of suggestions
+                var $liste = $nos('<ul class="autocomplete-liste"></ul>').hide().insertAfter($this);
+
+                // Function to print the autocomplete results
+                var printResults = function(data) {
+
+                    // Clear old results
+                    $liste.html('').hide();
+
+                    // No results ?
+                    if (typeof data != 'object' || !Object.keys(data).length) {
+                        return ;
                     }
 
-                    // Initialize cache
-                    var cache = [];
-                    var cache_enabled = $this.data('autocomplete-cache');
-                    if (typeof cache_enabled == 'undefined') {
-                        cache_enabled = true;
-                    }
-
-                    // Initialize list of suggestions
-                    var $liste = $nos('<ul class="autocomplete-liste"></ul>').hide();
-                    $this.after($liste);
-
-                    //update data when the custom event is triggered (otherwise it's useless)
-                    //As any changes on dom attribute OR data will be done manually,
-                    // user will always have the opportunity to trigger this custom event
-                    $this.on('update_autocomplete.renderer', function(e) {
-                        url = $nos(this).data('autocomplete-url');
-                        post = $this.data('autocomplete-post') || post;
+                    // Print the results
+                    $nos.each(data, function(key, line) {
+                        var $li = $nos('<li>'+line.label+'</li>');
+                        if (typeof line.class != 'undefined') {
+                            $li.addClass(line.class);
+                        }
+                        $li.data('value', line.value)
+                            .bind('click', function(e) {
+                                if (typeof callback === 'string') {
+                                    callback = window[callback];
+                                }
+                                if ($nos.isFunction(callback)) {
+                                    // Callback
+                                    callback.call(this, {
+                                        'root'      : $this,
+                                        'value'     : $nos(this).data('value'),
+                                        'label'     : $nos(this).html(),
+                                        'event'     : e
+                                    });
+                                } else {
+                                    // Default behaviour
+                                    $this.val($nos(this).data('value')).trigger('focus');
+                                    $liste.hide();
+                                }
+                            })
+                            // deal with current hover selection
+                            .mouseenter(function() {
+                                $liste.find('.current').removeClass('current');
+                                $nos(this).addClass('current');
+                            })
+                            .appendTo($liste);
                     });
+                    $liste.show();
+                };
 
-                    // function to display autocomplete
-                    var print_autocomplete = function(data) {
+                // Function to get the autocompletion URL
+                var getUrl = function() {
+                    return $this.data('autocomplete-url')  || $this.attr('data-autocomplete-url') || null;
+                };
 
-                        // Clear old results
-                        $liste.html('').hide();
-                        // No results ?
-                        if (typeof data != 'object' || !Object.keys(data).length) {
+                // Function to get the minimum autocompletion length
+                var getMinLength = function() {
+                    return $this.data('autocomplete-minlength') || $this.attr('autocomplete-minlength') || 3;
+                };
+
+                // Function to get the posted vars
+                var getPostedVars = function() {
+                    var postedVars = {};
+
+                    // Gets the posted vars
+                    var post = $this.data('autocomplete-post') || $this.attr('data-autocomplete-post') || options.post || {};
+                    if (typeof post === "object" ) {
+                        $.extend(postedVars, post);
+                    }
+
+                    // Adds the config to the posted vars
+                    var config = $this.data('autocomplete-config') || $this.attr('data-autocomplete-config') || {};
+                    if (typeof post === "object" ) {
+                        $.extend(postedVars, {
+                            config: config
+                        });
+                    }
+
+                    return postedVars;
+                };
+
+                // Keyboard navigation
+                $this.bind('keydown', function(e) {
+                    var code = e.keyCode ? e.keyCode : e.which;
+                    if (!isSpecialKey(code)) {
+                        return ;
+                    }
+                    if (!$liste.length) {
+                        return ;
+                    }
+                    var $current = $liste.find('.current');
+                    // when using "Enter" key
+                    if (code == 13) {
+                        if ($current.length) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            $current.trigger('click');
+                        }
+                        return false;
+                    }
+                    // "Up" arrow
+                    else if (code == 38) {
+                        if ($current.length) {
+                            $current.removeClass('current').prev('li').addClass('current');
+                        }
+                        return false;
+                    }
+                    // "Down" arrow
+                    else if (code == 40) {
+                        if ($current.length && !$current.next('li').length) {
+                            return true;
+                        }
+                        var $target = ($current.length ? $current.removeClass('current').next('li') : $liste.find('li:first'));
+                        $target.addClass('current').trigger('hover');
+                        return false;
+                    }
+                });
+
+                // Ajax autocompletion
+                $this.bind('keyup', function(e) {
+
+                    // Don't autocomplete on special key
+                    if (isSpecialKey(e.keyCode ? e.keyCode : e.which)) {
+                        return false;
+                    }
+
+                    // Reset the autocompletion list
+                    $liste.html('').hide();
+
+                    // Prevents ajax bubbling
+                    if ($this.data('timer')) {
+                        clearTimeout($this.data('timer'));
+                    }
+                    $this.data('timer', setTimeout(function() {
+
+                        // Check if the search matches the minimum length
+                        var search = $this.val();
+                        if (search.length < getMinLength()) {
                             return ;
                         }
 
-                        // Print the results
-                        $nos.each(data, function(key, line) {
-                            var $li = $nos('<li>'+line.label+'</li>');
-                            if (typeof line.class != 'undefined') {
-                                $li.addClass(line.class);
-                            }
-                            $li.data('value', line.value)
-                                .bind('click', function(e) {
-                                    if (typeof callback === 'string') {
-                                        callback = window[callback];
-                                    }
-                                    if ($nos.isFunction(callback)) {
-                                        // Callback
-                                        callback.call(this, {
-                                            'root'      : $this,
-                                            'value'     : $nos(this).data('value'),
-                                            'label'     : $nos(this).html(),
-                                            'event'     : e
-                                        });
-                                    } else {
-                                        // Default behaviour
-                                        $this.val($nos(this).data('value')).trigger('focus');
-                                        $liste.hide();
-                                    }
-                                })
-                                // deal with current hover selection
-                                .mouseenter(function() {
-                                    $liste.find('.current').removeClass('current');
-                                    $nos(this).addClass('current');
-                                })
-                                .appendTo($liste);
-                        });
-                        $liste.show();
-                    }
+                        // Try to gets the results from the cache
+                        if (cache_enabled && cache[search]) {
+                            printResults.call($this, cache[search]);
+                            return ;
+                        }
 
-                    // Initialize ajax
-                    if (url.length > 0) {
-                        var minlen = $this.data('autocomplete-minlength') || $this.attr('autocomplete-minlength') || 3;
-                        $this.bind('keydown', function(e) {
-                            // Gestion de la navigation au clavier
-                            var code = e.keyCode ? e.keyCode : e.which;
-                            if (isSpecialKey(code)) {
-                                if ($liste.length) {
-                                    var $current = $liste.find('.current');
-                                    // when using "Enter" key
-                                    if (code == 13) {
-                                        if ($current.length) {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            $current.trigger('click');
-                                        }
-                                        return false;
-                                    }
-                                    // "Up" arrow
-                                    else if (code == 38) {
-                                        if ($current.length) {
-                                            $current.removeClass('current').prev('li').addClass('current');
-                                        }
-                                        return false;
-                                    }
-                                    // "Down" arrow
-                                    else if (code == 40) {
-                                        if ($current.length && !$current.next('li').length) {
-                                            return true;
-                                        }
-                                        var $target = ($current.length ? $current.removeClass('current').next('li') : $liste.find('li:first'));
-                                        $target.addClass('current').trigger('hover');
-                                        return false;
-                                    }
-                                }
-                            }
+                        // Prepares the posted vars
+                        var post = $.extend(getPostedVars(), {
+                            search: search
                         });
 
-                        $this.bind('keyup', function(e) {
-
-                            if (isSpecialKey(e.keyCode ? e.keyCode : e.which)) {
-                                return false;
+                        // Gets the results from an ajax query
+                        $.ajax({
+                            url : getUrl(),
+                            method : 'POST',
+                            data : post,
+                            success: function(data) {
+                                cache[search] = data;
+                                printResults.call($this, data);
                             }
-                            $liste.html('').hide();
-                            if ($this.data('timer')) {
-                                clearTimeout($this.data('timer'));
-                            }
-                            $this.data('timer', setTimeout(function() {
-                                var search = $this.val();
-                                if (search.length >= minlen) {
-                                    // Get the results from the cache
-                                    if (cache_enabled && cache[search]) {
-                                        print_autocomplete.call($this, cache[search]);
-                                    }
-                                    // Get the results from an ajax query
-                                    else {
-                                        post.search = search;
-                                        $.ajax({
-                                            url : url,
-                                            method : 'POST',
-                                            data : post,
-                                            success: function(data) {
-                                                cache[search] = data;
-                                                print_autocomplete.call($this, data);
-                                            }
-                                        });
-                                    }
-                                }
-                            }, 200));
-                            return false;
                         });
-                    }
-                    //using "off" remove handler on all input previously matched.
-                    //In order to execute the handler only once, an attr is set on it.
-                    $this.attr('auto-initialized', true);
-                }
+                    }, 200));
+                    return false;
+                });
+
+                // Sets this renderer as initialized
+                $this.attr('auto-initialized', true).trigger('init_autocomplete.renderer');
             });
             $nos(document).click(function() { $nos('ul.autocomplete-liste').html('').hide(); });
         });

@@ -26,16 +26,16 @@ if (!count($available_models)) {
             <label><?= $label ?></label>
             <select name="<?= \Arr::get($options, 'names.model') ?>">
                 <?php
-                if ($options['external'] !== true) {
+                if ($options['external'] !== true && \Arr::get($options, 'allow_none', true)) {
                     ?>
                     <option value=""><?= __('None') ?></option>
-                <?php
+                    <?php
                 }
                 foreach ($available_models as $model => $label) {
-                        $selected = ($model == $current_model) ? 'selected="selected"' : '';
-                        if (empty($current_model) && $model == '') {
-                            $selected = 'selected="selected"';
-                        }
+                    $selected = ($model == $current_model) ? 'selected="selected"' : '';
+                    if (empty($current_model) && $model == '') {
+                        $selected = 'selected="selected"';
+                    }
                     ?>
                     <option value="<?= $model ?>" <?= $selected ?>><?= $label ?></option>
                 <?php } ?>

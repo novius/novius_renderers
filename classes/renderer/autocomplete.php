@@ -70,14 +70,11 @@ class Renderer_Autocomplete extends \Fieldset_Field
                 \Arr::set($attributes, 'renderer_options.data.data-autocomplete-url', 'admin/novius_renderers/autocomplete/search_model');
             }
             // Add the model into the posted vars
-            \Arr::set($attributes, 'renderer_options.data.data-autocomplete-post', static::json_merge(
-                \Arr::get($attributes, 'renderer_options.data.data-autocomplete-post'),
-                array('model' => $model)
-            ));
+            static::mergeJsonAttribute($attributes, 'renderer_options.data.data-autocomplete-post', array('model' => $model));
+
         } else {
-            $post = \Arr::get($attributes, 'renderer_options.data.data-autocomplete-post');
-            $post = \Format::forge($post, 'json')->to_array();
-            $model = \Arr::get($post, 'model', false);
+            // Gets the model from the posted vars
+            $model = static::getJsonAttributeProperty($attributes, 'renderer_options.data.data-autocomplete-post', 'model');
         }
 
         if (!empty($model)) {
@@ -101,17 +98,14 @@ class Renderer_Autocomplete extends \Fieldset_Field
                     \Arr::set($attributes, 'renderer_options.data.data-autocomplete-crud', $insert);
                 }
             }
-            //If insert option is active, add this information in POST
+
+            // If insert option is active, add this information in the autocomplete config
             if (!empty($data_insert) || !empty($insert)) {
-                $post = \Arr::get($attributes, 'renderer_options.data.data-autocomplete-post');
-                $post = \Format::forge($post, 'json')->to_array();
-                $insert_option = \Arr::get($post, 'insert_option', false);
-                if (empty($insert_option)) {
-                    \Arr::set($attributes, 'renderer_options.data.data-autocomplete-post', \Format::forge(
-                        \Arr::merge($post, array('insert_option' => true))
-                    )->to_json());
-                }
+                \Arr::set($attributes, 'renderer_options.data.data-autocomplete-config.insert_option', true);
             }
+
+            // Sets the model as available models
+            \Arr::set($attributes, 'renderer_options.data.data-autocomplete-config.available_models', array($model));
         }
 
         // Extract data from renderer options
@@ -125,12 +119,66 @@ class Renderer_Autocomplete extends \Fieldset_Field
         // Prevent from displaying native autocomplete
         $attributes['autocomplete'] = 'off';
 
-        // Crypt post data
-        $crypt                                = new Crypt();
-        if (!empty($attributes['data-autocomplete-post'])) {
-            $attributes['data-autocomplete-post'] = json_encode(array('crypted_post' => $crypt->encode($attributes['data-autocomplete-post'])));
+        // Crypt the configuration to prevent any modification on client-side
+        if (isset($attributes['data-autocomplete-config'])) {
+            $crypt = new Crypt();
+            $attributes['data-autocomplete-config'] = $crypt->encode(serialize($attributes['data-autocomplete-config']));
         }
+
         return array($attributes, $options);
+    }
+
+    /**
+     * Merges $attribute in the specified $path in the array of json $attributes
+     *
+     * @param $attributes
+     * @param $path
+     * @param $attribute
+     */
+    public static function mergeJsonAttribute(&$attributes, $path, $attribute)
+    {
+        // Merges with the existing attribute
+        $existing_attribute = \Arr::get($attributes, $path);
+        if (!empty($existing_attribute)) {
+            $existing_attribute = \Format::forge($existing_attribute, 'json')->to_array();
+            $attribute = \Arr::merge($existing_attribute, $attribute);
+        }
+        static::setJsonAttribute($attributes, $path, $attribute);
+    }
+
+    /**
+     * Sets $attribute in the specified $path in the array of json $attributes
+     *
+     * @param $attributes
+     * @param $path
+     * @param $attribute
+     */
+    public static function setJsonAttribute(&$attributes, $path, $attribute)
+    {
+        \Arr::set($attributes, $path, \Format::forge($attribute)->to_json());
+    }
+
+    /**
+     * Gets a $property from an attribute specified by $path in the array of json $attributes
+     *
+     * @param $attributes
+     * @param $path
+     * @param $property
+     * @param null $default
+     * @return mixed|null
+     */
+    public static function getJsonAttributeProperty($attributes, $path, $property, $default = null)
+    {
+        // Gets the json attribute
+        $attribute = \Arr::get($attributes, $path);
+        if (!empty($attribute)) {
+            $attribute = \Format::forge($attribute, 'json')->to_array();
+            // Gets the property from the attribute
+            if (!empty($attribute) && is_array($attribute)) {
+                return \Arr::get($attribute, $property, $default);
+            }
+        }
+        return $default;
     }
 
     /**
@@ -140,7 +188,6 @@ class Renderer_Autocomplete extends \Fieldset_Field
      */
     public function build()
     {
-
         $populate = '';
         $hiddenName = \Arr::get($this->attributes, 'data-name', $this->options['name']);
 

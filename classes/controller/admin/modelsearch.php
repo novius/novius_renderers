@@ -2,9 +2,7 @@
 
 namespace Novius\Renderers;
 
-use Fuel\Core\Crypt;
-
-class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
+class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
 {
     public function prepare_i18n()
     {
@@ -12,50 +10,52 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
         \Nos\I18n::current_dictionary('novius_renderers::default');
     }
 
-    public function action_search() {
+    public function action_search()
+    {
         try {
-            // Uncrypt sensitive data and merge them to the post values
-            $cryptedPosts = \Input::post('crypted_post');
-            if (!empty($cryptedPosts)) {
-                $crypt = new Crypt();
-                $cryptedPosts = json_decode($crypt->decode($cryptedPosts), true);
-                $_POST = \Arr::merge_assoc($_POST, $cryptedPosts);
-            }
+            $config = (array) \Input::post('config', array());
+
             // Get the search keywords
             $keywords = trim(strval(\Input::post('search', '')));
 
             // Use jayps_search ?
-            $use_jayps_search = \Input::post('use_jayps_search', false);
+            $use_jayps_search = \Arr::get($config, 'use_jayps_search', false);
             $use_jayps_search = (!empty($use_jayps_search) and $use_jayps_search != 'false');
 
             // Get the target model
-            $class = \Input::post('model', '');
-            if (empty($class) or !class_exists($class)) {
+            $model = (string) \Input::post('model', '');
+            if (empty($model) or !class_exists($model)) {
                 throw new \Exception('Could not find this model.');
             }
 
+            // Check if the $model is available
+            $available_models = (array) \Arr::get($config, 'available_models', array());
+            if (!in_array($model, $available_models)) {
+                throw new \Exception('This model is not compatible with this feature (not available).');
+            }
+
             // Check if the current user has the permission to access the model
-            list($application) = \Config::configFile($class);
+            list($application) = \Config::configFile($model);
             if (!\Nos\User\Permission::isApplicationAuthorised($application)) {
                 throw new \Nos\Access_Exception('You don\'t have access to application '.$application.'!');
             }
 
-            $query_args = array();
+            $query_args = (array) \Arr::get($config, 'query_args', array());
 
-            $pk_property = \Arr::get($class::primary_key(), 0);
-            $title_property = method_exists($class, 'search_property') ? $class::search_property() : $class::title_property();
+            $pk_property = \Arr::get($model::primary_key(), 0);
+            $title_property = method_exists($model, 'search_property') ? $model::search_property() : $model::title_property();
             if (empty($title_property)) {
-                throw new \Exception('Cannot search on this model.');
+                throw new \Exception('This model is not compatible with this feature (title property is required).');
             }
 
             // Search on keywords if jayps_search is enabled
-            $searchable = $class::behaviours('JayPS\Search\Orm_Behaviour_Searchable');
+            $searchable = $model::behaviours('JayPS\Search\Orm_Behaviour_Searchable');
             if (!empty($use_jayps_search) && !empty($keywords) && !empty($searchable)) {
                 $query_args['where'][] = array('keywords', $keywords.'*');
             }
 
             // Create the base query from the model
-            $query = $class::query($query_args);
+            $query = $model::query($query_args);
 
             // Will select only the primary key and the title
             $select = array(
@@ -71,7 +71,7 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
             // Check if a twinnable condition is needed
             $context = \Input::post('twinnable', false);
             if (!empty($context)) {
-                $behaviour_twinnable = $class::behaviours('Nos\Orm_Behaviour_Twinnable', false);
+                $behaviour_twinnable = $model::behaviours('Nos\Orm_Behaviour_Twinnable', false);
                 if ($behaviour_twinnable) {
                     $query->and_where_open()
                         ->where($behaviour_twinnable['context_property'], is_array($context) ? 'IN' : '=', $context)
@@ -117,26 +117,28 @@ class Controller_Admin_ModelSearch extends \Nos\Controller_Admin_Application
             $results = array_filter((array) $results);
 
             if (!empty($context)) {
-                // Remove pairs in results (only keep the same context if exist)
-                $result_context = array();
-                $result = array();
+
+                // Group items by common id
+                $common_items = array();
                 foreach ($results as $r) {
-                    if (isset($result_context[$r['common']])) {
-                        if ((is_array($context) && !in_array($r['context'], $context)) ||
-                            $r['context'] !== $context) {
-                            continue;
-                        } else {
-                            unset($result[$result_context[$r['common']]]);
-                        }
-                    }
-                    $result_context[$r['common']] = $r['value'];
-                    $result[$r['value']] = array(
-                        'value' => $r['value'],
-                        'label' => $r['label'],
-                    );
+                    $common_items[$r['common']][$r['value']] = $r;
                 }
 
-                $results = $result;
+                // Build results
+                $results = array();
+                foreach ($common_items as $items) {
+                    // Sort items by specified context order
+                    uasort($items, function($a, $b) use ($context) {
+                        $a_context = $a['context'] == $context;
+                        $b_context = $b['context'] == $context;
+                        if ($a_context === false xor $b_context === false) {
+                            return $a_context === false ? 1 : -1;
+                        }
+                        return intval($a_context) - intval($b_context);
+                    });
+                    reset($items);
+                    $results[key($items)] = current($items);
+                }
             }
 
             if (!empty($results)) {

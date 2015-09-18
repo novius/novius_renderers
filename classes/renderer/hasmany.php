@@ -8,13 +8,16 @@ class Renderer_HasMany extends \Nos\Renderer
         'limit' => false,
     );
 
+    /**
+     * Builds the fieldset
+     *
+     * @return mixed|string
+     */
     public function build()
     {
-        $attr_id = $this->get_attribute('id');
-        $id = !empty($attr_id) ? $attr_id : uniqid('hasmany_');
         $key = !empty($this->renderer_options['name']) ? $this->renderer_options['name'] : $this->name;
         $relation = !empty($this->renderer_options['related']) ? $this->renderer_options['related'] : $this->name;
-        $this->fieldset()->append(static::js_init());
+
         $data = array();
         $attributes = $this->get_attribute();
         foreach ($attributes as $key => $value) {
@@ -22,13 +25,25 @@ class Renderer_HasMany extends \Nos\Renderer
                 $data[mb_substr($key, strlen('form-'))] = $value;
             }
         }
+
+        // Gets the fieldset item
+        $item = $this->fieldset()->getInstance();
+        $context = $this->getItemContext($item);
+        if (!empty($this->renderer_options['context'])) {
+            $context = $this->renderer_options['context'];
+        }
+
+        // Adds the javascript
+        $this->fieldset()->append(static::js_init());
+
         $return = \View::forge('novius_renderers::hasmany/items', array(
-            'id' => $id,
+            'id' => $this->getId(),
             'key' => $key,
             'relation' => $relation,
             'value' => $this->value,
             'model' => $this->renderer_options['model'],
-            'item' => $this->fieldset()->getInstance(),
+            'item' => $item,
+            'context' => $context,
             'options' => $this->renderer_options,
             'data' => $data
         ), false)->render();
@@ -178,5 +193,25 @@ class Renderer_HasMany extends \Nos\Renderer
     public static function js_init()
     {
         return \View::forge('novius_renderers::hasmany/js', array(), false);
+    }
+
+    public function getId() {
+        $id = $this->get_attribute('id');
+        return !empty($id) ? $id : uniqid('hasmany_');
+    }
+
+    /**
+     * Returns the context of $item
+     *
+     * @param $item
+     * @return bool
+     */
+    public function getItemContext($item) {
+        if (!empty($item)) {
+            if ($item::behaviours('Nos\Orm_Behaviour_Contextable') || $item::behaviours('Nos\Orm_Behaviour_Twinnable')) {
+                return $item->get_context();
+            }
+        }
+        return false;
     }
 }

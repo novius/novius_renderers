@@ -16,9 +16,11 @@ class Renderer_ModelSearch extends \Nos\Renderer
         'names' => array(
             'id' => '{{prefix}}foreign_id',
             'model' => '{{prefix}}foreign_model',
+            'external' => '{{prefix}}url',
         ),
         'minlength' => 3,
         'external' => false,
+        'allow_none' => true,
         'link_property' => null
     );
 
@@ -87,25 +89,6 @@ class Renderer_ModelSearch extends \Nos\Renderer
     }
 
     /**
-     * Returns the renderer options for the specified $item
-     *
-     * @param \Nos\Orm\Model $item
-     * @return array
-     */
-    protected function getOptions(\Nos\Orm\Model $item)
-    {
-        $options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
-
-        // Replaces placeholders
-        $prefix = $item::prefix();
-        array_walk($options['names'], function(&$value, $key) use ($prefix) {
-            $value = str_replace('{{prefix}}', $prefix, $value);
-        });
-
-        return $options;
-    }
-
-    /**
      * Builds the field
      *
      * @return string
@@ -119,78 +102,48 @@ class Renderer_ModelSearch extends \Nos\Renderer
 
         // Gets the renderer options
         $options = $this->getOptions($item);
-        $available_models = $this->get_available_models($options);
-        \Arr::set($options, 'models', $available_models);
-        $link_property = \Arr::get($options, 'link_property');
 
         // Populate values with the linked object
+        $link_property = \Arr::get($options, 'link_property');
         if (empty($this->value) && $link_property) {
             $currentLink = \Novius\Link\Model_Link::find($item->$link_property);
             if ($currentLink) {
-                $this->value = array('model' => $currentLink->link_foreign_model, 'id' => $currentLink->link_foreign_id, 'external' => $currentLink->link_url);
+                $this->value = array(
+                    'model' => $currentLink->link_foreign_model,
+                    'id' => $currentLink->link_foreign_id,
+                    'external' => $currentLink->link_url
+                );
             }
         }
 
         // Prepare values
         if (empty($this->value) || !is_array($this->value)) {
-            // First available model as default value
-            reset($available_models);
             $this->value = array(
-                'model' => key($available_models),
+                'model' => '',
                 'id' => 0,
                 'external' => ''
             );
+            // @todo make the "allow none" option compatible with the "external" option
+            if (!(\Arr::get($options, 'allow_none', true) && $options['external'] !== true)) {
+                // First available model as default value if external is enabled or none
+                reset($options['models']);
+                $this->value['model'] = key($options['models']);
+            }
         } else {
-            /*
-             * Valid option : (choose not to relate any model)
-             *  array(
-             *      'model' => '',
-             *      'id' => 0,
-             *  )
-             * => not considered as empty()
-             */
-            if (!array_key_exists('model', $this->value) || empty($this->value['model'])) {
-                if ($options['external'] !== true) {
-                    $this->value['model'] = 'Nos\Page\Model_Page';
-                }
-           }
+            // Valid option : (choose not to relate any model)
+            //  array(
+            //      'model' => '',
+            //      'id' => 0,
+            //  )
+            // => not considered as empty()
+            if (empty($this->value['model'])) {
+                $this->value['model'] = '';
+                \Arr::delete($this->value, 'id');
+            }
             if (!array_key_exists('id', $this->value)) {
                 $this->value['id'] = 0;
             }
         }
-
-        if ($options['external'] === true) {
-            $options['models'] = \Arr::merge(array('' => __('External')), $options['models']);
-        }
-
-
-        // Deal with autocomplete configuration
-        $post = array(
-            'model' => $this->value['model'],
-            'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
-        );
-
-        // Twinnable ?
-        if (!empty($options['twinnable'])) {
-            if ($options['twinnable'] === true) {
-                $behaviour_twinnable = $item::behaviours('Nos\Orm_Behaviour_Twinnable', false);
-                // Will use behaviour configuration to match the right results
-                $post['twinnable'] = $item->{$behaviour_twinnable['context_property']};
-            } else {
-                // Allow custom configuration (eg specific context if the current model isn't twinnable but the relation is)
-                $post['twinnable'] = $options['twinnable'];
-            }
-        }
-        $options['autocomplete'] = \Arr::merge(array(
-            'data' => array(
-                'data-autocomplete-cache' => 'false',
-                'data-autocomplete-minlength' => intval(\Arr::get($options, 'minlength')),
-                'data-autocomplete-url' => 'admin/novius_renderers/modelsearch/search',
-                'data-autocomplete-callback' => 'click_modelsearch',
-                'data-autocomplete-post' => \Format::forge($post)->to_json(),
-            ),
-            // Do not use a wrapper to allow using multiple modelsearch and including only one script
-        ), \Arr::get($options, 'autocomplete', array()));
 
         // Add JS (init sub renderer)
         $this->fieldset()->append(static::js_init());
@@ -202,6 +155,91 @@ class Renderer_ModelSearch extends \Nos\Renderer
             'item' => $item,
             'options' => $options
         ), false);
+    }
+
+    /**
+     * Returns the renderer options for the specified $item
+     *
+     * @param \Nos\Orm\Model $item
+     * @return array
+     */
+    protected function getOptions(\Nos\Orm\Model $item)
+    {
+        $options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
+
+        // Replaces placeholders
+        $prefix = $item::prefix();
+        $options['names'] = array_map(function($value) use ($prefix) {
+            return str_replace('{{prefix}}', $prefix, $value);
+        }, $options['names']);
+
+        // Sets the available models
+        \Arr::set($options, 'models', $this->getAvailableModels($options));
+
+        // Gets the autocomplete configuration
+        \Arr::set($options, 'autocomplete', $this->getAutocompleteConfig($options));
+
+        return $options;
+    }
+
+    /**
+     * Returns the autocomplete configuration
+     *
+     * @param $options
+     * @return array
+     */
+    public function getAutocompleteConfig($options) {
+        $item = $this->fieldset()->getInstance();
+
+        // Prepares the autocomplete configuration
+        $autocomplete_config = array(
+            'available_models' => array_keys($options['models']),
+            'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
+        );
+
+        // Sets the query args
+        $query_args = \Arr::get($options, 'query_args', array());
+        if (is_callable($query_args)) {
+            $query_args = $query_args($item, $options);
+        }
+        \Arr::set($autocomplete_config, 'query_args', (array) $query_args);
+
+        // Prepare the autocomplete posted vars
+        $autocomplete_post = array();
+
+        // Sets the model in the posted vars if there is only one available
+        // @todo we should not have to do this !
+        if (count($autocomplete_config['available_models']) == 1) {
+            $autocomplete_post['model'] = \Arr::get($autocomplete_config['available_models'], 0);
+        }
+
+        // Sets the desired context in the posted vars if the twinnable option is enabled
+        if (!empty($options['twinnable'])) {
+            // Sets the context from $item
+            if ($options['twinnable'] === true) {
+                $behaviour_twinnable = $item::behaviours('Nos\Orm_Behaviour_Twinnable', false);
+                $autocomplete_post['twinnable'] = $item->{$behaviour_twinnable['context_property']};
+            }
+            // Sets the specified context (eg. if the current model isn't twinnable but the relation is)
+            else {
+                $autocomplete_post['twinnable'] = $options['twinnable'];
+            }
+        }
+
+        // Sets the autocomplete attributes
+        $config = \Arr::merge(array(
+            'data' => array(
+                'data-autocomplete-cache' => 'false',
+                'data-autocomplete-minlength' => intval(\Arr::get($options, 'minlength')),
+                'data-autocomplete-url' => 'admin/novius_renderers/modelsearch/search',
+                'data-autocomplete-callback' => 'click_modelsearch',
+                'data-autocomplete-post' => \Format::forge($autocomplete_post)->to_json(),
+                'data-autocomplete-config' => $autocomplete_config,
+            ),
+            // Do not use a wrapper to allow using multiple modelsearch and including only one script
+        ), \Arr::get($options, 'autocomplete', array()));
+
+        return $config;
     }
 
     /**
@@ -220,14 +258,31 @@ class Renderer_ModelSearch extends \Nos\Renderer
      * @param array $options
      * @return array
      */
-    public static function get_available_models($options = array()) {
-        // Do not assume that Model_Page must always be available, default value is array()
+    public static function getAvailableModels($options = array()) {
+        // Gets the predefined models (eg. Model_Page)
         \Config::load('novius_renderers::renderer/modelsearch', true);
         $models = \Config::get('novius_renderers::renderer/modelsearch.models', array());
 
-        // Custom models
+        // Gets the custom models
         $models = \Arr::merge($models, \Arr::get($options, 'models', array()));
 
+        // Adds a fake model for handling external link
+        if (\Arr::get($options, 'external') === true) {
+            $models = \Arr::merge(array('' => __('External')), $models);
+        }
+
         return array_filter($models);
+    }
+
+    /**
+     * Return the available models
+     *
+     * @deprecated Use getAvailableModels() instead
+     *
+     * @param array $options
+     * @return array
+     */
+    public static function get_available_models($options = array()) {
+        return static::getAvailableModels($options);
     }
 }
