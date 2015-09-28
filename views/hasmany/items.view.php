@@ -43,7 +43,9 @@
     );
 
     if (\Arr::get($options, 'inherit_context', true)) {
-        $attr['data-context'] = $item->get_context();
+        if (method_exists($item, 'get_context')) {
+            $attr['data-context'] = $item->get_context();
+        }
     }
 
     $attr = \Arr::merge($attr, $data);
