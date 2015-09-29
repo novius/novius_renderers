@@ -43,7 +43,9 @@
     );
 
     if (\Arr::get($options, 'inherit_context', true)) {
-        $attr['data-context'] = $item->get_context();
+        if (method_exists($item, 'behaviours') && ($item::behaviours('\Nos\Orm_Behaviour_Contextable') || $item::behaviours('\Nos\Orm_Behaviour_Twinnable'))) {
+            $attr['data-context'] = $item->get_context();
+        }
     }
 
     $attr = \Arr::merge($attr, $data);
