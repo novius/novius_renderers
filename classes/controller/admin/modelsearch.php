@@ -13,7 +13,7 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
     public function action_search()
     {
         try {
-            $config = (array) \Input::post('config', array());
+            $config = (array)\Input::post('config', array());
 
             // Get the search keywords
             $keywords = trim(strval(\Input::post('search', '')));
@@ -23,13 +23,20 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
             $use_jayps_search = (!empty($use_jayps_search) and $use_jayps_search != 'false');
 
             // Get the target model
-            $model = (string) \Input::post('model', '');
+            $model = (string)\Input::post('model', '');
             if (empty($model) or !class_exists($model)) {
                 throw new \Exception('Could not find this model.');
             }
 
+
+            // The fields to display as the label in a result
+            $display_field = \Input::post('display', array());
+
+            // The method to call on the item to display as the label in a result
+            $display_method = \Input::post('display_method', '');
+
             // Check if the $model is available
-            $available_models = (array) \Arr::get($config, 'available_models', array());
+            $available_models = (array)\Arr::get($config, 'available_models', array());
             if (!in_array($model, $available_models)) {
                 throw new \Exception('This model is not compatible with this feature (not available).');
             }
@@ -40,9 +47,9 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
                 throw new \Nos\Access_Exception('You don\'t have access to application '.$application.'!');
             }
 
-            $query_args = (array) \Arr::get($config, 'query_args', array());
+            $query_args = (array)\Arr::get($config, 'query_args', array());
 
-            $pk_property = \Arr::get($model::primary_key(), 0);
+            $pk_property    = \Arr::get($model::primary_key(), 0);
             $title_property = method_exists($model, 'search_property') ? $model::search_property() : $model::title_property();
             if (empty($title_property)) {
                 throw new \Exception('This model is not compatible with this feature (title property is required).');
@@ -64,7 +71,7 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
             if (is_array($title_property)) {
                 $select[] = array(\DB::expr('CONCAT_WS(" ", '.implode(', ', $title_property).')'), 'label');
             } else {
-                $select[] = array($title_property, 'label');
+                $select[]       = array($title_property, 'label');
                 $title_property = array($title_property);
             }
 
@@ -84,6 +91,13 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
                 }
             }
             $query = $query->get_query();
+
+            if (!empty($display_field)) {
+                $keys = array_keys($display_field);
+                foreach ($keys as $key) {
+                    $select[] = array($key, $key);
+                }
+            }
 
             $query = $query->select_array($select, true);
 
@@ -112,9 +126,8 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
             $results = $query
                 ->distinct(true)
                 ->execute()
-                ->as_array()
-            ;
-            $results = array_filter((array) $results);
+                ->as_array();
+            $results = array_filter((array)$results);
 
             if (!empty($context)) {
 
@@ -128,7 +141,7 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
                 $results = array();
                 foreach ($common_items as $items) {
                     // Sort items by specified context order
-                    uasort($items, function($a, $b) use ($context) {
+                    uasort($items, function ($a, $b) use ($context) {
                         $a_context = $a['context'] == $context;
                         $b_context = $b['context'] == $context;
                         if ($a_context === false xor $b_context === false) {
@@ -142,9 +155,40 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
             }
 
             if (!empty($results)) {
-                $results = array_map(function($result) {
-                    return \Arr::subset($result, array('label', 'value'));
-                }, $results);
+                if (!empty($display_method)) {
+                    $arr_ids = array();
+                    foreach ($results as $result) {
+                        $arr_ids[] = $result['value'];
+                    }
+                    $items = $model::query()
+                        ->where(
+                            \Arr::get($model::primary_key(), 0), 'IN', $arr_ids
+                        )
+                        ->get();
+                    foreach ($results as $resultKey => $result) {
+                        $label = '';
+                        if (array_key_exists($result['value'], $items)) {
+                            $item  = $items[$result['value']];
+                            $label = $item->$display_method();
+                        }
+                        if (!empty($label)) {
+                            $results[$resultKey]['label'] = $label;
+                        }
+                    }
+                } else {
+                    foreach ($results as $resultKey => $result) {
+                        $label = '';
+                        foreach ($display_field as $key => $template) {
+                            if (!empty($result[$key])) {
+                                $label .= ' '.strtr($template, array('{{field}}' => $result[$key]));
+                            }
+                        }
+                        if (!empty($label)) {
+                            $results[$resultKey]['label'] = $label;
+                        }
+                    }
+                }
+
             } else {
                 $results = array(
                     array(
@@ -155,9 +199,7 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
             }
 
             \Response::json($results);
-        }
-
-        // Errors
+        } // Errors
         catch (\Exception $e) {
             \Response::json(array(
                 'error' => $e->getMessage(),
