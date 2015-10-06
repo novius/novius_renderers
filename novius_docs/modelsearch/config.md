@@ -97,15 +97,13 @@ return array(
                 ),
                 'autocomplete' => array(
                     'data' => array(
-                        'data-autocomplete-post' => \Format::forge(array(
-                                    'model' => 'Namespace\Model_OfItemSearch',
+                        'data-autocomplete-post' => array(
                                     'display_method' => 'methodNameCallableWithItem', // Display method has priority over display bellow
                                     'display' => array(
                                       'an_item_field'          => '{{field}}', // Display field
                                       'an_other_item_field'       => '({{field}})', // Display field between parenthesis
                                     ),
                                 )
-                            )->to_json(),
                     )
                 ),
                 'names'        => array(
