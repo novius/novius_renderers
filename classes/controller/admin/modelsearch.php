@@ -28,12 +28,11 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
                 throw new \Exception('Could not find this model.');
             }
 
-
             // The fields to display as the label in a result
-            $display_field = \Input::post('display', array());
+            $display_field = (array)\Arr::get($config, 'display_fields', array());
 
             // The method to call on the item to display as the label in a result
-            $display_method = \Input::post('display_method', '');
+            $display_method = \Arr::get($config, 'display_method', array());
 
             // Check if the $model is available
             $available_models = (array)\Arr::get($config, 'available_models', array());

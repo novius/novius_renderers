@@ -5,7 +5,7 @@
  * @copyright  2013 Novius
  * @license    GNU Affero General Public License v3 or (at your option) any later version
  *             http://www.gnu.org/licenses/agpl-3.0.html
- * @link http://www.novius-os.org
+ * @link       http://www.novius-os.org
  */
 
 namespace Novius\Renderers;
@@ -13,14 +13,14 @@ namespace Novius\Renderers;
 class Renderer_ModelSearch extends \Nos\Renderer
 {
     protected static $DEFAULT_RENDERER_OPTIONS = array(
-        'names' => array(
-            'id' => '{{prefix}}foreign_id',
-            'model' => '{{prefix}}foreign_model',
+        'names'         => array(
+            'id'       => '{{prefix}}foreign_id',
+            'model'    => '{{prefix}}foreign_model',
             'external' => '{{prefix}}url',
         ),
-        'minlength' => 3,
-        'external' => false,
-        'allow_none' => true,
+        'minlength'     => 3,
+        'external'      => false,
+        'allow_none'    => true,
         'link_property' => null
     );
 
@@ -29,6 +29,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
      *
      * @param $item
      * @param $data
+     *
      * @return bool
      */
     public function before_save($item, $data)
@@ -96,7 +97,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
     public function build()
     {
         $attr_id = $this->get_attribute('id');
-        $id = !empty($attr_id) ? $attr_id : uniqid('modelsearch_');
+        $id      = !empty($attr_id) ? $attr_id : uniqid('modelsearch_');
 
         $item = $this->fieldset()->getInstance();
 
@@ -109,8 +110,8 @@ class Renderer_ModelSearch extends \Nos\Renderer
             $currentLink = \Novius\Link\Model_Link::find($item->$link_property);
             if ($currentLink) {
                 $this->value = array(
-                    'model' => $currentLink->link_foreign_model,
-                    'id' => $currentLink->link_foreign_id,
+                    'model'    => $currentLink->link_foreign_model,
+                    'id'       => $currentLink->link_foreign_id,
                     'external' => $currentLink->link_url
                 );
             }
@@ -119,8 +120,8 @@ class Renderer_ModelSearch extends \Nos\Renderer
         // Prepare values
         if (empty($this->value) || !is_array($this->value)) {
             $this->value = array(
-                'model' => '',
-                'id' => 0,
+                'model'    => '',
+                'id'       => 0,
                 'external' => ''
             );
             // @todo make the "allow none" option compatible with the "external" option
@@ -148,11 +149,11 @@ class Renderer_ModelSearch extends \Nos\Renderer
         // Add JS (init sub renderer)
         $this->fieldset()->append(static::js_init());
 
-        return (string) \View::forge('novius_renderers::modelsearch/inputs', array(
-            'label' => $this->label,
-            'id' => $id,
-            'value' => $this->value,
-            'item' => $item,
+        return (string)\View::forge('novius_renderers::modelsearch/inputs', array(
+            'label'   => $this->label,
+            'id'      => $id,
+            'value'   => $this->value,
+            'item'    => $item,
             'options' => $options
         ), false);
     }
@@ -161,6 +162,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
      * Returns the renderer options for the specified $item
      *
      * @param \Nos\Orm\Model $item
+     *
      * @return array
      */
     protected function getOptions(\Nos\Orm\Model $item)
@@ -168,8 +170,8 @@ class Renderer_ModelSearch extends \Nos\Renderer
         $options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
 
         // Replaces placeholders
-        $prefix = $item::prefix();
-        $options['names'] = array_map(function($value) use ($prefix) {
+        $prefix           = $item::prefix();
+        $options['names'] = array_map(function ($value) use ($prefix) {
             return str_replace('{{prefix}}', $prefix, $value);
         }, $options['names']);
 
@@ -186,15 +188,19 @@ class Renderer_ModelSearch extends \Nos\Renderer
      * Returns the autocomplete configuration
      *
      * @param $options
+     *
      * @return array
      */
-    public function getAutocompleteConfig($options) {
+    public function getAutocompleteConfig($options)
+    {
         $item = $this->fieldset()->getInstance();
 
         // Prepares the autocomplete configuration
         $autocomplete_config = array(
             'available_models' => array_keys($options['models']),
-            'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
+            'use_jayps_search' => (bool)\Arr::get($options, 'use_jayps_search', false),
+            'display_method'   => '',
+            'display_fields'   => array(),
         );
 
         // Sets the query args
@@ -202,7 +208,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
         if (is_callable($query_args)) {
             $query_args = $query_args($item, $options);
         }
-        \Arr::set($autocomplete_config, 'query_args', (array) $query_args);
+        \Arr::set($autocomplete_config, 'query_args', (array)$query_args);
 
         // Prepare the autocomplete posted vars
         $autocomplete_post = array();
@@ -217,27 +223,48 @@ class Renderer_ModelSearch extends \Nos\Renderer
         if (!empty($options['twinnable'])) {
             // Sets the context from $item
             if ($options['twinnable'] === true) {
-                $behaviour_twinnable = $item::behaviours('Nos\Orm_Behaviour_Twinnable', false);
+                $behaviour_twinnable            = $item::behaviours('Nos\Orm_Behaviour_Twinnable', false);
                 $autocomplete_post['twinnable'] = $item->{$behaviour_twinnable['context_property']};
-            }
-            // Sets the specified context (eg. if the current model isn't twinnable but the relation is)
+            } // Sets the specified context (eg. if the current model isn't twinnable but the relation is)
             else {
                 $autocomplete_post['twinnable'] = $options['twinnable'];
             }
         }
 
+        $autocomplete_options = \Arr::get($options, 'autocomplete', array());
+        if (isset($autocomplete_options['data']['data-autocomplete-post'])) {
+            $datas = $autocomplete_options['data']['data-autocomplete-post'];
+            if (!is_array($datas)) {
+                $datas = \Format::forge($datas, 'json')->to_array();
+            }
+            if (isset($datas['display_method'])) {
+                $autocomplete_config['display_method'] = $datas['display_method'];
+                unset($datas['display_method']);
+            }
+            if (isset($datas['display'])) {
+                $autocomplete_config['display_fields'] = $datas['display'];
+                unset($datas['display_fields']);
+            }
+            $options['autocomplete']['data']['data-autocomplete-post'] = $datas;
+        }
+
+
+        //$autocomplete_config
+
         // Sets the autocomplete attributes
         $config = \Arr::merge(array(
             'data' => array(
-                'data-autocomplete-cache' => 'false',
+                'data-autocomplete-cache'     => 'false',
                 'data-autocomplete-minlength' => intval(\Arr::get($options, 'minlength')),
-                'data-autocomplete-url' => 'admin/novius_renderers/modelsearch/search',
-                'data-autocomplete-callback' => 'click_modelsearch',
-                'data-autocomplete-post' => \Format::forge($autocomplete_post)->to_json(),
-                'data-autocomplete-config' => $autocomplete_config,
+                'data-autocomplete-url'       => 'admin/novius_renderers/modelsearch/search',
+                'data-autocomplete-callback'  => 'click_modelsearch',
+                'data-autocomplete-post'      => $autocomplete_post,
+                'data-autocomplete-config'    => $autocomplete_config,
             ),
             // Do not use a wrapper to allow using multiple modelsearch and including only one script
         ), \Arr::get($options, 'autocomplete', array()));
+
+        $config['data']['data-autocomplete-post'] = \Format::forge($config['data']['data-autocomplete-post'])->to_json();
 
         return $config;
     }
@@ -256,9 +283,11 @@ class Renderer_ModelSearch extends \Nos\Renderer
      * Return the available models
      *
      * @param array $options
+     *
      * @return array
      */
-    public static function getAvailableModels($options = array()) {
+    public static function getAvailableModels($options = array())
+    {
         // Gets the predefined models (eg. Model_Page)
         \Config::load('novius_renderers::renderer/modelsearch', true);
         $models = \Config::get('novius_renderers::renderer/modelsearch.models', array());
@@ -280,9 +309,11 @@ class Renderer_ModelSearch extends \Nos\Renderer
      * @deprecated Use getAvailableModels() instead
      *
      * @param array $options
+     *
      * @return array
      */
-    public static function get_available_models($options = array()) {
+    public static function get_available_models($options = array())
+    {
         return static::getAvailableModels($options);
     }
 }
