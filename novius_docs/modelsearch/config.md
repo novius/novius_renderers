@@ -66,7 +66,7 @@ Bellow the config of your CRUD field
     ),
     'template' => '<div class="custom_class_replace_what_you_want">{field}</div>',
     'before_save' => function($item, $data) {
-       // YOU CODE
+       // YOUR CODE
     }
 ),
 ```
@@ -88,7 +88,7 @@ return array(
                 'type' => 'hidden',
             )
         ),
-        'itemsearchkey'           => array(
+        'yourmodel_relation_key'           => array(
             'label'            => __('Your label'),
             'renderer'         => 'Novius\Renderers\Renderer_ModelSearch',
             'renderer_options' => array(
