@@ -6,6 +6,7 @@ class Renderer_HasMany extends \Nos\Renderer
 {
     protected static $DEFAULT_RENDERER_OPTIONS = array(
         'limit' => false,
+        'content_view' => 'novius_renderers::hasmany/content',
     );
 
     /**

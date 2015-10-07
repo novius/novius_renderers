@@ -42,13 +42,7 @@ if (!isset($options['delete']) || $options['delete']) {
         </div>
     </div>
     <div class="hasmany_content">
-        <table>
-<?php
-foreach ($fields as $field) {
-    echo $field->build();
-}
-?>
-        </table>
+        <?= \View::forge($options['content_view'], array('fields' => $fields), false) ?>
     </div>
 <?php
 echo $fieldset->build_append();
