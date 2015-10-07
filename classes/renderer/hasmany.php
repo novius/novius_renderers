@@ -59,7 +59,11 @@ class Renderer_HasMany extends \Nos\Renderer
         }
         $name = $this->name;
         $item->$name = array();
-        $values        = $data[$name];
+
+        $values        = \Arr::get($data, $name);
+        if (empty($values)) {
+            return true;
+        }
         $orderField = \Arr::get($this->renderer_options, 'order_field');
         $orderProperty = \Arr::get($this->renderer_options, 'order_property');
         $model = $this->renderer_options['model'];
