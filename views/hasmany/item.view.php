@@ -16,6 +16,7 @@ echo $fieldset->build_hidden_fields();
             <button class="dupli-item-js button-dupli-item" <?= array_to_attr(array(
                 'data-icon'     => 'copy',
                 'data-model'    => \Arr::get($options, 'model'),
+                'data-view'    => \Arr::get($options, 'content_view'),
                 'data-order'    => intval(\Arr::get($options, 'order', 0)),
             )) ?>><?= __('Duplicate this item') ?></button>
             <?php
