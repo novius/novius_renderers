@@ -46,8 +46,8 @@
     width: 30px;
 }
 
-.hasmany_item:first-child .hasmany_button_move_up,
-.hasmany_item:last-child .hasmany_button_move_down {
+.hasmany_item:first-child > .head .hasmany_button_move_up,
+.hasmany_item:last-child > .head .hasmany_button_move_down {
     display: none;
 }
 
