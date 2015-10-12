@@ -39,6 +39,7 @@
         'data-model' => $model,
         'data-context' => $context,
         'data-relation' => $relation,
+        'data-view'    => \Arr::get($options, 'content_view'),
         'data-order' => !empty($options['order']) ? 1 : 0,
     );
 

@@ -16,6 +16,7 @@ echo $fieldset->build_hidden_fields();
             <button class="dupli-item-js button-dupli-item" <?= array_to_attr(array(
                 'data-icon'     => 'copy',
                 'data-model'    => \Arr::get($options, 'model'),
+                'data-view'    => \Arr::get($options, 'content_view'),
                 'data-order'    => intval(\Arr::get($options, 'order', 0)),
             )) ?>><?= __('Duplicate this item') ?></button>
             <?php
@@ -42,13 +43,7 @@ if (!isset($options['delete']) || $options['delete']) {
         </div>
     </div>
     <div class="hasmany_content">
-        <table>
-<?php
-foreach ($fields as $field) {
-    echo $field->build();
-}
-?>
-        </table>
+        <?= \View::forge($options['content_view'], array('fields' => $fields), false) ?>
     </div>
 <?php
 echo $fieldset->build_append();

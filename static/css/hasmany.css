@@ -46,8 +46,8 @@
     width: 30px;
 }
 
-.hasmany_item:first-child .hasmany_button_move_up,
-.hasmany_item:last-child .hasmany_button_move_down {
+.hasmany_item:first-child > .head .hasmany_button_move_up,
+.hasmany_item:last-child > .head .hasmany_button_move_down {
     display: none;
 }
 
@@ -86,4 +86,20 @@
 
 .hasmany_items .item_list .hasmany_content > table > tbody > tr > td {
     padding-right: 65px;
+}
+
+.hasmany_content_div > .hasmany_content_div_field {
+    margin-bottom : 5px;
+}
+
+.hasmany_content_div > .hasmany_content_div_field label {
+    width       : 10%;
+    float       : left;
+    font-weight : bold;
+    line-height : 28px;
+}
+
+.hasmany_content_div > .hasmany_content_div_field input, .hasmany_content_div > .hasmany_content_div_field select, .hasmany_content_div  > .hasmany_content_div_field textarea {
+    max-width       : 85%;
+    margin-left : 5%;
 }

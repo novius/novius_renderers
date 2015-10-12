@@ -48,13 +48,14 @@ require(['jquery-nos-wysiwyg'], function ($) {
         var next = $div.closest('.count-items-js').find('.hasmany_item').length + 1;
         var $button = $div.closest('.count-items-js').find('button.add-item-js');
         var model = $button.data('model') || $button.attr('data-model');
-        var relation = $button.data('relation');
-        var order = $button.data('order');
         var data = {};
         data.forge = {};
-
-        console.log($button);
-        console.log('model', model);
+        var btnData = $button.data();
+        for (i in btnData) {
+            if (typeof btnData[i] !== 'function' && typeof btnData[i] !== 'object') {
+                data[i] = btnData[i];
+            }
+        }
 
         //select all inputs (cannot search on name, assuming it begins with "relation", because it's possible that it doesn't
         $div.find('input, select').each(function() {
@@ -70,11 +71,6 @@ require(['jquery-nos-wysiwyg'], function ($) {
                 }
             }
         });
-        data.model = model;
-        data.relation = relation;
-        data.order = order;
-
-        console.log(data);
 
         $nos.ajax({
             type : "GET",
