@@ -15,7 +15,7 @@ elseif ($value) {
     }
 }
 
-$defaultItem =\Arr::get($options, 'default_item', true);
+$defaultItem = \Arr::get($options, 'default_item', true);
 ?>
 <div class="hasmany_items count-items-js" data-nb-items="<?= empty($listItems) ? (int)$defaultItem : count($listItems) ?>">
     <div class="item_list">
