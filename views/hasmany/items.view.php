@@ -4,7 +4,7 @@ $listItems = null;
 if (!empty($relation) && !empty($item)) {
     $listItems = $item->{$relation};
 }
-elseif ($value) {
+elseif (!empty($value)) {
     $listItems = array();
     foreach ($value as $elem) {
         $newModel = $model::forge();
