@@ -16,6 +16,7 @@ class Renderer_HasMany extends \Nos\Renderer
      */
     public function build()
     {
+        $this->renderer_options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
         $key = !empty($this->renderer_options['name']) ? $this->renderer_options['name'] : $this->name;
         $relation = !empty($this->renderer_options['related']) ? $this->renderer_options['related'] : $this->name;
 
@@ -149,6 +150,7 @@ class Renderer_HasMany extends \Nos\Renderer
 
     public static function render_fieldset($item, $relation, $index = null, $renderer_options = array(), $data = array())
     {
+        $renderer_options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $renderer_options);
         static $auto_id_increment = 1;
         $index = \Input::get('index', $index);
         $config = static::getConfig($item, $data);
