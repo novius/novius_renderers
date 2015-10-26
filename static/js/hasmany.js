@@ -8,7 +8,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
     function restore_order($list) {
         var order = 0;
 
-        $list.find('input[name*=_order]').each(function(){
+        $list.find('> .hasmany_item > input[name*=_order]').each(function(){
             this.value = order++;
         });
     }
@@ -17,7 +17,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
     $(document).on('click', 'button.add-item-js', function(e) {
         var $button = $(this);
         var $container = $button.closest('.count-items-js');
-        var next = parseInt($container.data('nb-items')) + 1;
+        var next = parseInt($container.data('nb-items'));
         var btnData = $button.data();
         var data = {};
         for (i in btnData) {
@@ -32,10 +32,10 @@ require(['jquery-nos-wysiwyg'], function ($) {
             success : function(vue) {
                 var $vue = $(vue);
                 $vue.nosFormUI();
-                $container.find('.item_list').append($vue);
+                var $itemList = $container.children('.item_list');
+                $itemList.append($vue);
                 $container.data('nb-items', next);
-
-                restore_order($container.find('.item_list'));
+                restore_order($itemList);
             }
         });
         e.preventDefault();
@@ -45,7 +45,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
     $(document).on('click', 'button.dupli-item-js', function(event){
         var $div = $(this).closest('.hasmany_item');
         var index = $div.data('item-index');
-        var next = $div.closest('.count-items-js').find('.hasmany_item').length + 1;
+        var next = $div.closest('.count-items-js').find('.hasmany_item').length;
         var $button = $div.closest('.count-items-js').find('button.add-item-js');
         var model = $button.data('model') || $button.attr('data-model');
         var data = {};
