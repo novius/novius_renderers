@@ -17,7 +17,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
     $(document).on('click', 'button.add-item-js', function(e) {
         var $button = $(this);
         var $container = $button.closest('.count-items-js');
-        var next = parseInt($container.data('nb-items'));
+        var next = $container.find('.hasmany_item').length;
         var btnData = $button.data();
         var data = {};
         for (i in btnData) {
