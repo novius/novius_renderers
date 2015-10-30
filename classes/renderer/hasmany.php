@@ -62,7 +62,8 @@ class Renderer_HasMany extends \Nos\Renderer
         $name = $this->name;
 
         $values = \Arr::get($data, $name);
-        if(empty($values) || $values === $item->$name) {
+        $postData = \Input::post($name);
+        if(empty($values) && empty($postData)) {
             $item->$name = array();
             // When the input array is empty (which happens when the user tries to remove all childs),
             // the relation array (array(id => Model)) is given instead, which prevents us to remove the childs from database.
