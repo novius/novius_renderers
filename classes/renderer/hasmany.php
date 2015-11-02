@@ -60,12 +60,16 @@ class Renderer_HasMany extends \Nos\Renderer
             return true;
         }
         $name = $this->name;
-        $item->$name = array();
 
-        $values        = \Arr::get($data, $name);
-        if (empty($values)) {
+        $values = \Arr::get($data, $name);
+        $postData = \Input::post($name);
+        $item->$name = array();
+        if(empty($values) && empty($postData)) {
+            // When the input array is empty (which happens when the user tries to remove all childs),
+            // the relation array (array(id => Model)) is given instead, which prevents us to remove the childs from database.
             return true;
         }
+
         $orderField = \Arr::get($this->renderer_options, 'order_field');
         $orderProperty = \Arr::get($this->renderer_options, 'order_property');
         $model = $this->renderer_options['model'];
