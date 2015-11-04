@@ -65,7 +65,10 @@ if (!count($available_models)) {
             <label>
                 <?= __('External link') ?>
             </label>
-            <input class="ms-external" type="text" value="<?=$external?>" name="<?= $options['names']['external'] ?>">
+            <div class="autocomplete-container">
+                <input class="external" type="text" value="<?= $external ?>"
+                       name="<?= $options['names']['external'] ?>">
+            </div>
         </div>
     <?php
     }
