@@ -42,6 +42,7 @@ $defaultItem = \Arr::get($options, 'default_item', true);
         'data-relation' => $relation,
         'data-view'    => \Arr::get($options, 'content_view'),
         'data-order' => !empty($options['order']) ? 1 : 0,
+        'data-duplicate' => !empty($options['duplicate']) ? 1 : 0,
     );
 
     if (\Arr::get($options, 'inherit_context', true)) {
