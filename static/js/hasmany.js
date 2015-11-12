@@ -130,10 +130,14 @@ require(['jquery-nos-wysiwyg'], function ($) {
         //Deal with possible wysiwyg's
         $textarea.each(function(){
             var id_tiny = $(this).attr('id');
-            tinyMCE.get(id_tiny).save();
-            tinyMCE.get(id_tiny).remove();
+            if (tinyMCE) {
+                var wysi = tinyMCE.get(id_tiny);
+                if (wysi) {
+                    wysi.save();
+                    wysi.remove();
+                }
+            }
         });
-
         // move it
         if (down) {
             $swapper.after($item);
