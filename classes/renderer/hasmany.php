@@ -12,13 +12,22 @@ class Renderer_HasMany extends \Nos\Renderer
     /**
      * Builds the fieldset
      *
-     * @return mixed|string
+     * @return mixed
+     * @throws \Exception
+     * @throws \FuelException
      */
     public function build()
     {
         $this->renderer_options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $this->renderer_options);
-        $key = !empty($this->renderer_options['name']) ? $this->renderer_options['name'] : $this->name;
-        $relation = !empty($this->renderer_options['related']) ? $this->renderer_options['related'] : $this->name;
+        $key = \Arr::get($this->renderer_options, 'name', $this->name);
+        $relation = \Arr::get($this->renderer_options, 'related', $this->name);
+        $model = \Arr::get($this->renderer_options, 'model');
+        $item = $this->fieldset()->getInstance();
+
+        // Checks the model
+        if (empty($model) || !is_subclass_of($model, 'Nos\Orm\Model')) {
+            throw new \Exception('A valid model must be specified.');
+        }
 
         $data = array();
         $attributes = $this->get_attribute();
@@ -28,28 +37,54 @@ class Renderer_HasMany extends \Nos\Renderer
             }
         }
 
-        // Gets the fieldset item
-        $item = $this->fieldset()->getInstance();
-        $context = $this->getItemContext($item);
-        if (!empty($this->renderer_options['context'])) {
-            $context = $this->renderer_options['context'];
+        // Gets the context
+        $context = \Arr::get($this->renderer_options, 'context');
+        if (\Arr::get($this->renderer_options, 'inherit_context', true)) {
+            // Inherits the context
+            $item_context = static::getItemContext($item);
+            if (!empty($item_context)) {
+                $context = $item_context;
+            }
+        }
+
+        // Builds the default items
+        $default_items = array();
+        if (!empty($relation) && !empty($item)) {
+            $default_items = $item->{$relation};
+        } elseif (!empty($this->value)) {
+            // Builds default items from existing values
+            if (!empty($this->value)) {
+                foreach ($this->value as $elem) {
+                    $newModel = $model::forge();
+                    foreach ($elem as $property => $elemValue) {
+                        $newModel->$property = $elemValue;
+                    }
+                    $default_items[] = $newModel;
+                }
+            }
+        }
+        // Builds a default empty item if there are no default items and if the feature is enabled
+        if (empty($default_items) && \Arr::get($this->renderer_options, 'default_item', true)) {
+            $default_item = $model::forge();
+            \Novius\Renderers\Renderer_HasMany::setItemContext($default_item, $context);
+            $default_items = array($default_item);
         }
 
         // Adds the javascript
         $this->fieldset()->append(static::js_init());
 
-        $return = \View::forge('novius_renderers::hasmany/items', array(
+        return $this->template(\View::forge('novius_renderers::hasmany/items', array(
             'id' => $this->getId(),
             'key' => $key,
             'relation' => $relation,
-            'value' => $this->value,
-            'model' => $this->renderer_options['model'],
+            'model' => $model,
             'item' => $item,
-            'context' => $context,
-            'options' => $this->renderer_options,
-            'data' => $data
-        ), false)->render();
-        return $this->template($return);
+            'default_items' => $default_items,
+            'options' => \Arr::merge($this->renderer_options, array(
+                'context' => $context,
+            )),
+            'data' => $data,
+        ), false)->render());
     }
 
     public function before_save($item, $data)
@@ -212,17 +247,47 @@ class Renderer_HasMany extends \Nos\Renderer
     }
 
     /**
-     * Returns the context of $item
+     * Gets the context of $item
      *
      * @param $item
      * @return bool
      */
-    public function getItemContext($item) {
+    public static function getItemContext($item) {
         if (!empty($item)) {
             if ($item::behaviours('Nos\Orm_Behaviour_Contextable') || $item::behaviours('Nos\Orm_Behaviour_Twinnable')) {
                 return $item->get_context();
             }
         }
         return false;
+    }
+
+    /**
+     * Sets the $context on $item
+     *
+     * @param $item
+     * @param $context
+     * @return bool
+     */
+    public static function setItemContext($item, $context)
+    {
+        // Gets the context properties from the behaviour
+        $context_properties = \Arr::get(array_values(array_filter($item::behaviours(array(
+            'Nos\Orm_Behaviour_Contextable',
+            'Nos\Orm_Behaviour_Twinnable'
+        )))), 0);
+        if (empty($context_properties)) {
+            return false;
+        }
+
+        // Gets the context property name
+        $context_property = \Arr::get($context_properties, 'context_property');
+        if (empty($context_property) || !isset($item->{$context_property})) {
+            return false;
+        }
+
+        // Sets the context
+        $item->{$context_property} = $context;
+
+        return true;
     }
 }
