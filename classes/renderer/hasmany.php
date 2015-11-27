@@ -87,6 +87,13 @@ class Renderer_HasMany extends \Nos\Renderer
         ), false)->render());
     }
 
+    /**
+     * Automatically saves the items
+     *
+     * @param $item
+     * @param $data
+     * @return bool
+     */
     public function before_save($item, $data)
     {
         parent::before_save($item, $data);
@@ -179,7 +186,8 @@ class Renderer_HasMany extends \Nos\Renderer
      *
      * @return array
      */
-    protected static function getConfig($item, $data) {
+    protected static function getConfig($item, $data)
+    {
         $class       = get_class($item);
         $config_file = \Config::configFile($class);
         $config      = \Config::load(implode('::', $config_file), true);
@@ -187,15 +195,31 @@ class Renderer_HasMany extends \Nos\Renderer
         return $config;
     }
 
+    /**
+     * Renders the fieldset of the given $item
+     *
+     * @param $item
+     * @param $relation
+     * @param null $index
+     * @param array $renderer_options
+     * @param array $data
+     * @return string
+     * @throws \FuelException
+     */
     public static function render_fieldset($item, $relation, $index = null, $renderer_options = array(), $data = array())
     {
         $renderer_options = \Arr::merge(static::$DEFAULT_RENDERER_OPTIONS, $renderer_options);
+
+        // Initializes the auto-incremented counter
         static $auto_id_increment = 1;
+
         $index = \Input::get('index', $index);
         $config = static::getConfig($item, $data);
         $fieldset = static::getFieldSet($config, $item);
+
         // Override auto_id generation so it don't use the name (because we replace it below)
         $auto_id = uniqid('auto_id_');
+
         // Will build hidden fields seperately
         $fields = array();
         foreach ($fieldset->field() as $field) {
@@ -205,8 +229,10 @@ class Renderer_HasMany extends \Nos\Renderer
             }
         }
 
-
+        // Sets the field template
         $fieldset->form()->set_config('field_template', '<tr><th>{label}</th><td>{field}</td></tr>');
+
+        // Builds the view params
         $view_params = array(
             'fieldset' => $fieldset,
             'fields' => $fields,
@@ -216,14 +242,17 @@ class Renderer_HasMany extends \Nos\Renderer
         );
         $view_params['view_params'] = &$view_params;
 
+        // Builds the replacements
         $replaces = array();
         foreach ($config['fieldset_fields'] as $name => $item_config) {
             $replaces['"'.$name.'"'] = '"'.$relation.'['.$index.']['.$name.']"';
         }
-        $return = (string) \View::forge('novius_renderers::hasmany/item', $view_params, false)->render();
 
+        // Renders the item
+        $rendered_item = (string) \View::forge('novius_renderers::hasmany/item', $view_params, false)->render();
+
+        // Triggers an event to allow modification of replacements
         \Event::trigger('novius_renderers.hasmany_fieldset');
-
         \Event::trigger_function('novius_renderers.hasmany_fieldset', array(
             array(
                 'item' => &$item,
@@ -233,15 +262,29 @@ class Renderer_HasMany extends \Nos\Renderer
             )
         ));
 
-        return strtr($return, $replaces);
+        // Applies the replacements on the rendered item
+        $rendered_item = strtr($rendered_item, $replaces);
+
+        return $rendered_item;
     }
 
+    /**
+     * Returns the javascript needed by the renderer
+     *
+     * @return \Fuel\Core\View
+     */
     public static function js_init()
     {
         return \View::forge('novius_renderers::hasmany/js', array(), false);
     }
 
-    public function getId() {
+    /**
+     * Gets the renderer ID
+     *
+     * @return array|mixed|string
+     */
+    public function getId()
+    {
         $id = $this->get_attribute('id');
         return !empty($id) ? $id : uniqid('hasmany_');
     }
@@ -252,7 +295,8 @@ class Renderer_HasMany extends \Nos\Renderer
      * @param $item
      * @return bool
      */
-    public static function getItemContext($item) {
+    public static function getItemContext($item)
+    {
         if (!empty($item)) {
             if ($item::behaviours('Nos\Orm_Behaviour_Contextable') || $item::behaviours('Nos\Orm_Behaviour_Twinnable')) {
                 return $item->get_context();
