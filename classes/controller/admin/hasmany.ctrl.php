@@ -12,6 +12,7 @@ class Controller_Admin_HasMany extends \Nos\Controller_Admin_Application
         $forge = \Input::get('forge', array());
         $context = \Input::get('context');
         $view = \Input::get('view');
+        $duplicate = \Input::get('duplicate', true);
 
         // Duplicates an item
         if (!empty($forge)) {
@@ -28,7 +29,11 @@ class Controller_Admin_HasMany extends \Nos\Controller_Admin_Application
         }
 
         // Renders the fieldset
-        $return = Renderer_HasMany::render_fieldset($item, $relation, $index, array('order' => (int)$order, 'content_view' => $view));
+        $return = Renderer_HasMany::render_fieldset($item, $relation, $index, array(
+            'order'        => (int) $order,
+            'content_view' => $view,
+            'duplicate'    => $duplicate,
+        ));
         \Response::forge($return)->send(true);
         exit();
     }

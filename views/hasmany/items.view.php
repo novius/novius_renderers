@@ -23,6 +23,7 @@
         'data-relation' => $relation,
         'data-view'    => \Arr::get($options, 'content_view'),
         'data-order' => !empty($options['order']) ? 1 : 0,
+        'data-duplicate' => !empty($options['duplicate']) ? 1 : 0,
     );
 
     if (!isset($options['add']) || $options['add']) {
