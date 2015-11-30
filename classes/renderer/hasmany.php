@@ -83,6 +83,8 @@ class Renderer_HasMany extends \Nos\Renderer
             'options' => \Arr::merge($this->renderer_options, array(
                 'context' => $context,
             )),
+            'context' => $context,
+            'value' => $this->value,
             'data' => $data,
         ), false)->render());
     }
