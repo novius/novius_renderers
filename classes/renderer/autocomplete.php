@@ -199,8 +199,8 @@ class Renderer_Autocomplete extends \Fieldset_Field
         if (!empty($item)) {
             // Add the current item ID to the posted vars (used to prevent current item to appear in suggestions)
             $this->set_attribute('data-autocomplete-post', static::json_merge(
-                $this->get_attribute('data-autocomplete-post'),
-                array('from_id' => $item->implode_pk($item))
+                array('from_id' => $item->implode_pk($item)),
+                $this->get_attribute('data-autocomplete-post')
             ));
         }
 
@@ -291,9 +291,15 @@ class Renderer_Autocomplete extends \Fieldset_Field
      * @param array $data An array to merge
      * @return mixed
      */
-    public static function json_merge($json, array $data) {
-        $array = \Format::forge($json, 'json')->to_array();
-        $array = \Arr::merge($array, $data);
+    public static function json_merge($arr1, $arr2)
+    {
+        if (!is_array($arr1)) {
+            $arr1 = \Format::forge($arr1, 'json')->to_array();
+        }
+        if (!is_array($arr2)) {
+            $arr2 = \Format::forge($arr2, 'json')->to_array();
+        }
+        $array = \Arr::merge($arr1, $arr2);
         return \Format::forge($array)->to_json();
     }
 
