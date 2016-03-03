@@ -253,7 +253,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
         // Populate the autocomplete search input
         $populate_input = \Arr::get($this->renderer_options, 'populate_input');
         if (is_callable($populate_input)) {
-            $this->set_value($populate_input($item));
+            $this->set_value($populate_input($item, $this));
         } elseif ($is_multiple) {
             // The autocomplete input must be empty for multiple values
             $this->set_value('');
