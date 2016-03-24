@@ -1,5 +1,7 @@
 <?php
 \Nos\I18n::current_dictionary('novius_renderers::default');
+
+// Gets the related items
 $listItems = null;
 if (!empty($relation) && !empty($item)) {
     $listItems = $item->{$relation};
@@ -14,13 +16,20 @@ if (!empty($relation) && !empty($item)) {
     }
 }
 
+// Sorts the related items if there is an order property
+$orderProperty = \Arr::get($options, 'order_property');
+if (!empty($orderProperty)) {
+    uasort($listItems, function ($a, $b) use ($orderProperty) {
+        return intval($a->{$orderProperty}) - intval($b->{$orderProperty});
+    });
+}
+
 $defaultItem = \Arr::get($options, 'default_item', true);
 ?>
 <div class="hasmany_items count-items-js" data-nb-items="<?= empty($listItems) ? (int)$defaultItem : count($listItems) ?>">
     <div class="item_list">
         <?php
         $i = 0;
-
         if (!empty($listItems)) {
             foreach ($listItems as $o) {
                 // Build fieldset and return view
