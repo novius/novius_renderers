@@ -45,7 +45,6 @@ __Twinnable CRUD config with sort and images only :__
 __How to use the linked medias (simple) :__
 
 ```php
-<?php
 for ($index = 1; !empty($item->medias->{'image'.$index}); $index++) {
     $media = $item->medias->{'image'.$index};
     // ...
@@ -55,7 +54,6 @@ for ($index = 1; !empty($item->medias->{'image'.$index}); $index++) {
 __How to use the shared linked medias (twinnable) :__
 
 ```php
-<?php
 for ($index = 1; !empty($item->shared_medias_context->{'image'.$index}); $index++) {
     $media = $item->shared_medias_context->{'image'.$index};
     // ...
