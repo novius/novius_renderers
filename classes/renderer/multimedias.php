@@ -82,7 +82,7 @@ class Renderer_MultiMedias extends Renderer
      * @param null $key
      * @return array
      */
-    protected function getValueFromInstance($item, $key = null)
+    protected function getValueFromInstance($item)
     {
         $providerKey = $this->getProviderKey();
         $providerName = $this->getProviderName();
