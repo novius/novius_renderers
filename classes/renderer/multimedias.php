@@ -46,7 +46,7 @@ class Renderer_MultiMedias extends Renderer
     {
         // If the "key" option is set then skip auto save (for retro-compatibility)
         if (isset($this->renderer_options['key'])) {
-            return false;
+            return true;
         }
 
         $providerKey = $this->getProviderKey();
