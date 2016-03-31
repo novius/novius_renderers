@@ -28,7 +28,8 @@ return array(
                 'inherit_context' => false, // [Optional] Set "false" to disable the context inheritance (true by default)
                 'order_property' => 'show_order', // [Optional] The property on the model in which to save the order
                 'order_field' => 'my_order_field', // [Optional] The form field from which the order is obtained (default is order_property)
-                'before_save' => true, // [Optional] Set "true" to use the renderer's native save mechanism (false by default)
+                'dont_save' => false, // [Optional] Set "true" to bypass the renderer's native save mechanism (false by default)
+                'before_save' => false, // [Deprecated] [Optional] Set "true" to use the renderer's native save mechanism (false by default)
             ),
             'template' => '{field}',
         ),
