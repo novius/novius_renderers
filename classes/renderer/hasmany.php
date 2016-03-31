@@ -170,6 +170,7 @@ class Renderer_HasMany extends \Nos\Renderer
 
         // The fields that will not be set on the related items
         $ignored_fields = \Arr::merge($modelPks, array(
+            $modelPk,
             $modelContextCommonField,
             $modelContextMainField,
             $orderField
@@ -216,10 +217,9 @@ class Renderer_HasMany extends \Nos\Renderer
 
             // Sets the properties values
             $filled_values = 0;
-            $properties = $model::properties();
             foreach ($v as $field => $value) {
-                // Checks if the property is valid and not ignored
-                if (!isset($properties[$field]) || in_array($field, $ignored_fields)) {
+                // Checks if the field has to be ignored
+                if (in_array($field, $ignored_fields)) {
                     continue;
                 }
                 $relatedItem->{$field} = $value;
