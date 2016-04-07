@@ -165,7 +165,7 @@ class Renderer_HasMany extends \Nos\Renderer
         if (empty($modelPks) || empty($values) || ($isPopulatedWithItem && empty($postData))) {
             // When the input array is empty (which happens when the user tries to remove all childs),
             // the relation array (array(id => Model)) is given instead, which prevents us to remove the childs from database.
-            return true;
+            return false;
         }
 
         // The fields that will not be set on the related items
