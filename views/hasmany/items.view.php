@@ -26,7 +26,7 @@ if (!empty($orderProperty)) {
 
 $defaultItem = \Arr::get($options, 'default_item', true);
 ?>
-<div class="hasmany_items count-items-js" data-nb-items="<?= empty($listItems) ? (int)$defaultItem : count($listItems) ?>">
+<div class="hasmany_items count-items-js" data-nb-items="<?= empty($listItems) ? (int)$defaultItem : count($listItems) ?>" <?php if  (!empty($orderProperty)): ?> data-order-property="<?= $orderProperty ?>"<?php endif; ?>>
     <div class="item_list">
         <?php
         $i = 0;

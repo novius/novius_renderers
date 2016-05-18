@@ -8,9 +8,12 @@ require(['jquery-nos-wysiwyg'], function ($) {
     function restore_order($list) {
         var order = 0;
 
-        $list.find('> .hasmany_item > input[name*=_order]').each(function(){
-            this.value = order++;
-        });
+        $order = $list.parent('.hasmany_items').data('order-property');
+        if ($order !== undefined && $order.length > 0) {
+            $list.find('> .hasmany_item > input[name*='+$order+']').each(function(){
+                this.value = order++;
+            });
+        }
     }
 
     //Add one item
