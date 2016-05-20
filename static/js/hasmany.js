@@ -20,14 +20,6 @@ require(['jquery-nos-wysiwyg'], function ($) {
                     this.value = order++;
                 });
             }
-            // Otherwise try to find an input field whose name contains "_order"
-            // @todo remove this fallback in a future major release (it's too confusing because this could match a wrong name, eg. field_orderable)
-            else {
-                // Old mechanism (buggued)
-                $list.find('> .hasmany_item > input[name*=_order]').each(function () {
-                    this.value = order++;
-                });
-            }
         }
     }
 

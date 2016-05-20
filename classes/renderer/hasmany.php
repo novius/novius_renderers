@@ -2,8 +2,6 @@
 
 namespace Novius\Renderers;
 
-use Fuel\Core\Arr;
-
 class Renderer_HasMany extends \Nos\Renderer
 {
     protected static $DEFAULT_RENDERER_OPTIONS = array(
@@ -236,8 +234,8 @@ class Renderer_HasMany extends \Nos\Renderer
             }
 
             // Trigger the before save of all the fields of the has_many
-            $config = static::getConfig($relatedItem, array(), $this->renderer_options);
-            $fieldset = static::getFieldSet($config, $relatedItem);
+            $config = static::getConfig($relatedItem, array());
+            $fieldset = static::getFieldSet($config, $relatedItem, $this->renderer_options);
             foreach ($fieldset->field() as $field) {
                 $field->before_save($relatedItem, $v);
                 $callback = \Arr::get($config, 'fieldset_fields.'.$field->name.'.before_save');
@@ -289,28 +287,20 @@ class Renderer_HasMany extends \Nos\Renderer
      *
      * @return array
      */
-    protected static function getConfig($item, $data, $renderer_options)
+    protected static function getConfig($item, $data, &$renderer_options)
     {
         $class       = get_class($item);
         $config_file = \Config::configFile($class);
         $config      = \Config::load(implode('::', $config_file), true);
 
-        if (\Arr::get($renderer_options, 'order', false)) {
-            $orderField = false;
-            foreach (\Arr::get($config, 'fieldset_fields') as $field) {
-                if(\Arr::get($field, 'form.attribute.data-hasmany-order')) {
-                    $orderField = true;
+        // fallback old
+        if (\Arr::get($renderer_options, 'order', false) && empty(\Arr::get($renderer_options, 'order_property', false))) {
+            foreach (\Arr::get($config, 'fieldset_fields') as $k => $field) {
+                if (preg_match('/(.*)_order(.*)/', $k)) {
+                    \Arr::set($renderer_options, 'order_property', true);
                     break;
-                }
-            }
-            if (!$orderField) {
-                foreach (\Arr::get($config, 'fieldset_fields') as $k => $field) {
-                    if (preg_match('/(.*)_order(.*)/', $k)) {
-                        Arr::set($config, 'fieldset_fields.'. $k . '.form.attribute.data-hasmany-order', true);
-                        break;
-                    }
-                }
-            }
+                 }
+             }
         }
 
         \Event::trigger_function('novius_renderers.fieldset_config', array('config' => &$config, 'item' => $item, 'data' => $data));
