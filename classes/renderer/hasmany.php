@@ -275,7 +275,7 @@ class Renderer_HasMany extends \Nos\Renderer
      */
     protected static function getFieldSet($config, $item)
     {
-        $fieldset = \Fieldset::build_from_config($config['fieldset_fields'], $item, array('save' => false, 'auto_id' => false));
+        $fieldset = \Fieldset::build_from_config($config['fieldset_fields'], $item, array('save' => false, 'auto_id' => false, 'csrf' => false));
         $fieldset->populate_with_instance($item);
         return $fieldset;
     }
