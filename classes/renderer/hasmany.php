@@ -294,7 +294,7 @@ class Renderer_HasMany extends \Nos\Renderer
         $config      = \Config::load(implode('::', $config_file), true);
 
         // fallback old
-        if (\Arr::get($renderer_options, 'order', false) && empty(\Arr::get($renderer_options, 'order_property', false))) {
+        if (\Arr::get($renderer_options, 'order', false) && !\Arr::get($renderer_options, 'order_property', false)) {
             foreach (\Arr::get($config, 'fieldset_fields') as $k => $field) {
                 if (preg_match('/(.*)_order(.*)/', $k)) {
                     \Arr::set($renderer_options, 'order_property', true);
