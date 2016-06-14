@@ -234,8 +234,8 @@ class Renderer_HasMany extends \Nos\Renderer
             }
 
             // Trigger the before save of all the fields of the has_many
-            $config = static::getConfig($relatedItem, array());
-            $fieldset = static::getFieldSet($config, $relatedItem, $this->renderer_options);
+            $config = static::getConfig($relatedItem, array(), $this->renderer_options);
+            $fieldset = static::getFieldSet($config, $relatedItem);
             foreach ($fieldset->field() as $field) {
                 $field->before_save($relatedItem, $v);
                 $callback = \Arr::get($config, 'fieldset_fields.'.$field->name.'.before_save');
