@@ -8,9 +8,19 @@ require(['jquery-nos-wysiwyg'], function ($) {
     function restore_order($list) {
         var order = 0;
 
-        $list.find('> .hasmany_item > input[name*=_order]').each(function(){
-            this.value = order++;
-        });
+        // Check if the sort feature is enabled
+        var order_enabled = $list.parent('.hasmany_items').data('order');
+        if (order_enabled) {
+
+            // Uses the order property to select the order input field
+            var order_property = $list.parent('.hasmany_items').data('order-property');
+            if (order_property) {
+                // New mechanism (not bugged)
+                $list.find('> .hasmany_item > input[name$="['+order_property+']"]').each(function () {
+                    this.value = order++;
+                });
+            }
+        }
     }
 
     //Add one item
