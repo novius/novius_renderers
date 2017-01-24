@@ -168,9 +168,9 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
                         $label = '';
                         if (array_key_exists($result['value'], $items)) {
                             $item  = $items[$result['value']];
-                            if (method_exists($item, $display_method)) {
+                            try {
                                 $label = $item->$display_method();
-                            }
+                            } catch (\BadMethodCallException $e) {}
                         }
                         if (!empty($label)) {
                             $results[$resultKey]['label'] = $label;
