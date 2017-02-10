@@ -129,7 +129,7 @@ require(['jquery-nos-wysiwyg'], function ($) {
         var down = $(this).hasClass('item-down-js'),
             $item = $(this).closest('.hasmany_item'),
             $swapper = down ? $item.nextAll('div:eq(0)') : $item.prevAll('div:eq(0)'),
-            $textarea = $item.find('textarea[name*=wysiwyg]'),
+            $textarea = $item.find('textarea:tinymce'),
             order = 0;
 
         // already top or bottom
