@@ -5,17 +5,19 @@ $id = uniqid();
 <div id="<?= $id ?>">
     <?php
     if ($url) {
-    ?>
+        ?>
     <a href="<?= $url ?>">
         <?php
-        }
+
+    }
 
         echo $text;
         if ($url) {
-        ?>
+            ?>
     </a>
 <?php
-}
+
+        }
 ?>
 </div>
 

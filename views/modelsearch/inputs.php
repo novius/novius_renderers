@@ -21,7 +21,8 @@ if (!count($available_models)) {
 
 ?>
 <div id="<?= $id ?>" class="modelsearch">
-    <?php if (count($available_models) > 1) { ?>
+    <?php if (count($available_models) > 1) {
+    ?>
         <div class="ms-select">
             <label><?= $label ?></label>
             <select name="<?= \Arr::get($options, 'names.model') ?>">
@@ -30,20 +31,24 @@ if (!count($available_models)) {
                     ?>
                     <option value=""><?= __('None') ?></option>
                     <?php
+
                 }
-                foreach ($available_models as $model => $label) {
-                    $selected = ($model == $current_model) ? 'selected="selected"' : '';
-                    if (empty($current_model) && $model == '') {
-                        $selected = 'selected="selected"';
-                    }
-                    ?>
+    foreach ($available_models as $model => $label) {
+        $selected = ($model == $current_model) ? 'selected="selected"' : '';
+        if (empty($current_model) && $model == '') {
+            $selected = 'selected="selected"';
+        } ?>
                     <option value="<?= $model ?>" <?= $selected ?>><?= $label ?></option>
-                <?php } ?>
+                <?php 
+    } ?>
             </select>
         </div>
-    <?php } else { ?>
+    <?php 
+} else {
+    ?>
         <input type="hidden" name="<?= \Arr::get($options, 'names.model') ?>" value="<?= key($available_models) ?>" />
-    <?php } ?>
+    <?php 
+} ?>
     <div class="ms-value ms-autocomplete <?=$classAutocomplete?>">
         <label>
             <?= (count($available_models) > 1) ? __('Content title') : $label ?>
@@ -71,6 +76,7 @@ if (!count($available_models)) {
             </div>
         </div>
     <?php
+
     }
     ?>
 </div>

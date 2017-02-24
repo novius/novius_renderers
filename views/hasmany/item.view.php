@@ -20,17 +20,19 @@ echo $fieldset->build_hidden_fields();
                 'data-order'    => intval(\Arr::get($options, 'order', 0)),
             )) ?>><?= __('Duplicate this item') ?></button>
             <?php
+
             }
             ?>
         </div>
         <div class="right">
 <?php
 if (!empty($options['order'])) {
-?>
+                ?>
             <button class="hasmany_button_move_down item-down-js" data-icon="triangle-1-s">&nbsp;</button>
             <button class="hasmany_button_move_up item-up-js" data-icon="triangle-1-n">&nbsp;</button>
 <?php
-}
+
+            }
 if (!isset($options['delete']) || $options['delete']) {
     ?>
             <button class="hasmany_button_delete ui-state-error item-delete-js" data-icon="trash" <?= array_to_attr(array(
@@ -38,6 +40,7 @@ if (!isset($options['delete']) || $options['delete']) {
                 'data-removed' => empty($is_new) ? __('This item will be deleted when the form is saved') : '',
             )) ?>>&nbsp;</button>
 <?php
+
 }
 ?>
         </div>

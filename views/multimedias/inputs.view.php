@@ -13,7 +13,7 @@ if ($sortable) {
 
         <?php
         $index = 1;
-        $value = (array)$value;
+        $value = (array) $value;
         foreach ($value as $media_id) {
             ?>
             <?php
@@ -25,20 +25,19 @@ if ($sortable) {
                     <?php
                     echo \Nos\Media\Renderer_Media::renderer(
                         array(
-                            'name'             => $key . '[' . $index . ']',
+                            'name'             => $key.'['.$index.']',
                             'value'            => $media_id,
                             'required'         => false,
                             'renderer_options' => $options,
                         )
-                    );
-                    ?>
+                    ); ?>
 
                 </li>
                 <?php
                 $index++;
-            }
-            ?>
+            } ?>
         <?php
+
         }
         ?>
     </ul>
@@ -48,7 +47,7 @@ if ($sortable) {
     if ((!$options['limit']) || $index <= $options['limit']) {
         echo \Nos\Media\Renderer_Media::renderer(
             array(
-                'name'             => $key . '[' . $index . ']',
+                'name'             => $key.'['.$index.']',
                 'value'            => null,
                 'required'         => false,
                 'renderer_options' => $options,

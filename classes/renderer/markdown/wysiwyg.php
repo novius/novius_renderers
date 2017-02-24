@@ -16,7 +16,6 @@ class Renderer_Markdown_Wysiwyg extends \Fieldset_Field
 
     public function __construct($name, $label = '', array $attributes = array(), array $rules = array(), \Fuel\Core\Fieldset $fieldset = null)
     {
-
         $attributes['type']  = 'textarea';
         $attributes['class'] = (isset($attributes['class']) ? $attributes['class'] : '').' wmd-input';
         if (empty($attributes['id'])) {

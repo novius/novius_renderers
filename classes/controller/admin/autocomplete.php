@@ -116,7 +116,7 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
                         $label = '';
                         foreach ($display_field as $key => $template) {
                             if (!empty($result[$key])) {
-                                $label .= ' ' . strtr($template, array('{{field}}' => $result[$key]));
+                                $label .= ' '.strtr($template, array('{{field}}' => $result[$key]));
                             }
                         }
                         if (!empty($label)) {
@@ -155,7 +155,8 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
         }
     }
 
-    public function action_call_crud() {
+    public function action_call_crud()
+    {
         $crud = \Input::param('_crud', false);
         $js_id = \Input::param('_js_id', false);
         $segments = explode('/', $crud);
@@ -172,7 +173,7 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
             if (!empty($crud) && !empty($js_id)) {
 
                 //Add a specific event on insert thanks to config
-                \Event::register_function('config|'.$config_file, function(&$config) use ($crud, $js_id) {
+                \Event::register_function('config|'.$config_file, function (&$config) use ($crud, $js_id) {
                     $config['controller_url'] = 'admin/novius_renderers/autocomplete/call_crud';
                     $config['fields']['_crud'] = array(
                         'form' => array(
@@ -202,7 +203,7 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
             }
         } else {
             //HMVC call
-            \Event::register_function('afterSaveCrud|'.$config_file, function(&$json) use ($crud, $js_id) {
+            \Event::register_function('afterSaveCrud|'.$config_file, function (&$json) use ($crud, $js_id) {
                 unset($json['replaceTab']);
                 $json['closeDialog'] = true;
                 //Get id in the classic Event

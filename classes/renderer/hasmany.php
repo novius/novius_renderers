@@ -154,7 +154,7 @@ class Renderer_HasMany extends \Nos\Renderer
         // Initializes the related items
         if ($isRelationTwinnable && !empty($item->{$relationName})) {
             // Removes the related items in the current context
-            $item->{$relationName} = array_filter($item->{$relationName}, function($relatedItem) use ($modelContextField, $itemContext) {
+            $item->{$relationName} = array_filter($item->{$relationName}, function ($relatedItem) use ($modelContextField, $itemContext) {
                 return $relatedItem->{$modelContextField} != $itemContext;
             });
         } else {
@@ -299,8 +299,8 @@ class Renderer_HasMany extends \Nos\Renderer
                 if (preg_match('/(.*)_order(.*)/', $k)) {
                     \Arr::set($renderer_options, 'order_property', $k);
                     break;
-                 }
-             }
+                }
+            }
         }
 
         \Event::trigger_function('novius_renderers.fieldset_config', array('config' => &$config, 'item' => $item, 'data' => $data));

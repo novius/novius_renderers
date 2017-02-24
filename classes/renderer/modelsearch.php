@@ -149,7 +149,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
         // Add JS (init sub renderer)
         $this->fieldset()->append(static::js_init());
 
-        return (string)\View::forge('novius_renderers::modelsearch/inputs', array(
+        return (string) \View::forge('novius_renderers::modelsearch/inputs', array(
             'label'   => $this->label,
             'id'      => $id,
             'value'   => $this->value,
@@ -198,7 +198,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
         // Prepares the autocomplete configuration
         $autocomplete_config = array(
             'available_models' => array_keys($options['models']),
-            'use_jayps_search' => (bool)\Arr::get($options, 'use_jayps_search', false),
+            'use_jayps_search' => (bool) \Arr::get($options, 'use_jayps_search', false),
             'display_method'   => '',
             'display_fields'   => array(),
         );
@@ -208,7 +208,7 @@ class Renderer_ModelSearch extends \Nos\Renderer
         if (is_callable($query_args)) {
             $query_args = $query_args($item, $options);
         }
-        \Arr::set($autocomplete_config, 'query_args', (array)$query_args);
+        \Arr::set($autocomplete_config, 'query_args', (array) $query_args);
 
         // Prepare the autocomplete posted vars
         $autocomplete_post = array();

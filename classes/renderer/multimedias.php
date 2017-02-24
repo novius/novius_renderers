@@ -26,7 +26,7 @@ class Renderer_MultiMedias extends Renderer
             $this->set_value($this->getValueFromInstance($item));
         }
 
-        return (string)\View::forge('novius_renderers::multimedias/inputs', array(
+        return (string) \View::forge('novius_renderers::multimedias/inputs', array(
             'id'      => $id,
             'key'     => $this->getInputName(),
             'options' => $this->renderer_options,
@@ -58,7 +58,7 @@ class Renderer_MultiMedias extends Renderer
         $values = array_filter($values);
 
         // Resets the medias
-        foreach($item->{$relationName} as $id => $media) {
+        foreach ($item->{$relationName} as $id => $media) {
             if (preg_match('`^'.preg_quote($providerName).'([0-9]+)$`', $media->medil_key)) {
                 $item->{$providerKey}->{$media->medil_key} = null;
                 unset($item->{$relationName}[$id]);

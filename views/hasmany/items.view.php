@@ -28,7 +28,7 @@ $defaultItem = \Arr::get($options, 'default_item', true);
 
 ?>
 <div class="hasmany_items count-items-js" <?= array_to_attr(array(
-    'data-nb-items' => empty($listItems) ? (int)$defaultItem : count($listItems),
+    'data-nb-items' => empty($listItems) ? (int) $defaultItem : count($listItems),
     'data-order' => \Arr::get($options, 'order') ? 1 : 0,
     'data-order-property' => \Arr::get($options, 'order_property'),
 )) ?>>
@@ -70,6 +70,7 @@ $defaultItem = \Arr::get($options, 'default_item', true);
         ?>
     <button class="add-item-js button-add-item" <?= array_to_attr($attr) ?>><?= __('Add one item') ?></button>
     <?php
+
     }
     ?>
 </div>
