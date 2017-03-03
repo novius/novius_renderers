@@ -54,7 +54,7 @@ $defaultItem = \Arr::get($options, 'default_item', true);
         'data-model' => $model,
         'data-context' => $context,
         'data-relation' => $relation,
-        'data-view'    => \Arr::get($options, 'content_view'),
+        'data-view' => \Arr::get($options, 'content_view'),
         'data-order' => !empty($options['order']) ? 1 : 0,
         'data-duplicate' => !empty($options['duplicate']) ? 1 : 0,
     );
@@ -66,11 +66,8 @@ $defaultItem = \Arr::get($options, 'default_item', true);
     }
 
     $attr = \Arr::merge($attr, $data);
-    if (!isset($options['add']) || $options['add']) {
-        ?>
-    <button class="add-item-js button-add-item" <?= array_to_attr($attr) ?>><?= __('Add one item') ?></button>
-    <?php
-
-    }
     ?>
+    <?php if (!isset($options['add']) || $options['add']): ?>
+        <button class="add-item-js button-add-item" <?= array_to_attr($attr) ?>><?= __('Add one item') ?></button>
+    <?php endif ?>
 </div>

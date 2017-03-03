@@ -16,12 +16,12 @@
         'jquery-ui.droppable',
         'static/apps/novius_renderers/js/multiselect/ui.multiselect'
         <?= (!empty($locale) && file_exists('static/apps/novius_renderers/js/multiselect/locales/jquery.uix.multiselect_'.$locale.'.js')) ? ", 'static/apps/novius_renderers/js/multiselect/locales/jquery.uix.multiselect_".$locale.".js'" : '' ?>
-    ], function( $nos ) {
-    $nos(function() {
-            var  $m = $nos('#<?= $id ?>');
-			$m.nosOnShow('one', function() {
+    ], function ($nos) {
+        $nos(function () {
+            var $m = $nos('#<?= $id ?>');
+            $m.nosOnShow('one', function () {
                 $nos(this)
-                        .css(<?= $css ?>);
+                    .css(<?= $css ?>);
                 $nos(this).multiselect(<?= $options ?>);
                 $nos(this).multiselect('option', 'locale', '<?= $locale ?>');
             });

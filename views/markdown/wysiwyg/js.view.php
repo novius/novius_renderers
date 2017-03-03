@@ -4,8 +4,8 @@
         'static/apps/novius_renderers/js/showdown',
         'static/apps/novius_renderers/js/wmd',
         'link!static/apps/novius_renderers/css/wmd.css'
-    ], function( $ ) {
-        $(function() {
+    ], function ($) {
+        $(function () {
             var $input = $('#<?= $id ?>');
             var $toolbar = $('<div id="toolbar_<?= $id ?>" class="wmd-toolbar"></div>');
             $toolbar.insertBefore($input);

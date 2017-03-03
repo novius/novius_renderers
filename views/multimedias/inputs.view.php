@@ -14,48 +14,34 @@ if ($sortable) {
         <?php
         $index = 1;
         $value = (array) $value;
-        foreach ($value as $media_id) {
-            ?>
-            <?php
-            if (!empty($media_id)) {
-                ?>
-
-                <li class="<?= $class ?>">
-
-                    <?php
-                    echo \Nos\Media\Renderer_Media::renderer(
-                        array(
-                            'name'             => $key.'['.$index.']',
-                            'value'            => $media_id,
-                            'required'         => false,
-                            'renderer_options' => $options,
-                        )
-                    ); ?>
-
-                </li>
-                <?php
-                $index++;
-            } ?>
-        <?php
-
-        }
         ?>
+        <?php foreach ($value as $media_id): ?>
+            <?php if (!empty($media_id)): ?>
+                <li class="<?= $class ?>">
+                    <?= \Nos\Media\Renderer_Media::renderer(array(
+                        'name' => $key.'['.$index.']',
+                        'value' => $media_id,
+                        'required' => false,
+                        'renderer_options' => $options,
+                    )) ?>
+                </li>
+                <?php $index++; ?>
+            <?php endif ?>
+        <?php endforeach ?>
     </ul>
     <span class="picker-container <?= $class ?>">
-    <?php
-    //if limit = 0 OR false, or if number of medias < limit, an additional media can be add
-    if ((!$options['limit']) || $index <= $options['limit']) {
-        echo \Nos\Media\Renderer_Media::renderer(
-            array(
-                'name'             => $key.'['.$index.']',
-                'value'            => null,
-                'required'         => false,
-                'renderer_options' => $options,
-            )
-        );
-        $index++;
-    }
-    ?>
-</span>
+            <?php
+            //if limit = 0 OR false, or if number of medias < limit, an additional media can be add
+            if ((!$options['limit']) || $index <= $options['limit']) {
+                echo \Nos\Media\Renderer_Media::renderer(array(
+                    'name' => $key.'['.$index.']',
+                    'value' => null,
+                    'required' => false,
+                    'renderer_options' => $options,
+                ));
+                $index++;
+            }
+            ?>
+        </span>
     <span data-next="<?= $index ?>" data-key="<?= $key ?>"></span>
 </div>

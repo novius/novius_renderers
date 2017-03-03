@@ -2,12 +2,10 @@
     require([
         'jquery-nos',
         'link!static/apps/novius_renderers/css/multimedias.css'
-    ], function($)
-    {
-        $(function()
-        {
-            var $container      = $('#<?= $id; ?>');
-            var media_options   = $container.find('input.media').data('media-options');
+    ], function ($) {
+        $(function () {
+            var $container = $('#<?= $id; ?>');
+            var media_options = $container.find('input.media').data('media-options');
             var $span = $container.find('span[data-next]');
             var key = $span.data('key');
             var sortable = $container.data('sortable');
@@ -18,12 +16,10 @@
                 $container.find('ul').disableSelection();
             }
             media_options.inputFileThumb.file = "";//flush image
-            $container.on('change', 'input.media', function(e, data)
-            {
+            $container.on('change', 'input.media', function (e, data) {
                 var $input = $container.find('input.media:last');
                 // add a new renderer only if the last one has been used
-                if ($input.val() > 0)
-                {
+                if ($input.val() > 0) {
                     // If input not in list, put in it.
                     var $parentLi = $input.parents('.wrapper_elements');
                     if (!$parentLi.length) {
@@ -35,7 +31,7 @@
                         $wrapper.append($li);
                     }
                     var index = $span.data('next');
-                    var $newimg = $('<input name="'+ key +'[' + index + ']" class="media" type="hidden" value="">');
+                    var $newimg = $('<input name="' + key + '[' + index + ']" class="media" type="hidden" value="">');
                     $newimg.nosMedia(media_options);
                     $container.find('.picker-container').append($newimg);
                     $span.data('next', index + 1);
