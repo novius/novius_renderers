@@ -38,7 +38,6 @@ class Renderer_CrudLink extends Renderer_Text
      */
     public function build()
     {
-
         $item = $this->value;
         $text = \Arr::get($this->renderer_options, 'text', '');
         $url  = \Arr::get($this->renderer_options, 'url', '');
@@ -48,21 +47,20 @@ class Renderer_CrudLink extends Renderer_Text
             $class = get_class($item);
             $crud  = $this->findCrud($class, $app);
             if ($crud) {
-                $url = $crud . '/insert_update/' . $this->value->id;
+                $url = $crud.'/insert_update/'.$this->value->id;
             }
             $text = strtr($text, array('{{MODEL}}' => Inflector::humanize(Inflector::singularize((Inflector::tableize($class))))));
-
         }
         $this->value = \View::forge('novius_renderers::crudlink/link', compact('text', 'url'))->render();
-        return (string)parent::build();
+        return (string) parent::build();
     }
 
     protected function findCrud($class, $app)
     {
         if (!\Arr::get(static::$_cacheCrud, $class)) {
-            $configDir      = APPPATH . "applications/$app/config/";
+            $configDir      = APPPATH."applications/$app/config/";
             $controllerPath = 'controller/admin/';
-            $listConfig     = \File::read_dir($configDir . $controllerPath);
+            $listConfig     = \File::read_dir($configDir.$controllerPath);
             $found          = $this->searchDir($listConfig, $class, $app, $controllerPath);
             if (!empty($found)) {
                 static::$_cacheCrud[$class] = \Arr::get($found, 'controller_url');
@@ -73,11 +71,11 @@ class Renderer_CrudLink extends Renderer_Text
 
     protected function searchDir($dir, $class, $app, $currentDirectory)
     {
-        $dir = (array)$dir;
+        $dir = (array) $dir;
         foreach ($dir as $dirname => $file) {
             if (is_array($file)) {
                 foreach ($dir as $file) {
-                    $return = $this->searchDir($file, $class, $app, $currentDirectory . $dirname);
+                    $return = $this->searchDir($file, $class, $app, $currentDirectory.$dirname);
                     if (!empty($return)) {
                         return $return;
                     }
@@ -94,7 +92,6 @@ class Renderer_CrudLink extends Renderer_Text
             }
         }
         return false;
-
     }
 
     protected function cleanFilename($file)

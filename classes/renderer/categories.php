@@ -35,7 +35,6 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             $this->renderer_options['parents'] = $attributes['renderer_options']['parents'];
             unset($attributes['renderer_options']['parents']);
         }
-
     }
 
     public function build()
@@ -157,5 +156,4 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             return $e->response();
         }
     }
-
 }

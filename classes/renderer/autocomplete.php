@@ -71,7 +71,6 @@ class Renderer_Autocomplete extends \Fieldset_Field
             }
             // Add the model into the posted vars
             static::mergeJsonAttribute($attributes, 'renderer_options.data.data-autocomplete-post', array('model' => $model));
-
         } else {
             // Gets the model from the posted vars
             $model = static::getJsonAttributeProperty($attributes, 'renderer_options.data.data-autocomplete-post', 'model');
@@ -215,7 +214,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
                 $hiddenName .= '[]';
             }
             if (!empty($this->value)) {
-                foreach((array) $this->value as $id => $value) {
+                foreach ((array) $this->value as $id => $value) {
                     // Get the item title and ID whether $value is a Model
                     $label = $value;
                     if ($value instanceof \Nos\Orm\Model) {
@@ -276,7 +275,8 @@ class Renderer_Autocomplete extends \Fieldset_Field
      *
      * @return mixed
      */
-    public function build_without_template() {
+    public function build_without_template()
+    {
         $original_template = $this->template;
         $this->template = '{field}';
         $field = $this->template(parent::build());
@@ -353,7 +353,7 @@ class Renderer_Autocomplete extends \Fieldset_Field
 
                         // Sorts the related items in the order they were posted
                         $posted_value = (array) \Input::post($field_name);
-                        uasort($related_items, function($a, $b) use ($posted_value) {
+                        uasort($related_items, function ($a, $b) use ($posted_value) {
                             $a_order = array_search($a->id, $posted_value);
                             $b_order = array_search($b->id, $posted_value);
                             if ($a_order === false xor $b_order === false) {

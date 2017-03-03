@@ -13,7 +13,7 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
     public function action_search()
     {
         try {
-            $config = (array)\Input::post('config', array());
+            $config = (array) \Input::post('config', array());
 
             // Get the search keywords
             $keywords = trim(strval(\Input::post('search', '')));
@@ -23,19 +23,19 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
             $use_jayps_search = (!empty($use_jayps_search) and $use_jayps_search != 'false');
 
             // Get the target model
-            $model = (string)\Input::post('model', '');
+            $model = (string) \Input::post('model', '');
             if (empty($model) or !class_exists($model)) {
                 throw new \Exception('Could not find this model.');
             }
 
             // The fields to display as the label in a result
-            $display_field = (array)\Arr::get($config, 'display_fields', array());
+            $display_field = (array) \Arr::get($config, 'display_fields', array());
 
             // The method to call on the item to display as the label in a result
             $display_method = \Arr::get($config, 'display_method', array());
 
             // Check if the $model is available
-            $available_models = (array)\Arr::get($config, 'available_models', array());
+            $available_models = (array) \Arr::get($config, 'available_models', array());
             if (!in_array($model, $available_models)) {
                 throw new \Exception('This model is not compatible with this feature (not available).');
             }
@@ -46,7 +46,7 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
                 throw new \Nos\Access_Exception('You don\'t have access to application '.$application.'!');
             }
 
-            $query_args = (array)\Arr::get($config, 'query_args', array());
+            $query_args = (array) \Arr::get($config, 'query_args', array());
 
             $pk_property    = \Arr::get($model::primary_key(), 0);
             $title_property = method_exists($model, 'search_property') ? $model::search_property() : $model::title_property();
@@ -126,7 +126,7 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
                 ->distinct(true)
                 ->execute()
                 ->as_array();
-            $results = array_filter((array)$results);
+            $results = array_filter((array) $results);
 
             if (!empty($context)) {
 
@@ -170,7 +170,8 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
                             $item  = $items[$result['value']];
                             try {
                                 $label = $item->$display_method();
-                            } catch (\BadMethodCallException $e) {}
+                            } catch (\BadMethodCallException $e) {
+                            }
                         }
                         if (!empty($label)) {
                             $results[$resultKey]['label'] = $label;
@@ -189,7 +190,6 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
                         }
                     }
                 }
-
             } else {
                 $results = array(
                     array(

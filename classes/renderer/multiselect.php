@@ -136,5 +136,4 @@ class Renderer_Multiselect extends \Fieldset_Field
             'locale' => \Str::sub($user->user_lang, 0, 2),
         ), false);
     }
-
 }
