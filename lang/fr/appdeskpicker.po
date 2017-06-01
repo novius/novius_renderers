@@ -1,0 +1,13 @@
+#: views/appdeskpicker/renderer.view.php:13
+#: views/appdeskpicker/renderer.view.php:58
+msgid "Nothing selected yet"
+msgstr "Aucun élément sélectionné"
+
+#: views/appdeskpicker/renderer.view.php:20
+msgid "Deselect"
+msgstr "Désélectionner"
+
+#: views/appdeskpicker/renderer.view.php:25
+#: views/appdeskpicker/renderer.view.php:39
+msgid "Select an item"
+msgstr "Sélectionner un élément"
