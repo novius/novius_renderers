@@ -23,6 +23,8 @@ require(['jquery-nos-wysiwyg'], function ($) {
         }
     }
 
+    toggleDisableAddButtons(true);
+
     //Add one item
     $(document).on('click', 'button.add-item-js', function(e) {
         var $button = $(this);
@@ -35,6 +37,9 @@ require(['jquery-nos-wysiwyg'], function ($) {
                 data[i] = btnData[i];
             }
         }
+
+        toggleDisableAddButtons(true);
+
         $.ajax({
             type : "GET",
             url: 'admin/novius_renderers/hasmany/add_item/' + next,
@@ -82,6 +87,8 @@ require(['jquery-nos-wysiwyg'], function ($) {
             }
         });
 
+        toggleDisableAddButtons(true);
+
         $nos.ajax({
             type : "GET",
             url: 'admin/novius_renderers/hasmany/add_item/' + next,
@@ -91,7 +98,6 @@ require(['jquery-nos-wysiwyg'], function ($) {
                 $vue.nosFormUI();
                 $div.closest('.item_list').append($vue);
                 $div.closest('.count-items-js').data('nb-items', next);
-
                 restore_order($div.closest('.item_list'));
             }
         });
@@ -105,9 +111,11 @@ require(['jquery-nos-wysiwyg'], function ($) {
         var removed = $(this).data('removed');
         var $list = $(this).closest('.item_list');
         if (confirm(question)) {
+            toggleDisableAddButtons(false);
             var $item = $(this).closest('.hasmany_item');
             if (removed.length > 0) {
                 $item.find('.head').remove();
+                $item.addClass('deleted');
                 $item.html(
                     $('<div/>').addClass('hasmany_message ui-state-error').html(removed)
                 );
@@ -163,5 +171,17 @@ require(['jquery-nos-wysiwyg'], function ($) {
             $(this).wysiwyg($(this).data('wysiwyg-options'));
         });
     });
-});
 
+    function toggleDisableAddButtons(isAdding) {
+        var actualItemsQuantity = $('.hasmany_item:not(.deleted)').length;
+        var quantityAfterOperation = isAdding ? ++actualItemsQuantity : --actualItemsQuantity;
+        var cannotAdd = canNotAddMoreItems(quantityAfterOperation);
+        $('.button-add-item').prop('disabled', cannotAdd);
+        $('.button-dupli-item').prop('disabled', cannotAdd);
+    }
+
+    function canNotAddMoreItems(quantityAfterOperation) {
+        var limit = $('.hasmany_items').data('limit');
+        return limit && quantityAfterOperation >= limit;
+    }
+});
