@@ -161,7 +161,9 @@ class Controller_Admin_ModelSearch extends Controller_Admin_Autocomplete
                     }
                     $items = $model::query()
                         ->where(
-                            \Arr::get($model::primary_key(), 0), 'IN', $arr_ids
+                            \Arr::get($model::primary_key(), 0),
+                            'IN',
+                            $arr_ids
                         )
                         ->get();
                     foreach ($results as $resultKey => $result) {

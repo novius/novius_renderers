@@ -104,7 +104,8 @@ class Controller_Admin_Autocomplete extends \Nos\Controller_Admin_Application
                 }
 
                 // Gets the query results
-                $results = array_filter((array) $query->order_by($title_property)
+                $results = array_filter(
+                    (array) $query->order_by($title_property)
                     ->distinct(true)
                     ->execute()
                     ->as_array()

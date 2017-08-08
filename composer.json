@@ -1,0 +1,12 @@
+{
+    "name": "novius/novius_renderers",
+    "require": {} ,
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "2.4"
+    },
+    "scripts": {
+        "lint" : [
+            "php-cs-fixer fix --config .php_cs.dist -vv --diff --dry-run"
+        ]
+    }
+}
