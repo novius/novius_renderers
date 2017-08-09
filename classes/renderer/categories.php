@@ -85,7 +85,10 @@ class Renderer_Categories extends \Nos\Renderer_Selector
             'treeOptions' => array(
                 'context' => $context == null ? '' : $context,
             ),
-            'columns' => \Arr::get($options, 'columns', array(
+            'columns' => \Arr::get(
+                $options,
+                'columns',
+                array(
                     array(
                         'dataKey' => 'title'
                     )

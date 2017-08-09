@@ -5,16 +5,13 @@ php:
 
 sudo: false
 
-env:
-  - PHPCSFIXER_PATH=$HOME/phar/php-cs-fixer.phar
-
 cache:
     directories:
-      - $HOME/phar/
+      - $HOME/.composer/cache
 
 before_script:
-  - 'if [ ! -f $PHPCSFIXER_PATH ]; then mkdir -p `dirname $PHPCSFIXER_PATH` && curl -o $PHPCSFIXER_PATH http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar; fi'
-  - php $PHPCSFIXER_PATH -V
+  - php -v
+  - composer install
 
 script:
-  - php $PHPCSFIXER_PATH fix --dry-run -vv --diff --config=./.php_cs.dist
+  - composer run-script lint
