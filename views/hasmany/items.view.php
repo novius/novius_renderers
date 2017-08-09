@@ -27,7 +27,7 @@ if (!empty($orderProperty)) {
 $defaultItem = \Arr::get($options, 'default_item', true);
 ?>
 
-<?php if($options['limit']):?>
+<?php if ($options['limit']):?>
 <p><?= __('Quantité maximum d\'éléments : ').$options['limit'] ?></p>
 <?php endif; ?>
 
