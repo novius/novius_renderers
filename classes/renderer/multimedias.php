@@ -26,7 +26,7 @@ class Renderer_MultiMedias extends Renderer
             $this->set_value($this->getValueFromInstance($item));
         }
 
-        $template = $this->template ?: $this->fieldset()->form()->get_config('field_template', "<tr><th>{label} :</th> <td>{field}</td></tr>");
+        $template = $this->template ?: $this->fieldset()->form()->get_config('field_template', "{field} {required}");
         
         $field = (string) \View::forge('novius_renderers::multimedias/inputs', array(
             'id'      => $id,
