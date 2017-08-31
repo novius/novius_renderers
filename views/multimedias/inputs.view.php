@@ -43,5 +43,5 @@ if ($sortable) {
             }
             ?>
         </span>
-    <span data-next="<?= $index ?>" data-key="<?= $key ?>"></span>
+    <span data-next="<?= $index ?>" data-key="<?= $key ?>" data-limit="<?= $options['limit'] ?>"></span>
 </div>

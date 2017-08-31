@@ -30,11 +30,16 @@
                         $item.appendTo($li);
                         $wrapper.append($li);
                     }
+
                     var index = $span.data('next');
-                    var $newimg = $('<input name="' + key + '[' + index + ']" class="media" type="hidden" value="">');
-                    $newimg.nosMedia(media_options);
-                    $container.find('.picker-container').append($newimg);
-                    $span.data('next', index + 1);
+                    var limit = $span.data('limit');
+                    // add a new media picker only if limit is not defined or it has not been reach
+                    if ((typeof limit != 'number') || (index <= limit)) {
+                        var $newimg = $('<input name="' + key + '[' + index + ']" class="media" type="hidden" value="">');
+                        $newimg.nosMedia(media_options);
+                        $container.find('.picker-container').append($newimg);
+                        $span.data('next', index + 1);
+                    }
                 }
             });
         });

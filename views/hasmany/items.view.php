@@ -25,12 +25,17 @@ if (!empty($orderProperty)) {
 }
 
 $defaultItem = \Arr::get($options, 'default_item', true);
-
 ?>
+
+<?php if ($options['limit']):?>
+<p><?= __('Quantité maximum d\'éléments : ').$options['limit'] ?></p>
+<?php endif; ?>
+
 <div class="hasmany_items count-items-js" <?= array_to_attr(array(
     'data-nb-items' => empty($listItems) ? (int) $defaultItem : count($listItems),
     'data-order' => \Arr::get($options, 'order') ? 1 : 0,
     'data-order-property' => \Arr::get($options, 'order_property'),
+    'data-limit' => $options['limit'],
 )) ?>>
     <div class="item_list">
         <?php
