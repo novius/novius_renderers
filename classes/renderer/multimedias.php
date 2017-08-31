@@ -26,13 +26,17 @@ class Renderer_MultiMedias extends Renderer
             $this->set_value($this->getValueFromInstance($item));
         }
 
-        return (string) \View::forge('novius_renderers::multimedias/inputs', array(
+        $template = $this->template ?: $this->fieldset()->form()->get_config('field_template', "{field} {required}");
+        
+        $field = (string) \View::forge('novius_renderers::multimedias/inputs', array(
             'id'      => $id,
             'key'     => $this->getInputName(),
             'options' => $this->renderer_options,
             'item'    => $item,
             'value'   => $this->value,
         ), false);
+        
+        return str_replace(array('{label}', '{field}'), array($this->label, $field), $template);
     }
 
     /**
