@@ -15,5 +15,12 @@ return array(
                 'datepicker' => array(),
             ),
         ),
+        // If you enable the sortable list feature (the "order" property on the renderer options), 
+        // you have to add the order field as a hidden field
+        //'show_order' => array(
+        //    'form' => array(
+        //        'type' => 'hidden',
+        //    )
+        //),
     )
 );
