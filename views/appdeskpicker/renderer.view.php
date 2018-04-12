@@ -4,8 +4,16 @@
 ?>
 
 <div id="<?= $id ?>">
-    <?= \Form::hidden($name.'[id]', $item->{$options['field_id']}, array('class' => 'field-id')) ?>
-    <?= \Form::hidden($name.'[class]', $item->{$options['field_class']}, array('class' => 'field-class')) ?>
+    <?= \Form::hidden(
+        $name.'[id]',
+        empty($item->{$options['field_id']}) ? null : $item->{$options['field_id']},
+        array('class' => 'field-id')
+    ) ?>
+    <?= \Form::hidden(
+        $name.'[class]',
+        empty($item->{$options['field_class']}) ? null : $item->{$options['field_class']},
+        array('class' => 'field-class')
+    ) ?>
     <div>
         <span class="field-title"><?php
             if (!empty($selectedItem)) {
